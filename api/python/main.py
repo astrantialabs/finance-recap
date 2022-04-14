@@ -30,10 +30,10 @@ class Main(Database):
 
 
     def get_data(excel_path, active_sheet, start_range, end_range, percentage_cell, attribute, json_path):
-        wb_sumarry_recap = Excel(excel_path, active_sheet)
-        value = wb_sumarry_recap.get_value_multiple_2d(start_range, end_range)
+        wb_data = Excel(excel_path, active_sheet)
+        value = wb_data.get_value_multiple_2d(start_range, end_range)
 
-        sumarry_recap_array = []
+        data_array = []
         for i in range(len(value)):
             for j in range(len(percentage_cell)):
                 if(type(value[i][percentage_cell[j]]) in (int, float)): 
@@ -44,18 +44,18 @@ class Main(Database):
                         value[i][percentage_cell[j]] = None
 
 
-            temp_sumarry_recap_dictionary = {
+            temp_data_dictionary = {
                 "id": i + 1
             }
 
             for j in range(len(attribute)):
-                temp_sumarry_recap_dictionary[attribute[j]] = value[i][j]
+                temp_data_dictionary[attribute[j]] = value[i][j]
 
     
-            sumarry_recap_array.append(temp_sumarry_recap_dictionary)
+            data_array.append(temp_data_dictionary)
 
 
-        json_object = json.dumps(sumarry_recap_array, indent = 4)
+        json_object = json.dumps(data_array, indent = 4)
 
         with open(json_path, "w") as outfile:
             outfile.write(json_object)
