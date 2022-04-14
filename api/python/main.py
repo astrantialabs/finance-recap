@@ -25,8 +25,18 @@ class Main(Database):
     def main():
         config = dotenv_values("./api/.env")
 
-        Main.get_data("./api/excel/Rekap Fisik dan Keuangan Test.xlsx", 1, "B6", "D22", [1, 2], ["activity", "physical", "finance"], "./api/json/secretariat_summary_recap.json")
-        # Main.upload_sumarry(config.get("APIdbURI"), "DisnakerFinanceRecap", "summary_recaps")
+        excel_path = "./api/excel/Rekap Fisik dan Keuangan Test.xlsx"
+        percentage_cell = [1, 2]
+        attribute = ["activity", "physical", "finance"]
+        summary_parameter = [
+            ["B6", "D22", "sekretariat"],
+            ["H6", "J14", "penta"],
+            ["N6", "P8", "lattas"],
+            ["T6", "V11", "hi"]
+        ]
+
+        for i in range(len(summary_parameter)):
+            Main.get_data(excel_path, 1, summary_parameter[i][0], summary_parameter[i][1], percentage_cell, attribute, f"./api/json/{summary_parameter[i][2]}_summary_recap.json")
 
 
     def get_data(excel_path, active_sheet, start_range, end_range, percentage_cell, attribute, json_path):
