@@ -3,3 +3,7 @@ web/public/hot
 web/public/storage
 web/storage/*.key
 web/vendor
+api/excel
+api/json
+api/.env
+api/note.txt
