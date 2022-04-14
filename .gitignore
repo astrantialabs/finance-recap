@@ -1,5 +1,22 @@
+<<<<<<< HEAD
 web/node_modules
 web/public/hot
 web/public/storage
 web/storage/*.key
 web/vendor
+=======
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+>>>>>>> 9c466511169a97a501c840678015be09e11eb15d
