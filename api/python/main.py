@@ -28,6 +28,7 @@ class Main(Database):
         Main.get_summary_data()
         Main.upload_summary_data(config)
         
+        
     def get_data(excel_path, active_sheet, start_range, end_range, percentage_cell, attribute, json_path):
         wb_data = Excel(excel_path, active_sheet)
         value = wb_data.get_value_multiple_2d(start_range, end_range)
