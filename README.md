@@ -1,7 +1,5 @@
 <h2 align="center"> ━━━━━━  ❖  ━━━━━━ </h2>
 
-<h2></h2>
-
 ### ❖ Informasi
 
 **Department of Labor and Social Financial Data Recapitulasion System** *(Disnaker Finance Recap)* adalah sebuah aplikasi berbasis website uang dikembangkan oleh [@yehezkieldio](https://github.com/yehezkieldio) dan [@NotHydra](https://github.com/NotHydra).
