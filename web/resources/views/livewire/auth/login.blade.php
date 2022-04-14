@@ -1,8 +1,30 @@
+{{-- <div class="section" id="login">
+    <div class="container">
+        <div class="columns is-mobile is-centered">
+            <div class="column is-6 is-12-mobile">
+                <div class="box">
+                    <form wire:submit.prevent="login">
+                        <div class="field">
+                            <label for="username" class="label">Username:</label>
+                            <input type="text" wire:model="username" class="input">
+                        </div>
+                        <div class="field">
+                            <label for="password" class="label">Password</label>
+                            <input type="password" wire:model="password" class="input @error('password') is-danger @enderror">
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> --}}
 <div>
     <div class="container">
         <div class="card">
             <div class="card-body">
                 <form wire:submit.prevent="login">
+                    @csrf
                     <div class="field">
                         <label class="label">username</label>
                         <div class="control">
@@ -27,6 +49,8 @@
                     </div>
                     <button class="button" type="submit">Submit</button>
                 </form>
+                
+                <br>
             </div>
         </div>
     </div>
