@@ -23,12 +23,11 @@ class Database():
 
 class Main(Database):
     def main():
-        config = dotenv_values("./api/.env")
-
         Main.get_summary_data()
-        Main.upload_summary_data(config)
+        Main.combine_summary_data()
+        Main.update_summary_data()
         
-        
+
     def get_data(excel_path, active_sheet, start_range, end_range, percentage_cell, attribute, json_path):
         wb_data = Excel(excel_path, active_sheet)
         value = wb_data.get_value_multiple_2d(start_range, end_range)
@@ -61,7 +60,7 @@ class Main(Database):
             outfile.write(json_object)
 
 
-    def upload_data(mongoDBURI, database_name, collection_name, json_path, attribute):
+    def update_data(mongoDBURI, database_name, collection_name, json_path, attribute):
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
         data = json.load(open(json_path))
@@ -92,20 +91,38 @@ class Main(Database):
             Main.get_data(excel_path, 1, summary_parameter[i][0], summary_parameter[i][1], percentage_cell, attribute, f"./api/json/{summary_parameter[i][2]}_summary_recap.json")
 
 
-    def upload_summary_data(config):
-        mongoDBURI = config.get("APIdbURI")
-        database_name = "DisnakerFinanceRecap"
-        attribute = ["activity", "physical", "finance"]
+    def combine_summary_data():
         summary_parameter = [
-            "sekretariat",
-            "penta",
-            "lattas",
-            "hi",
+            "Sekretariat",
+            "Penta",
+            "Lattas",
+            "HI",
         ]
 
+        combined_array = []
         for i in range(len(summary_parameter)):
-            Main.upload_data(mongoDBURI, database_name, f"{summary_parameter[i]}_summary_recaps", f"./api/json/{summary_parameter[i]}_summary_recap.json", attribute)
+            temp_dictionary = {
+                "id": i + 1,
+                "name": summary_parameter[i],
+                "activity": json.load(open(f"./api/json/{summary_parameter[i].lower()}_summary_recap.json"))
+            }
 
+            combined_array.append(temp_dictionary)
+
+
+        json_object = json.dumps(combined_array, indent = 4)
+
+        with open("./api/json/collection/summary_recaps.json", "w") as outfile:
+            outfile.write(json_object)
+
+
+    def update_summary_data():
+        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
+        database_name = "DisnakerFinanceRecap"
+        attribute = ["name", "activity"]
+        
+        Main.update_data(mongoDBURI, database_name, "summary_recaps", "./api/json/collection/summary_recaps.json", attribute)
+    
         
 if(__name__ == "__main__"):
     Main.main()
