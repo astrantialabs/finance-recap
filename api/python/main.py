@@ -5,39 +5,7 @@ from excel import Excel
 from pymongo import MongoClient
 from dotenv import dotenv_values
 
-class Main():
-    def main():
-        wb_sumarry_recap = Excel("./api/excel/Rekap Fisik dan Keuangan Test.xlsx", 1)
-        value = wb_sumarry_recap.get_value_multiple_2d("B6", "D22")
-
-        sumarry_recap_array = []
-        percetange_cell = [1, 2]
-        for i in range(len(value)):
-            for j in range(len(percetange_cell)):
-                if(type(value[i][percetange_cell[j]]) in (int, float)): 
-                    value[i][percetange_cell[j]] = math.trunc(value[i][percetange_cell[j]] * 100)
-
-                if(type(value[i][percetange_cell[j]]) == str): 
-                    if(value[i][percetange_cell[j]] == "#REF!"):
-                        value[i][percetange_cell[j]] = None
-
-
-            temp_sumarry_recap_dictionary = {
-                "id": i + 1,
-                "activity": value[i][0],
-                "physical": value[i][1],
-                "finance": value[i][2]
-            }
-
-            sumarry_recap_array.append(temp_sumarry_recap_dictionary)
-
-
-        json_object = json.dumps(sumarry_recap_array, indent = 4)
-
-        with open("./api/json/sumarry_recap.json", "w") as outfile:
-            outfile.write(json_object)
-
-
+class Database():
     def get_cluster(mongoDBURI):
         cluster = MongoClient(mongoDBURI)
         return cluster
@@ -53,7 +21,47 @@ class Main():
         return collection
 
 
-    def summary_upload(mongoDBURI, database_name, collection_name):
+class Main(Database):
+    def main():
+        config = dotenv_values("./api/.env")
+
+        Main.get_data("./api/excel/Rekap Fisik dan Keuangan Test.xlsx", 1, "B6", "D22", [1, 2], ["activity", "physical", "finance"], "./api/json/secretariat_summary_recap.json")
+        # Main.upload_sumarry(config.get("APIdbURI"), "DisnakerFinanceRecap", "summary_recaps")
+
+
+    def get_data(excel_path, active_sheet, start_range, end_range, percentage_cell, attribute, json_path):
+        wb_sumarry_recap = Excel(excel_path, active_sheet)
+        value = wb_sumarry_recap.get_value_multiple_2d(start_range, end_range)
+
+        sumarry_recap_array = []
+        for i in range(len(value)):
+            for j in range(len(percentage_cell)):
+                if(type(value[i][percentage_cell[j]]) in (int, float)): 
+                    value[i][percentage_cell[j]] = math.trunc(value[i][percentage_cell[j]] * 100)
+
+                if(type(value[i][percentage_cell[j]]) == str): 
+                    if(value[i][percentage_cell[j]] == "#REF!"):
+                        value[i][percentage_cell[j]] = None
+
+
+            temp_sumarry_recap_dictionary = {
+                "id": i + 1
+            }
+
+            for j in range(len(attribute)):
+                temp_sumarry_recap_dictionary[attribute[j]] = value[i][j]
+
+    
+            sumarry_recap_array.append(temp_sumarry_recap_dictionary)
+
+
+        json_object = json.dumps(sumarry_recap_array, indent = 4)
+
+        with open(json_path, "w") as outfile:
+            outfile.write(json_object)
+
+
+    def upload_sumarry(mongoDBURI, database_name, collection_name):
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
         data = json.load(open('./api/json/sumarry_recap.json'))
@@ -68,7 +76,4 @@ class Main():
 
         
 if(__name__ == "__main__"):
-    config = dotenv_values("./api/.env")
-
     Main.main()
-    Main.summary_upload(config.get("APIdbURI"), "DisnakerFinanceRecap", "summary_recaps")
