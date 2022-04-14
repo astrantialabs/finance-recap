@@ -1,4 +1,14 @@
-# disnaker-finance-recap
+<h2 align="center"> ━━━━━━  ❖  ━━━━━━ </h2>
 
-- Disnaker Financial Data Recapitulation atau Disnaker Finance Recap adalah sebuah aplikasi berbasis website yang dikembangkan oleh [@yehezkieldio](https://github.com/yehezkieldio) dan [@NotHydra](https://github.com/NotHydra) dengan tujuan mempermudahkan melihat sebuah data-data tertentu dengan detail yang penuh.
-- Disnaker Financial Data Recapitulation dikembangkan menggunakan bahasa PHP dan Python dengan tambahan bahasa HTML, SCSS/CSS, dan JavaScipt menggunakan framework Laravel dan MongoDB sebagai database data keuangan dan PostgreSQL sebagai database user.
+<h2></h2>
+
+### ❖ Informasi
+
+**Department of Labor and Social Financial Data Recapitulasion System** *(Disnaker Finance Recap)* adalah sebuah aplikasi berbasis website uang dikembangkan oleh [@yehezkieldio](https://github.com/yehezkieldio) dan [@NotHydra](https://github.com/NotHydra).
+
+Technology stack:
+
+- **Web Framework:** [Laravel](https://laravel.com/) [Livewire](https://laravel-livewire.com)
+- **CSS Framework:** [Bulma](https://bulma.io/)
+- **Database:** [MongoDB Atlas](https://www.mongodb.com/atlas/database), [PostgreSQL](https://www.postgresql.org/)
+- **Programming Language:** [PHP](https://www.php.net/), [Python](https://www.python.org/)
