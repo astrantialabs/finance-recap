@@ -25,20 +25,9 @@ class Main(Database):
     def main():
         config = dotenv_values("./api/.env")
 
-        excel_path = "./api/excel/Rekap Fisik dan Keuangan Test.xlsx"
-        percentage_cell = [1, 2]
-        attribute = ["activity", "physical", "finance"]
-        summary_parameter = [
-            ["B6", "D22", "sekretariat"],
-            ["H6", "J14", "penta"],
-            ["N6", "P8", "lattas"],
-            ["T6", "V11", "hi"]
-        ]
-
-        for i in range(len(summary_parameter)):
-            Main.get_data(excel_path, 1, summary_parameter[i][0], summary_parameter[i][1], percentage_cell, attribute, f"./api/json/{summary_parameter[i][2]}_summary_recap.json")
-
-
+        Main.get_summary_data()
+        Main.upload_summary_data(config)
+        
     def get_data(excel_path, active_sheet, start_range, end_range, percentage_cell, attribute, json_path):
         wb_data = Excel(excel_path, active_sheet)
         value = wb_data.get_value_multiple_2d(start_range, end_range)
@@ -71,18 +60,50 @@ class Main(Database):
             outfile.write(json_object)
 
 
-    def upload_sumarry(mongoDBURI, database_name, collection_name):
+    def upload_data(mongoDBURI, database_name, collection_name, json_path, attribute):
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
-        data = json.load(open('./api/json/sumarry_recap.json'))
+        data = json.load(open(json_path))
         for i in range(len(data)):
             update_id = data[i].get("id")
-            update_activity = data[i].get("activity")
-            update_physical = data[i].get("physical")
-            update_finance = data[i].get("finance")
+            update_dictionary = {}
 
-            # collection.find_one_and_update({"id": i+1}, {"$set" :{"activity" : "Test", "physical" : 100, "finance" : 100}})
-            collection.find_one_and_update({"id": update_id}, {"$set" :{"activity" : update_activity, "physical" : update_physical, "finance" : update_finance}})
+            for j in range(len(attribute)):
+                update_dictionary[attribute[j]] = data[i].get(attribute[j])
+                # update_dictionary[attribute[j]] = 100
+
+
+            collection.find_one_and_update({"id": update_id}, {"$set" : update_dictionary })
+
+
+    def get_summary_data():
+        excel_path = "./api/excel/Rekap Fisik dan Keuangan Test.xlsx"
+        percentage_cell = [1, 2]
+        attribute = ["activity", "physical", "finance"]
+        summary_parameter = [
+            ["B6", "D22", "sekretariat"],
+            ["H6", "J14", "penta"],
+            ["N6", "P8", "lattas"],
+            ["T6", "V11", "hi"]
+        ]
+
+        for i in range(len(summary_parameter)):
+            Main.get_data(excel_path, 1, summary_parameter[i][0], summary_parameter[i][1], percentage_cell, attribute, f"./api/json/{summary_parameter[i][2]}_summary_recap.json")
+
+
+    def upload_summary_data(config):
+        mongoDBURI = config.get("APIdbURI")
+        database_name = "DisnakerFinanceRecap"
+        attribute = ["activity", "physical", "finance"]
+        summary_parameter = [
+            "sekretariat",
+            "penta",
+            "lattas",
+            "hi",
+        ]
+
+        for i in range(len(summary_parameter)):
+            Main.upload_data(mongoDBURI, database_name, f"{summary_parameter[i]}_summary_recaps", f"./api/json/{summary_parameter[i]}_summary_recap.json", attribute)
 
         
 if(__name__ == "__main__"):
