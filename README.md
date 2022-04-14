@@ -8,7 +8,6 @@
 
 Technology stack:
 
-- **Web Framework:** [Laravel](https://laravel.com/) [Livewire](https://laravel-livewire.com)
-- **CSS Framework:** [Bulma](https://bulma.io/)
-- **Database:** [MongoDB Atlas](https://www.mongodb.com/atlas/database), [PostgreSQL](https://www.postgresql.org/)
-- **Programming Language:** [PHP](https://www.php.net/), [Python](https://www.python.org/)
+- **Web Framework:** [Laravel](https://laravel.com/) • [Livewire](https://laravel-livewire.com)
+- **Database:** [MongoDB Atlas](https://www.mongodb.com/atlas/database) • [PostgreSQL](https://www.postgresql.org/)
+- **Programming Language:** [PHP](https://www.php.net/) • [Python](https://www.python.org/)
