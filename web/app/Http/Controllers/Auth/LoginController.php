@@ -1,0 +1,3 @@
+class LoginController extends Controller {
+    
+}
