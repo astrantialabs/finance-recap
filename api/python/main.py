@@ -24,7 +24,6 @@ class Database():
 class Main(Database):
     def main():
         Main.get_summary_data()
-        Main.combine_summary_data()
         Main.update_summary_data()
 
 
@@ -91,31 +90,20 @@ class Main(Database):
             ["T6", "V11", "HI"]
         ]
 
-        for i in range(len(summary_parameter)):
-            value = Main.get_data(path, 1, summary_parameter[i][0], summary_parameter[i][1], percentage_cell, attribute)
-            Main.write_json(value, f"./api/json/{summary_parameter[i][2].lower()}_summary_recap.json")
-
-
-    def combine_summary_data():
-        summary_parameter = [
-            "Sekretariat",
-            "Penta",
-            "Lattas",
-            "HI"
-        ]
-
         combined_array = []
         for i in range(len(summary_parameter)):
+            activity = Main.get_data(path, 1, summary_parameter[i][0], summary_parameter[i][1], percentage_cell, attribute)
+
             temp_dictionary = {
                 "id": i + 1,
                 "name": summary_parameter[i],
-                "activity": json.load(open(f"./api/json/{summary_parameter[i].lower()}_summary_recap.json"))
+                "activity": activity
             }
 
             combined_array.append(temp_dictionary)
-
-
-        Main.write_json(combined_array, "./api/json/collection/summary_recaps.json")
+        
+        
+        Main.write_json(combined_array, "./api/json/summary_recaps.json")
 
 
     def update_summary_data():
@@ -123,7 +111,7 @@ class Main(Database):
         database_name = "DisnakerFinanceRecap"
         attribute = ["name", "activity"]
         
-        Main.update_data(mongoDBURI, database_name, "summary_recaps", "./api/json/collection/summary_recaps.json", attribute)
+        Main.update_data(mongoDBURI, database_name, "summary_recaps", "./api/json/summary_recaps.json", attribute)
 
 
 if(__name__ == "__main__"):
