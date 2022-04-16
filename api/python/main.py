@@ -23,8 +23,13 @@ class Database():
 
 class Main(Database):
     def main():
+        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
+        database_name = "DisnakerFinanceRecap"
+        collection_name = "summary_recaps"
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+        
         Main.get_summary_data()
-        Main.update_summary_data()
+        Main.update_summary_data(collection)
 
 
     def write_json(data, path):
@@ -63,9 +68,7 @@ class Main(Database):
         return data_array
 
 
-    def update_data(mongoDBURI, database_name, collection_name, json_path, attribute):
-        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
-
+    def update_data(collection, json_path, attribute):
         data = json.load(open(json_path))
         for i in range(len(data)):
             update_id = data[i].get("id")
@@ -106,12 +109,10 @@ class Main(Database):
         Main.write_json(combined_array, "./api/json/summary_recaps.json")
 
 
-    def update_summary_data():
-        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
-        database_name = "DisnakerFinanceRecap"
+    def update_summary_data(collection):
         attribute = ["name", "activity"]
         
-        Main.update_data(mongoDBURI, database_name, "summary_recaps", "./api/json/summary_recaps.json", attribute)
+        Main.update_data(collection, "./api/json/summary_recaps.json", attribute)
 
 
 if(__name__ == "__main__"):
