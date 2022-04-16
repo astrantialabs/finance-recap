@@ -31,6 +31,9 @@ class Main(Database):
         Main.get_summary_data()
         Main.update_summary_data(collection)
 
+        # path = "./api/excel/Rekap Fisik dan Keuangan Test.xlsx"
+        # Main.get_data(path, 4, "B16", "R52")
+
 
     def write_json(data, path):
         json_object = json.dumps(data, indent = 4)
@@ -39,10 +42,7 @@ class Main(Database):
             outfile.write(json_object)
 
 
-    def get_data(path, active_sheet, start_range, end_range, percentage_cell, attribute):
-        wb_data = Excel(path, active_sheet)
-        value = wb_data.get_value_multiple_2d(start_range, end_range)
-
+    def convert_to_dict(value, attribute, percentage_cell=[]):
         data_array = []
         for i in range(len(value)):
             for j in range(len(percentage_cell)):
@@ -66,6 +66,13 @@ class Main(Database):
 
         
         return data_array
+
+
+    def get_data(path, active_sheet, start_range, end_range):
+        wb_data = Excel(path, active_sheet)
+        value = wb_data.get_value_multiple_2d(start_range, end_range)
+
+        return value
 
 
     def update_data(collection, json_path, attribute):
@@ -95,11 +102,12 @@ class Main(Database):
 
         combined_array = []
         for i in range(len(summary_parameter)):
-            activity = Main.get_data(path, 1, summary_parameter[i][0], summary_parameter[i][1], percentage_cell, attribute)
+            value = Main.get_data(path, 1, summary_parameter[i][0], summary_parameter[i][1])
+            activity = Main.convert_to_dict(value, attribute, percentage_cell)
 
             temp_dictionary = {
                 "id": i + 1,
-                "name": summary_parameter[i],
+                "name": summary_parameter[i][2],
                 "activity": activity
             }
 
