@@ -52,7 +52,7 @@ class Utility():
 
 class Main(Database, Utility):
     def main():
-        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
+        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
         database_name = "DisnakerFinanceRecap"
         collection_name = "summary_recaps"
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
@@ -182,7 +182,7 @@ class Main(Database, Utility):
 
 
     def get_summary_data():
-        path = "./api/excel/Rekap Fisik dan Keuangan Test.xlsx"
+        path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx" # path
         percentage_cell = [1, 2]
         attribute = ["activity", "physical", "finance", "detail"]
         summary_parameter = [
@@ -266,13 +266,13 @@ class Main(Database, Utility):
             combined_array.append(temp_dictionary)
         
         
-        Main.write_json(combined_array, "./api/json/summary_recaps.json")
+        Main.write_json(combined_array, "./api/backend/json/summary_recaps.json") # path
 
 
     def update_summary_data(collection):
         attribute = ["name", "activity"]
         
-        Main.update_data(collection, "./api/json/summary_recaps.json", attribute)
+        Main.update_data(collection, "./api/backend/json/summary_recaps.json", attribute) # path
 
 
 if(__name__ == "__main__"):
