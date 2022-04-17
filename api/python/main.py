@@ -21,17 +21,7 @@ class Database():
         return collection
 
 
-class Main(Database):
-    def main():
-        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
-        database_name = "DisnakerFinanceRecap"
-        collection_name = "summary_recaps"
-        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
-        
-        Main.get_summary_data()
-        Main.update_summary_data(collection)
-        
-
+class Utility():
     def write_json(data, path):
         json_object = json.dumps(data, indent = 4)
 
@@ -60,6 +50,17 @@ class Main(Database):
         return temp_data_dictionary
 
 
+class Main(Database, Utility):
+    def main():
+        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
+        database_name = "DisnakerFinanceRecap"
+        collection_name = "summary_recaps"
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+        
+        Main.get_summary_data()
+        Main.update_summary_data(collection)
+        
+
     def get_data(path, active_sheet, start_range, end_range):
         wb_data = Excel(path, active_sheet)
         value = wb_data.get_value_multiple_2d(start_range, end_range)
@@ -75,104 +76,9 @@ class Main(Database):
 
             for j in range(len(attribute)):
                 update_dictionary[attribute[j]] = data[i].get(attribute[j])
-                # update_dictionary[attribute[j]] = 100
 
 
             collection.find_one_and_update({"id": update_id}, {"$set" : update_dictionary })
-
-
-    def get_summary_data():
-        path = "./api/excel/Rekap Fisik dan Keuangan Test.xlsx"
-        percentage_cell = [1, 2]
-        attribute = ["activity", "physical", "finance", "detail"]
-        summary_parameter = [
-            ["B6", "D22", "Sekretariat", [
-                    [2, "B16", "Q39", [3, 3, 3, 5]],
-                    [3, "B16", "Q20", [3]],
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    [12, "B16", "Q52", [19]],
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None
-                ]
-            ],
-
-            ["H6", "J14", "Penta", [
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None
-                ]
-            ],
-
-            ["N6", "P8", "Lattas", [
-                    None,
-                    None,
-                    None
-                ]
-            ],
-
-            ["T6", "V11", "HI", [
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None
-                ]
-            ]
-        ]
-
-        combined_array = []
-        for i in range(len(summary_parameter)):
-            value = Main.get_data(path, 1, summary_parameter[i][0], summary_parameter[i][1])
-
-            activity = []
-            for j in range(len(value)):
-                if(type(summary_parameter[i][3][j]) == list):
-                    print(summary_parameter[i][3][j][0], summary_parameter[i][3][j][1], summary_parameter[i][3][j][2], summary_parameter[i][3][j][3])
-                    detail = Main.get_detail_data(path, summary_parameter[i][3][j][0], summary_parameter[i][3][j][1], summary_parameter[i][3][j][2], summary_parameter[i][3][j][3])
-                
-                elif(type(summary_parameter[i][3][j]) != list):
-                    detail = None
-
-                value[j].append(detail)
-
-                temp_activity_dictionary = Main.convert_to_dict(j, value, attribute, percentage_cell)
-                activity.append(temp_activity_dictionary)
-
-
-            temp_dictionary = {
-                "id": i + 1,
-                "name": summary_parameter[i][2],
-                "activity": activity
-            }
-
-            combined_array.append(temp_dictionary)
-        
-        
-        Main.write_json(combined_array, "./api/json/summary_recaps.json")
-
-
-    def update_summary_data(collection):
-        attribute = ["name", "activity"]
-        
-        Main.update_data(collection, "./api/json/summary_recaps.json", attribute)
 
 
     def get_detail_data(path, active_sheet, start_range, end_range, cell_attribute):
@@ -273,6 +179,100 @@ class Main(Database):
 
 
         return detail_array
+
+
+    def get_summary_data():
+        path = "./api/excel/Rekap Fisik dan Keuangan Test.xlsx"
+        percentage_cell = [1, 2]
+        attribute = ["activity", "physical", "finance", "detail"]
+        summary_parameter = [
+            ["B6", "D22", "Sekretariat", [
+                    [2, "B16", "Q39", [3, 3, 3, 5]],
+                    [3, "B16", "Q20", [3]],
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    [12, "B16", "Q52", [19]],
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None
+                ]
+            ],
+
+            ["H6", "J14", "Penta", [
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None
+                ]
+            ],
+
+            ["N6", "P8", "Lattas", [
+                    None,
+                    None,
+                    None
+                ]
+            ],
+
+            ["T6", "V11", "HI", [
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None
+                ]
+            ]
+        ]
+
+        combined_array = []
+        for i in range(len(summary_parameter)):
+            value = Main.get_data(path, 1, summary_parameter[i][0], summary_parameter[i][1])
+
+            activity = []
+            for j in range(len(value)):
+                if(type(summary_parameter[i][3][j]) == list):
+                    print(summary_parameter[i][3][j][0], summary_parameter[i][3][j][1], summary_parameter[i][3][j][2], summary_parameter[i][3][j][3])
+                    detail = Main.get_detail_data(path, summary_parameter[i][3][j][0], summary_parameter[i][3][j][1], summary_parameter[i][3][j][2], summary_parameter[i][3][j][3])
+                
+                elif(type(summary_parameter[i][3][j]) != list):
+                    detail = None
+
+                value[j].append(detail)
+
+                temp_activity_dictionary = Main.convert_to_dict(j, value, attribute, percentage_cell)
+                activity.append(temp_activity_dictionary)
+
+
+            temp_dictionary = {
+                "id": i + 1,
+                "name": summary_parameter[i][2],
+                "activity": activity
+            }
+
+            combined_array.append(temp_dictionary)
+        
+        
+        Main.write_json(combined_array, "./api/json/summary_recaps.json")
+
+
+    def update_summary_data(collection):
+        attribute = ["name", "activity"]
+        
+        Main.update_data(collection, "./api/json/summary_recaps.json", attribute)
 
 
 if(__name__ == "__main__"):
