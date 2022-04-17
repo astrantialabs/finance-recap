@@ -23,17 +23,18 @@ class Database():
 
 class Main(Database):
     def main():
-        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
-        database_name = "DisnakerFinanceRecap"
-        collection_name = "summary_recaps"
-        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+        # mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
+        # database_name = "DisnakerFinanceRecap"
+        # collection_name = "summary_recaps"
+        # collection = Main.get_collection(mongoDBURI, database_name, collection_name)
         
-        Main.get_summary_data()
-        Main.update_summary_data(collection)
+        # Main.get_summary_data()
+        # Main.update_summary_data(collection)
+        
+        detail_data = Main.get_detail_data("./api/excel/Rekap Fisik dan Keuangan Test.xlsx", 4, "B16", "Q52", [19])
 
-        # path = "./api/excel/Rekap Fisik dan Keuangan Test.xlsx"
-        # Main.get_data(path, 4, "B16", "R52")
-
+        Main.write_json(detail_data, "./api/json/test.json")
+        
 
     def write_json(data, path):
         json_object = json.dumps(data, indent = 4)
@@ -42,30 +43,25 @@ class Main(Database):
             outfile.write(json_object)
 
 
-    def convert_to_dict(value, attribute, percentage_cell=[]):
-        data_array = []
-        for i in range(len(value)):
-            for j in range(len(percentage_cell)):
-                if(type(value[i][percentage_cell[j]]) in (int, float)): 
-                    value[i][percentage_cell[j]] = math.trunc(value[i][percentage_cell[j]] * 100)
+    def convert_to_dict(count, value, attribute, percentage_cell=[]):
+        for i in range(len(percentage_cell)):
+            if(type(value[count][percentage_cell[i]]) in (int, float)): 
+                value[count][percentage_cell[i]] = math.trunc(value[count][percentage_cell[i]] * 100)
 
-                if(type(value[i][percentage_cell[j]]) == str): 
-                    if(value[i][percentage_cell[j]] == "#REF!"):
-                        value[i][percentage_cell[j]] = None
+            if(type(value[count][percentage_cell[i]]) == str): 
+                if(value[count][percentage_cell[i]] == "#REF!"):
+                    value[count][percentage_cell[i]] = None
 
 
-            temp_data_dictionary = {
-                "id": i + 1
-            }
+        temp_data_dictionary = {
+            "id": count + 1
+        }
 
-            for j in range(len(attribute)):
-                temp_data_dictionary[attribute[j]] = value[i][j]
-
-    
-            data_array.append(temp_data_dictionary)
+        for i in range(len(attribute)):
+            temp_data_dictionary[attribute[i]] = value[count][i]
 
         
-        return data_array
+        return temp_data_dictionary
 
 
     def get_data(path, active_sheet, start_range, end_range):
@@ -103,7 +99,12 @@ class Main(Database):
         combined_array = []
         for i in range(len(summary_parameter)):
             value = Main.get_data(path, 1, summary_parameter[i][0], summary_parameter[i][1])
-            activity = Main.convert_to_dict(value, attribute, percentage_cell)
+
+            activity = []
+            for j in range(len(value)):
+                temp_activity_dictionary = Main.convert_to_dict(j, value, attribute, percentage_cell)
+                activity.append(temp_activity_dictionary)
+
 
             temp_dictionary = {
                 "id": i + 1,
@@ -121,6 +122,106 @@ class Main(Database):
         attribute = ["name", "activity"]
         
         Main.update_data(collection, "./api/json/summary_recaps.json", attribute)
+
+
+    def get_detail_data(path, active_sheet, start_range, end_range, cell_attribute):
+        detail_array = []
+        cell_range = [Excel.convert_range(start_range), Excel.convert_range(end_range)]
+
+        cell_attribute_index = 0
+        cell_attribute_count = 0
+        
+        detail_range = []
+        expenses_range = []
+
+        i = cell_range[0][1]
+        while i < cell_range[1][1] + 2:
+            if(cell_attribute_count == cell_attribute[cell_attribute_index]):  
+                combined_expenses_range = []
+
+                j = 0
+                while j < len(expenses_range):
+                    temp_combined_expenses_range = expenses_range[j] + expenses_range[j+1] 
+                    combined_expenses_range.append(temp_combined_expenses_range)
+
+                    j += 2
+
+
+                temp_detail.append(combined_expenses_range)
+                detail_range.append(temp_detail)
+
+                expenses_range = []
+                cell_attribute_count = 0
+                cell_attribute_index += 1
+
+            if(cell_attribute_count == 0):
+                temp_detail = [[cell_range[0][0], i], [cell_range[1][0], i]]
+
+                cell_attribute_count += 1
+                i += 1
+            
+            elif(cell_attribute_count != 0):
+                temp_expenses = [[cell_range[0][0], i], [cell_range[1][0], i+1]]
+                expenses_range.append(temp_expenses)
+
+                cell_attribute_count += 1
+                i += 2
+
+
+        for i in range(len(detail_range)):
+            expenses_array = []
+            for j in range(len(detail_range[i][2])):
+                physical_value = Main.get_data(path, active_sheet, detail_range[i][2][j][0], detail_range[i][2][j][1])
+                finance_value = Main.get_data(path, active_sheet, detail_range[i][2][j][2], detail_range[i][2][j][3])
+
+                del physical_value[0][2:4]
+                del physical_value[1][2:4]
+                del finance_value[0][2:4]
+                del finance_value[1][2:4]
+
+                physical_monthly = []
+                for k in range(len(physical_value[0][2:14])):
+                    temp_physical_monthly = [physical_value[0][2:14][k], physical_value[1][2:14][k]]
+                    physical_monthly.append(temp_physical_monthly)
+
+                
+                finance_monthly = []
+                for k in range(len(finance_value[0][2:14])):
+                    temp_finance_monthly = [finance_value[0][2:14][k], finance_value[1][2:14][k]]
+                    finance_monthly.append(temp_finance_monthly)
+
+
+                temp_expenses_dictionary = {
+                    "id": j+1,
+                    "name": physical_value[0][0],
+                    "physical": {
+                        "total": physical_value[0][1],
+                        "monthly": physical_monthly
+                    },
+                    "finance": {
+                        "total": finance_value[0][1],
+                        "monthly": finance_monthly
+                    }
+                }
+
+                expenses_array.append(temp_expenses_dictionary)
+                
+
+            value = Main.get_data(path, active_sheet, detail_range[i][0], detail_range[i][1])
+            del value[0][2:4]
+
+            temp_detail_dictionary = {
+                "id": i+1,
+                "account": value[0][0],
+                "total_finance": value[0][1],
+                "monthly_finance": value[0][2:14],
+                "expenses": expenses_array
+            }
+
+            detail_array.append(temp_detail_dictionary)
+
+
+        return detail_array
 
 
 if(__name__ == "__main__"):
