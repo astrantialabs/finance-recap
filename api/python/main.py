@@ -23,17 +23,13 @@ class Database():
 
 class Main(Database):
     def main():
-        # mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
-        # database_name = "DisnakerFinanceRecap"
-        # collection_name = "summary_recaps"
-        # collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI")
+        database_name = "DisnakerFinanceRecap"
+        collection_name = "summary_recaps"
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
         
-        # Main.get_summary_data()
-        # Main.update_summary_data(collection)
-        
-        detail_data = Main.get_detail_data("./api/excel/Rekap Fisik dan Keuangan Test.xlsx", 4, "B16", "Q52", [19])
-
-        Main.write_json(detail_data, "./api/json/test.json")
+        Main.get_summary_data()
+        Main.update_summary_data(collection)
         
 
     def write_json(data, path):
@@ -60,7 +56,7 @@ class Main(Database):
         for i in range(len(attribute)):
             temp_data_dictionary[attribute[i]] = value[count][i]
 
-        
+
         return temp_data_dictionary
 
 
@@ -88,12 +84,58 @@ class Main(Database):
     def get_summary_data():
         path = "./api/excel/Rekap Fisik dan Keuangan Test.xlsx"
         percentage_cell = [1, 2]
-        attribute = ["activity", "physical", "finance"]
+        attribute = ["activity", "physical", "finance", "detail"]
         summary_parameter = [
-            ["B6", "D22", "Sekretariat"],
-            ["H6", "J14", "Penta"],
-            ["N6", "P8", "Lattas"],
-            ["T6", "V11", "HI"]
+            ["B6", "D22", "Sekretariat", [
+                    [2, "B16", "Q39", [3, 3, 3, 5]],
+                    [3, "B16", "Q20", [3]],
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    [12, "B16", "Q52", [19]],
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None
+                ]
+            ],
+
+            ["H6", "J14", "Penta", [
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None
+                ]
+            ],
+
+            ["N6", "P8", "Lattas", [
+                    None,
+                    None,
+                    None
+                ]
+            ],
+
+            ["T6", "V11", "HI", [
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None
+                ]
+            ]
         ]
 
         combined_array = []
@@ -102,6 +144,15 @@ class Main(Database):
 
             activity = []
             for j in range(len(value)):
+                if(type(summary_parameter[i][3][j]) == list):
+                    print(summary_parameter[i][3][j][0], summary_parameter[i][3][j][1], summary_parameter[i][3][j][2], summary_parameter[i][3][j][3])
+                    detail = Main.get_detail_data(path, summary_parameter[i][3][j][0], summary_parameter[i][3][j][1], summary_parameter[i][3][j][2], summary_parameter[i][3][j][3])
+                
+                elif(type(summary_parameter[i][3][j]) != list):
+                    detail = None
+
+                value[j].append(detail)
+
                 temp_activity_dictionary = Main.convert_to_dict(j, value, attribute, percentage_cell)
                 activity.append(temp_activity_dictionary)
 
