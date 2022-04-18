@@ -58,7 +58,7 @@ class Main(Database, Utility):
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
         
         Main.get_summary_data()
-        # Main.update_summary_data(collection)
+        Main.update_summary_data(collection)
         
 
     def get_data(path, active_sheet, start_range, end_range):
