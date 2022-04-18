@@ -33,7 +33,9 @@
                                 {{ $activityItem['activity'] }}
                             </td>
                             <td>
+                                @isset($record)
                                 {{ $activityItem['physical'] }}
+                                @endisset
                             </td>
                             <td>
                                 {{ $activityItem['finance'] }}
@@ -81,16 +83,16 @@
                                                         {{ $detailsItem['account'] }}
                                                     </td>
                                                     <td>
-                                                        {{ $detailsItem['total_finance'] }}
+                                                        @currency($detailsItem['total_finance'])
                                                     </td>
                                                     <?php $monthlyFinance = $detailsItem['monthly_finance'] ?>
                                                     @foreach ($monthlyFinance as $monthlyFinance => $monthlyFinanceItem)
                                                     <td>
-                                                        {{ $monthlyFinanceItem }}
+                                                        @currency($monthlyFinanceItem)
                                                     </td>
                                                     @endforeach
                                                     <td>
-                                                        {{ $detailsItem['total_finance'] }}
+                                                        @currency($detailsItem['total_finance'])
                                                     </td>
                                                 </tr>
                                                 <tr class="fold">

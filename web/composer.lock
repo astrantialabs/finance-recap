@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2c2b21645e67abb43ff3bf50dcf2458e",
+    "content-hash": "ae54cca8490137364c14172d0e2eb658",
     "packages": [
         {
             "name": "brick/math",
@@ -2451,6 +2451,63 @@
                 }
             ],
             "time": "2021-12-04T23:24:31+00:00"
+        },
+        {
+            "name": "postscripton/laravel-money",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PostScripton/laravel-money.git",
+                "reference": "d9dca3563d9d069cd15626fcd4788acdf10b1eed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PostScripton/laravel-money/zipball/d9dca3563d9d069cd15626fcd4788acdf10b1eed",
+                "reference": "d9dca3563d9d069cd15626fcd4788acdf10b1eed",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.0",
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.15",
+                "slevomat/coding-standard": "7.0",
+                "squizlabs/php_codesniffer": "3.6"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "PostScripton\\Money\\MoneyServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "PostScripton\\Money\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PostScripton",
+                    "email": "postscripton.sp@gmail.com"
+                }
+            ],
+            "description": "A convenient way to convert numbers from DB or inputs into money strings for humans",
+            "support": {
+                "issues": "https://github.com/PostScripton/laravel-money/issues",
+                "source": "https://github.com/PostScripton/laravel-money/tree/v3.1.0"
+            },
+            "time": "2021-10-17T08:16:16+00:00"
         },
         {
             "name": "psr/container",
