@@ -76,7 +76,7 @@ table {
 }
 
 .login {
-  max-height: 100vh;
+  padding: 18px;
 }
 .login .logotype {
   font-size: 14px;
@@ -90,6 +90,9 @@ table {
 }
 .login .form-container {
   max-width: 500px;
+}
+.login .form-container .tag {
+  margin-top: 8px;
 }
 
 hr {
