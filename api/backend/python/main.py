@@ -186,6 +186,7 @@ class Main(Database, Utility):
         percentage_cell = [1, 2]
         attribute = ["activity", "physical", "finance", "detail"]
         summary_parameter = json.load(open("./api/backend/json/setting.json"))
+        # summary_parameter = json.load(open("./api/backend/json/dummy_setting.json"))
 
         combined_array = []
         for i in range(len(summary_parameter)):

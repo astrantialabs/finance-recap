@@ -2,7 +2,13 @@ import json
 
 class Main():
     def main():
-        data = json.load(open("api/setting/json/untranslated_setting.json"))
+        # in_path = "api/setting/json/untranslated_dummy_setting.json"
+        # out_path = "api/setting/json/dummy_setting.json"
+
+        in_path = "api/setting/json/untranslated_setting.json"
+        out_path = "api/setting/json/setting.json"
+
+        data = json.load(open(in_path))
 
         dictionary_array = []
         for i in range(len(data)):
@@ -33,7 +39,7 @@ class Main():
 
 
         json_object = json.dumps(dictionary_array, indent = 4)
-        with open("api/setting/json/setting.json", "w") as outfile:
+        with open(out_path, "w") as outfile:
             outfile.write(json_object)
 
 
