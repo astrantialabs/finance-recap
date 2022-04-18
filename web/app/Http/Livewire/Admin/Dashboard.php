@@ -26,6 +26,14 @@ class Dashboard extends Component
         $lattas = filter_array($summaries, '3');
         $hi = filter_array($summaries, '4');
 
+        // foreach ($penta as $penta => $pentaItem) {
+        //     $activities = $pentaItem['activity'];
+
+        //     foreach ($activities as $activities => $item) {
+        //         $out->writeln($item['activity']);
+        //     }
+        // }
+
         return view('livewire.admin.dashboard', [
             'summary' => Summary::all(),
             'user' => Auth::user(),
