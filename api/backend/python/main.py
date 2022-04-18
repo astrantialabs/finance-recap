@@ -58,7 +58,7 @@ class Main(Database, Utility):
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
         
         Main.get_summary_data()
-        Main.update_summary_data(collection)
+        # Main.update_summary_data(collection)
         
 
     def get_data(path, active_sheet, start_range, end_range):
@@ -185,70 +185,19 @@ class Main(Database, Utility):
         path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx" # path
         percentage_cell = [1, 2]
         attribute = ["activity", "physical", "finance", "detail"]
-        summary_parameter = [
-            ["B6", "D22", "Sekretariat", [
-                    [2, "B16", "Q39", [3, 3, 3, 5]],
-                    [3, "B16", "Q20", [3]],
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    [12, "B16", "Q52", [19]],
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None
-                ]
-            ],
-
-            ["H6", "J14", "Penta", [
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None
-                ]
-            ],
-
-            ["N6", "P8", "Lattas", [
-                    None,
-                    None,
-                    None
-                ]
-            ],
-
-            ["T6", "V11", "HI", [
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None
-                ]
-            ]
-        ]
+        summary_parameter = json.load(open("./api/backend/json/setting.json"))
 
         combined_array = []
         for i in range(len(summary_parameter)):
-            value = Main.get_data(path, 1, summary_parameter[i][0], summary_parameter[i][1])
+            value = Main.get_data(path, 1, summary_parameter[i].get("start_range"), summary_parameter[i].get("end_range"))
 
             activity = []
             for j in range(len(value)):
-                if(type(summary_parameter[i][3][j]) == list):
-                    print(summary_parameter[i][3][j][0], summary_parameter[i][3][j][1], summary_parameter[i][3][j][2], summary_parameter[i][3][j][3])
-                    detail = Main.get_detail_data(path, summary_parameter[i][3][j][0], summary_parameter[i][3][j][1], summary_parameter[i][3][j][2], summary_parameter[i][3][j][3])
+                if(type(summary_parameter[i].get("detail")[j]) == dict):
+                    print(summary_parameter[i].get("detail")[j].get("active_Sheet"), summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
+                    detail = Main.get_detail_data(path, summary_parameter[i].get("detail")[j].get("active_Sheet"), summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
                 
-                elif(type(summary_parameter[i][3][j]) != list):
+                elif(type(summary_parameter[i].get("detail")[j]) != dict):
                     detail = None
 
                 value[j].append(detail)
@@ -259,7 +208,7 @@ class Main(Database, Utility):
 
             temp_dictionary = {
                 "id": i + 1,
-                "name": summary_parameter[i][2],
+                "name": summary_parameter[i].get("name"),
                 "activity": activity
             }
 
