@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use NumberFormatter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,13 @@ class AppServiceProvider extends ServiceProvider
             'currency',
             function($expression) {
                 return "Rp. <?php echo number_format($expression,0,',','.'); ?>";
+            }
+        );
+        Blade::directive(
+            'percent',
+            function($exp) {
+                $formatter = new NumberFormatter('en_US', NumberFormatter::PERCENT);
+                return "<?php $formatter->format($exp); ?>";
             }
         );
     }

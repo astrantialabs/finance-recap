@@ -15,7 +15,7 @@ class Dashboard extends Component
 
         function filter_array($array, $term) {
             $matches = array();
-            foreach($array as $a){
+            foreach($array as $a) {
                 if($a['id'] == $term)
                     $matches[]=$a;
             }
@@ -25,14 +25,6 @@ class Dashboard extends Component
         $penta = filter_array($summaries, '2');
         $lattas = filter_array($summaries, '3');
         $hi = filter_array($summaries, '4');
-
-        // foreach ($penta as $penta => $pentaItem) {
-        //     $activities = $pentaItem['activity'];
-
-        //     foreach ($activities as $activities => $item) {
-        //         $out->writeln($item['activity']);
-        //     }
-        // }
 
         return view('livewire.admin.dashboard', [
             'summary' => Summary::all(),
