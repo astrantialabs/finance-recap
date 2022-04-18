@@ -24,7 +24,7 @@ class Login extends Component
 
         if(Auth::attempt(['username' => $this->username, 'password' => $this->password])) {
 
-            return redirect()->to('/admin/dashboard');
+            return redirect()->to('/');
 
         } else {
             $out->writeln("tdk sukses");

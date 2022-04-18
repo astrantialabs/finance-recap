@@ -1,144 +1,73 @@
-{{-- <div class="container">
-    <h1 class="title">
-        dashboard
-    </h1>
-    <p class="subtitle">
-        <livewire:auth.logout/>
-    </p>
-    di
-</div> --}}
-
-<style>
-    .accordion {
-      background-color: #eee;
-      color: #444;
-      cursor: pointer;
-      padding: 18px;
-      width: 100%;
-      border: none;
-      text-align: left;
-      outline: none;
-      font-size: 15px;
-      transition: 0.4s;
-    }
-    
-    .active, .accordion:hover {
-      background-color: #ccc;
-    }
-    
-    .accordion:after {
-      content: '\002B';
-      color: #777;
-      font-weight: bold;
-      float: right;
-      margin-left: 5px;
-    }
-    
-    .active:after {
-      content: "\2212";
-    }
-    
-    .panel {
-      padding: 0 18px;
-      background-color: white;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.2s ease-out;
-    }
-    </style>
-
-<div class="section">
-    <div class="columns">
-        <div class="column is-mobile is-2" id="dashboard-menu">
-            @include('layouts.menu', ['username' => $user->username])
-        </div>
-        <div class="column is-mobile" id="overview-dashboard">
-           <h1 class="title">
-               Overview
-           </h1>
-            <div class="content">
-                <div class="rekapitulasi-fisik-dan-keuangan">
-                    <h2 class="title has-text-centered">
-                        Rekapitulasi Fisik dan Keuangan
-                    </h2>
-                    <div class="sekretariat box">
-                        <h3 class="title">
-                            Sekretariat
-                        </h3>
-                        <div style="overflow-y: scroll; height:400px;">
-
-                            <div class="table-container">
-                                <table class="table is-bordered is-striped is-narrow">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="1" rowspan="2">
-                                                Sub Kegiatan
-                                            </th>
-                                            <th colspan="2" rowspan="1">
-                                                Realisasi
-                                            </th>
-                                            
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                Pisikal
-                                            </th>
-                                            <th>
-                                                Keuangan
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($summary as $sum)
-                                        <tr>
-                                            <td>{{ $sum->activity }}</td>
-                                            <td> 
-                                                @isset($sum->physical)
-                                                    {{ $sum->physical }}%
-                                                @endempty
-
-                                                @empty($sum->physical)
-                                                    N/A
-                                                @endempty
-                                            </td>
-                                            <td> 
-                                                @isset($sum->finance)
-                                                    {{ $sum->finance }}%
-                                                @endempty
-
-                                                @empty($sum->finance)
-                                                    N/A
-                                                @endempty
-                                            </td>
-                                            
-                
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                
-            </div>
-        </div>
+<section class="section">
+    <div class="container is-fullhd">
+        <table class="table is-bordered is-narrow fold-table">
+            <thead>
+              <tr>
+                <th>Company</th><th>Amount</th><th>Value</th><th>Premiums</th><th>Strategy A</th><th>Strategy B</th><th>Strategy C</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="view">
+                <td>Company Name</td>
+                <td class="pcs">457</td>
+                <td class="cur">6535178</td>
+                <td>-</td>
+                <td class="per">50,71</td>
+                <td class="per">49,21</td>
+                <td class="per">0</td>
+              </tr>
+              <tr class="fold">
+                <td colspan="7">
+                  <div class="fold-content">
+                    <h3>Company Name</h3>
+                    <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Company name</th><th>Customer no</th><th>Customer name</th><th>Insurance no</th><th>Strategy</th><th>Start</th><th>Current</th><th>Diff</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Sony</td>
+                          <td>13245</td>
+                          <td>John Doe</td>
+                          <td>064578</td>
+                          <td>A, 100%</td>
+                          <td class="cur">20000</td>
+                          <td class="cur">33000</td>
+                          <td class="cur">13000</td>
+                        </tr>
+                        <tr>
+                          <td>Sony</td>
+                          <td>13288</td>
+                          <td>Claire Bennet</td>
+                          <td>064877</td>
+                          <td>B, 100%</td>
+                          <td class="cur">28000</td>
+                          <td class="cur">48000</td>
+                          <td class="cur">20000</td>
+                        </tr>
+                        <tr>
+                          <td>Sony</td>
+                          <td>12341</td>
+                          <td>Barry White</td>
+                          <td>064123</td>
+                          <td>A, 100%</td>
+                          <td class="cur">10000</td>
+                          <td class="cur">22000</td>
+                          <td class="cur">12000</td>
+                        </tr>
+                      </tbody>
+                    </table>          
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        <livewire:auth.logout />
     </div>
-</div>
+</section>
 <script>
-    var acc = document.getElementsByClassName("accordion");
-    var i;
     
-    for (i = 0; i < acc.length; i++) {
-      acc[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.maxHeight) {
-          panel.style.maxHeight = null;
-        } else {
-          panel.style.maxHeight = panel.scrollHeight + "px";
-        } 
-      });
-    }
-    </script>
+</script>

@@ -2164,6 +2164,12 @@ module.exports = {
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
+$(function () {
+  $(".fold-table tr.view").on("click", function () {
+    $(this).toggleClass("open").next(".fold").toggleClass("open");
+  });
+});
+
 /***/ }),
 
 /***/ "./resources/js/bootstrap.js":
