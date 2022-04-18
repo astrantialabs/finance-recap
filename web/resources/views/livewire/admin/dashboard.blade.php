@@ -126,6 +126,9 @@
                                                                             <th>December</th>
                                                                             <th colspan="1" rowspan="1">Jumlah</th>
                                                                             <th>Persentase Realisasi Fisik /Anggaran</th>
+                                                                            <th>
+                                                                                Sisa Fisik/Anggaran yang belum digunakan
+                                                                            </th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -160,6 +163,9 @@
                                                                             </td>
                                                                             <td rowspan="2">
                                                                                 {{ array_sum(array_column($monthlyPhysicalExpenses, 1)) / array_sum(array_column($monthlyPhysicalExpenses, 0)) * 100 }}%
+                                                                            </td>
+                                                                            <td rowspan="2">
+                                                                                {{ array_sum(array_column($monthlyPhysicalExpenses, 0)) - array_sum(array_column($monthlyPhysicalExpenses, 1)) }}
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -214,6 +220,9 @@
                                                                             </td>
                                                                             <td rowspan="2">
                                                                                 {{ round(array_sum(array_column($monthlyFinanceExpenses, 1)) / array_sum(array_column($monthlyFinanceExpenses, 0)) * 100) }}%
+                                                                            </td>
+                                                                            <td rowspan="2">
+                                                                                @currency(round(array_sum(array_column($monthlyFinanceExpenses, 0)) - array_sum(array_column($monthlyFinanceExpenses, 1))))
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
