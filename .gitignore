@@ -13,7 +13,7 @@ web/yarn-error.log
 web/.idea
 web/.vscode
 api/backend/excel
-api/backend/json
+api/backend/json/summary_recaps.json
 api/image
 api/.env
 api/note.txt

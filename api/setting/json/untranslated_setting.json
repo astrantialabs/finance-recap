@@ -1,0 +1,56 @@
+[
+    [
+        "B6", "D22", "Sekretariat", [
+            [2, "B16", "Q39", [3, 3, 3, 5]],
+            [3, "B16", "Q20", [3]],
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            [12, "B16", "Q52", [19]],
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ]
+    ],
+
+    [
+        "H6", "J14", "Penta", [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ]
+    ],
+
+    [
+        "N6", "P8", "Lattas", [
+            null,
+            null,
+            null
+        ]
+    ],
+
+    [
+        "T6", "V11", "HI", [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ]
+    ]
+]
