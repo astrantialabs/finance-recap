@@ -1,5 +1,7 @@
 import math
 import json
+import datetime
+import os
 
 from excel import Excel
 from pymongo import MongoClient
@@ -54,12 +56,13 @@ class Main(Database, Utility):
     def main():
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
         database_name = "DisnakerFinanceRecap"
-        collection_name = "summary_recaps"
-        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+        
         
         Main.get_summary_data()
-        Main.update_summary_data(collection)
-        
+        Main.update_summary_data(mongoDBURI, database_name)
+
+        Main.update_utility_data(mongoDBURI, database_name)
+
 
     def get_data(path, active_sheet, start_range, end_range):
         wb_data = Excel(path, active_sheet)
@@ -225,10 +228,25 @@ class Main(Database, Utility):
         Main.write_json(combined_array, "./api/backend/json/summary_recaps.json") # path
 
 
-    def update_summary_data(collection):
+    def update_summary_data(mongoDBURI, database_name):
+        collection_name = "summary_recaps"
+        sumarry_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+
         attribute = ["name", "activity"]
         
-        Main.update_data(collection, "./api/backend/json/summary_recaps.json", attribute) # path
+        Main.update_data(sumarry_recaps_collection, "./api/backend/json/summary_recaps.json", attribute) # path
+
+
+    def update_utility_data(mongoDBURI, database_name):
+        excel_path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx"
+
+        excel_last_modified = os.path.getmtime(excel_path)
+        translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%Y-%m-%d %H:%M:%S")
+
+        collection_name = "utilities"
+        utilities_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+
+        utilities_collection.find_one_and_update({"id": 1}, {"$set" : {"last_modified": translated_excel_last_modified}})
 
 
 if(__name__ == "__main__"):
