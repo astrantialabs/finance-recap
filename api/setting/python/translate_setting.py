@@ -12,11 +12,13 @@ class Main():
 
         dictionary_array = []
         for i in range(len(data)):
+            
             detail_array = []
             for j in range(len(data[i][3])):
                 if(type(data[i][3][j]) == list):
                     temp_detail = {
-                        "active_Sheet": data[i][3][j][0],
+                        "id": j + 1,
+                        "active_sheet": data[i][3][j][0],
                         "start_range": data[i][3][j][1],
                         "end_range": data[i][3][j][2],
                         "attribute": data[i][3][j][3]
@@ -29,6 +31,7 @@ class Main():
 
 
             temp_dictionary = {
+                "id": i + 1,
                 "name": data[i][2],
                 "start_range": data[i][0],
                 "end_range": data[i][1],
