@@ -16,7 +16,7 @@ class Main():
             for j in range(len(data[i][3])):
                 if(type(data[i][3][j]) == list):
                     temp_detail = {
-                        "active_Sheet": data[i][3][j][0],
+                        "active_sheet": data[i][3][j][0],
                         "start_range": data[i][3][j][1],
                         "end_range": data[i][3][j][2],
                         "attribute": data[i][3][j][3]
