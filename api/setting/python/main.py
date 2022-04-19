@@ -43,7 +43,33 @@ class Main():
                 break
 
             elif(event == "listbox"):
-                pass
+                name = values["listbox"][0]
+                
+                for i in range(len(data)):
+                    if(data[i].get("name") == name):
+                        data_count = i
+                        detail_count = 0
+
+
+                window["data_id"].update(data[data_count].get("id"))
+
+                for attribute in current_data_attribute:
+                        window[f"data_{attribute}"].update(data[data_count].get(attribute))
+
+
+                if(type(data[data_count].get("detail")[detail_count]) == dict):
+                    window["detail_id"].update(data[data_count].get("detail")[detail_count].get("id"))
+
+                    for attribute in current_data_detail_attribute:
+                        window[f"detail_{attribute}"].update(data[data_count].get("detail")[detail_count].get(attribute))
+
+
+                elif(type(data[data_count].get("detail")[detail_count]) != dict):
+                    window["detail_id"].update(detail_count + 1)
+
+                    for attribute in current_data_detail_attribute:
+                        window[f"detail_{attribute}"].update("null")
+
 
             elif(event == "previous_button" or event == "next_button"):
                 if(event == "previous_button" and detail_count != 0):
