@@ -134,7 +134,6 @@
 
                                                     <th>
                                                         @currency($details_item['total_finance'])
-
                                                     </th>
                                                     <th>
                                                         &nbsp;
@@ -148,7 +147,6 @@
                                                 <?php $expenses = $details_item['expenses'] ?>
                                                 @foreach ($expenses as $expenses => $expenses_item)
                                                 <?php  $physical_expenses = $expenses_item['physical']; ?>
-
                                                 <tr>
                                                     <td rowspan="2">
                                                         {{ $expenses_item['name'] }}
@@ -190,7 +188,6 @@
                                                         array_sum(array_column($monthly_physical_expenses,1)) }}
                                                     </td>
                                                 </tr>
-
                                                 <tr>
                                                     <td>
                                                         Realisasi
@@ -271,6 +268,8 @@
                                                         @currency($result)
                                                     </td>
                                                 </tr>
+
+
                                                 <tr>
                                                     <td>Realisasi</td>
 

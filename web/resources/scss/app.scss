@@ -211,8 +211,15 @@ hr {
                 vertical-align: middle;
             }
         }
+
+        .sekretariat-table-nested-body {
+            tr:nth-last-child(1), tr:nth-last-child(2), tr:nth-last-child(3), tr:nth-last-child(4) {
+                display: none;
+                visibility: hidden;
+            }
+        }
     }
-    
+
     th {
         color: #1a202c;
     }

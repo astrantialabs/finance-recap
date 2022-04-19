@@ -147,6 +147,10 @@ hr {
   text-align: center;
   vertical-align: middle;
 }
+.sekretariat-table .sekretariat-table-fold-container .sekretariat-table-nested-body tr:nth-last-child(1), .sekretariat-table .sekretariat-table-fold-container .sekretariat-table-nested-body tr:nth-last-child(2), .sekretariat-table .sekretariat-table-fold-container .sekretariat-table-nested-body tr:nth-last-child(3), .sekretariat-table .sekretariat-table-fold-container .sekretariat-table-nested-body tr:nth-last-child(4) {
+  display: none;
+  visibility: hidden;
+}
 .sekretariat-table th {
   color: #1a202c;
 }
