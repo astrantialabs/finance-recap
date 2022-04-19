@@ -15,6 +15,7 @@ web/.vscode
 api/backend/excel
 api/backend/json/summary_recaps.json
 api/backend/json/dummy_summary_recaps.json
+api/backend/python/random_data_dependency.py
 api/image
 api/.env
 api/note.txt
