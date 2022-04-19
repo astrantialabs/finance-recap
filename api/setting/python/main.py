@@ -3,7 +3,8 @@ import json
 
 class Main():
     def main():
-        data = json.load(open("./api/setting/json/setting.json")) #path
+        path = "./api/setting/json/setting.json" #path
+        data = json.load(open(path))
 
         data_count = 0
         detail_count = 0
@@ -30,8 +31,9 @@ class Main():
             [[sg.InputText(default_text=current_data_detail.get(attribute), size=(100, 1), key=f"detail_{attribute}", enable_events=True)] for attribute in current_data_detail_attribute],
             
             [
-                sg.Button('Previous', key="previous_button", enable_events=True, disabled = True),
-                sg.Button('Next', key="next_button", enable_events=True)
+                sg.Button("Previous", key="previous_button", enable_events=True, disabled = True),
+                sg.Button("Next", key="next_button", enable_events=True),
+                sg.Button("Save", key="save_button", enable_events=True)
             ]
         ]
 
@@ -91,6 +93,81 @@ class Main():
                     for attribute in current_data_detail_attribute:
                         window[f"detail_{attribute}"].update("null")
             
+
+            elif(event == "save_button"):
+                confirmation_layout = [
+                    [sg.Text("Are you sure?", font=12)],
+                    [
+                        sg.Button("Yes", key="yes_button", enable_events=True, size=(8, 2), button_color="#00CC00"),
+                        sg.Button("No", key="no_button", enable_events=True, size=(8, 2), button_color="#CC0000")
+                    ]
+                ]
+
+                confirmation_window = sg.Window("Confirm", confirmation_layout, size=(225, 100), element_justification='c', keep_on_top=True)
+
+                while True:
+                    confirmation_event, confirmation_values = confirmation_window.read()
+                    if(confirmation_event == sg.WINDOW_CLOSED or confirmation_event == "no_button"):
+                        break
+
+                    elif(confirmation_event == "yes_button"):
+                        list_of_data = []
+                        list_of_data.append(values["data_id"])
+                        for attribute in current_data_attribute:
+                            list_of_data.append(values[f"data_{attribute}"])
+
+
+                        list_of_detail = []
+                        list_of_detail.append(values["detail_id"])
+                        for attribute in current_data_detail_attribute:
+                            list_of_detail.append(values[f"detail_{attribute}"])
+
+
+                        has_null_data = False
+                        for attribute in list_of_data + list_of_detail:
+                            if(attribute == "null"):
+                                has_null_data = True
+
+
+                        if(not has_null_data):
+                            list_of_data[0] = int(list_of_data[0])
+                            list_of_data[1] = str(list_of_data[1])
+                            list_of_data[2] = str(list_of_data[2])
+                            list_of_data[3] = str(list_of_data[3])
+
+                            list_of_detail[0] = int(list_of_detail[0])
+                            list_of_detail[1] = int(list_of_detail[1])
+                            list_of_detail[2] = str(list_of_detail[2])
+                            list_of_detail[3] = str(list_of_detail[3])
+                            list_of_detail[4] = (list_of_detail[4]).split(" ")
+
+                            for i in range(len(list_of_detail[4])):
+                                list_of_detail[4][i] = int(list_of_detail[4][i])
+
+
+                            data[data_count]["id"] = list_of_data[0]
+                            data[data_count]["name"] = list_of_data[1]
+                            data[data_count]["start_range"] = list_of_data[2]
+                            data[data_count]["end_range"] = list_of_data[3]
+
+                            data[data_count].get("detail")[detail_count]["id"] = list_of_detail[0]
+                            data[data_count].get("detail")[detail_count]["active_sheet"] = list_of_detail[1]
+                            data[data_count].get("detail")[detail_count]["start_range"] = list_of_detail[2]
+                            data[data_count].get("detail")[detail_count]["end_range"] = list_of_detail[3]
+                            data[data_count].get("detail")[detail_count]["attribute"] = list_of_detail[4]
+
+                        json_object = json.dumps(data, indent = 4)
+
+                        with open(path, "w") as outfile:
+                            outfile.write(json_object)
+
+
+                        window["listbox"].update([division.get("name") for division in data])
+
+                        break
+
+
+                confirmation_window.close()
 
             if(detail_count == 0):
                 window["previous_button"].update(disabled = True)
