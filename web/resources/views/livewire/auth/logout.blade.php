@@ -1,3 +1,3 @@
 <div>
-    <a wire:click="logout" class="button" style="cursor: pointer">LOG OUT </a>
+    <a wire:click="logout" class="call-to-action call-to-action-primary" style="cursor: pointer">Logout</a>
 </div>

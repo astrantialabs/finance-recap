@@ -126,3 +126,34 @@ hr {
   background: #232c3c;
   color: #ededee;
 }
+
+.sekretariat .sekretariat-title {
+  font-size: 34px;
+  font-weight: 750;
+  color: #1a202c;
+}
+
+.sekretariat-table .sekretariat-table-head .sub-kegiatan, .sekretariat-table .sekretariat-table-head .realisasi {
+  text-align: center;
+  vertical-align: middle;
+}
+.sekretariat-table .sekretariat-table-body .activity-name {
+  font-size: 14px;
+}
+.sekretariat-table .sekretariat-table-fold-container {
+  padding: 14px;
+}
+.sekretariat-table .sekretariat-table-fold-container .sekretariat-table-nested-head th {
+  text-align: center;
+  vertical-align: middle;
+}
+.sekretariat-table th {
+  color: #1a202c;
+}
+.sekretariat-table td {
+  color: #6c6c6c;
+}
+
+.logout {
+  margin-bottom: 44px;
+}

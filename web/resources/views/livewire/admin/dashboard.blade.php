@@ -1,19 +1,25 @@
 <section class="section">
+    <div class="logout">
+        <livewire:auth.logout />
+    </div>
     <div class="container is-fullhd">
+        {{-- {{ $summary }} --}}
         <div class="sekretariat">
-            <h1 class="title">
-                Sekretariat
+            <h1 class="sekretariat-title title">
+                Sekretariat.
             </h1>
-            <div class="table-container" id="table-container">
-                <table class="table is-bordered is-narrow fold-table">
-                    <thead>
+            <hr>
+            <div class="sekretariat-table-container table-container" id="table-container">
+                <table class="sekretariat-table table is-bordered is-fullwidth fold-table">
+                    <thead class="sekretariat-table-head">
                         <tr>
-                            <th colspan="1" rowspan="2">
+                            <th class="sub-kegiatan" colspan="1" rowspan="2">
                                 Sub Kegiatan
                             </th>
-                            <th colspan="2" rowspan="1">
+                            <th class="realisasi" colspan="2" rowspan="1">
                                 Realisasi
                             </th>
+                        </tr>
                         <tr>
                             <th>
                                 Pisikal
@@ -22,299 +28,271 @@
                                 Keuangan
                             </th>
                         </tr>
-                        </tr>
                     </thead>
-                    <tbody>
-                        @foreach ($sekretariat as $sekretariat => $sekretariatItem)
-                        <?php $activities = $sekretariatItem['activity']; ?>
-                        @foreach ($activities as $activities => $activityItem)
+                    <tbody class="sekretariat-table-body">
+                        {{-- Sekretariat Index --}}
+                        @foreach ($sekretariat as $sekretariat_item)
+                        <?php $activities = $sekretariat_item['activity']; ?>
+
+                        {{-- Sekretariat Activities --}}
+                        @foreach ($activities as $activities => $activities_item)
                         <tr class="view">
-                            <td>
-                                {{ $activityItem['activity'] }}
-                            </td>
-                            <td>
-                                @isset($record)
-                                {{ $activityItem['physical'] }}
+                            <th class="activity-name">
+                                {{ $activities_item['activity'] }}
+                            </th>
+                            <td class="activity-physical">
+                                @isset($activities_item['physical'])
+                                {{ $activities_item['physical'] }}%
                                 @endisset
+                                @php
+                                if (is_null($activities_item['physical'])) {
+                                echo "-";
+                                }
+                                @endphp
                             </td>
-                            <td>
-                                {{ $activityItem['finance'] }}
+                            <td class="activity-finance">
+                                @isset($activities_item['finance'])
+                                {{ $activities_item['finance'] }}%
+                                @endisset
+                                @php
+                                if (is_null($activities_item['finance'])) {
+                                echo "-";
+                                }
+                                @endphp
                             </td>
                         </tr>
                         <tr class="fold">
-                            <td colspan="7">
+                            <td colspan="100">
                                 <div class="fold-content">
-                                    <div class="table-container" id="table-container">
-                                        <table class="table-nested table is-bordered is-narrow fold-table fold-table">
-                                            <thead>
+                                    <div class="sekretariat-table-fold-container table-container" id="table-container">
+                                        <table class="sekretariat-table-nested table is-bordered is-fullwidth">
+                                            <thead class="sekretariat-table-nested-head">
                                                 <tr>
-                                                    <th rowspan="2">Rekening</th>
-                                                    <th rowspan="2">Jumlah Fisik/Anggaran</th>
+                                                    <th rowspan="2">
+                                                        Rekening
+                                                    </th>
+                                                    <th rowspan="2">
+                                                        Jumlah Fisik / Anggaran
+                                                    </th>
+                                                    <th rowspan="2">
+                                                        Target Realisasi
+                                                    </th>
                                                     <th rowspan="1" colspan="12">
                                                         Jumlah Kebutuhan Dana
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th>Januari</th>
-                                                    <th>Febuari</th>
-                                                    <th>Maret</th>
-                                                    <th>April</th>
-                                                    <th>Mei</th>
-                                                    <th>Juni</th>
-                                                    <th>Juli</th>
-                                                    <th>Agustus</th>
-                                                    <th>September</th>
-                                                    <th>Oktober</th>
-                                                    <th>November</th>
-                                                    <th>December</th>
-                                                    <th colspan="2" rowspan="1">Jumlah</th>
+                                                    <th rowspan="1">Januari</th>
+                                                    <th rowspan="1">Febuari</th>
+                                                    <th rowspan="1">Maret</th>
+                                                    <th rowspan="1">April</th>
+                                                    <th rowspan="1">Mei</th>
+                                                    <th rowspan="1">Juni</th>
+                                                    <th rowspan="1">Juli</th>
+                                                    <th rowspan="1">Agustus</th>
+                                                    <th rowspan="1">September</th>
+                                                    <th rowspan="1">Oktober</th>
+                                                    <th rowspan="1">November</th>
+                                                    <th rowspan="1">December</th>
+                                                    <th rowspan="1">Jumlah</th>
+                                                    <th rowspan="1">
+                                                        Persentase Realisasi Fisik / Anggaran
+                                                    </th>
+                                                    <th rowspan="1">
+                                                        Sisa Fisik / Anggaran yang belum digunakan
+                                                    </th>
                                                 </tr>
                                             </thead>
-                                            <tfoot>
+                                            <tbody class="sekretariat-table-nested-body">
+                                                <?php 
+                                                $details = $activities_item['detail'];
+                                                if (is_null($details)) {
+                                                    break;
+                                                }
+                                                ?>
+                                                {{-- Sekretariat Details --}}
+                                                @foreach ($details as $details => $details_item)
                                                 <tr>
-                                                    <th>Jumlah Realisasi Keuangan</th>
-                                                    <?php $details = $activityItem['detail'] ?>
-                                                    <?php
-                                                        if (is_null($details)) {
-                                                            break;
-                                                        }
-                                                    ?>
+                                                    <th>
+                                                        {{ $details_item['account'] }}
+                                                    </th>
+                                                    <th>
+                                                        @currency($details_item['total_finance'])
+                                                    </th>
+                                                    <th>
+                                                        &nbsp;
+                                                    </th>
 
-                                                    <?php $jumlahRealisasiKeuangan = array(); ?>
-                                                    <?php $jumlahRealisasiJanuari = array(); ?>
-
-                                                    @foreach ($details as $details => $detailsItem)
-                                                    <?php $jumlahRealisasiKeuangan[] = $detailsItem['total_finance'] ?>
-
-                                                    <?php $expenses = $detailsItem['expenses'] ?>
-                                                        @foreach ($expenses as $expenses => $expensesItem)
-                                                            <?php  $financeExpenses = $expensesItem['finance']; ?>
-                                                            <?php  $monthlyFinanceExpenses = $financeExpenses['monthly']; ?>
-
-                                                            @foreach ($monthlyFinanceExpenses as $monthlyFinanceExpenses => $monthlyFinanceExpensesItem)
-                                                                <?php $jumlahRealisasiJanuari[] = $monthlyFinanceExpensesItem[1]; ?>
-                                                            @endforeach
-                                                        @endforeach
+                                                    {{-- Sekretariat Monthly Finance --}}
+                                                    <?php $monthly_finance = $details_item['monthly_finance']; ?>
+                                                    @foreach ($monthly_finance as $monthly_finance =>
+                                                    $monthly_finance_item)
+                                                    <th>
+                                                        @currency($monthly_finance_item)
+                                                    </th>
                                                     @endforeach
 
                                                     <th>
-                                                        @currency(array_sum($jumlahRealisasiKeuangan))
+                                                        @currency($details_item['total_finance'])
+
+                                                    </th>
+                                                    <th>
+                                                        &nbsp;
+                                                    </th>
+                                                    <th>
+                                                        &nbsp;
                                                     </th>
                                                 </tr>
-                                            </tfoot>
-                                            <tbody>
-                                                <?php $details = $activityItem['detail'] ?>
-                                                <?php
-                                                    if (is_null($details)) {
-                                                        break;
-                                                    }
-                                                    ?>
-                                                @foreach ($details as $details => $detailsItem)
-                                                <tr class="view">
-                                                    <td>
-                                                        {{ $detailsItem['account'] }}
+
+                                                {{-- Sekretariat Target Expenses --}}
+                                                <?php $expenses = $details_item['expenses'] ?>
+                                                @foreach ($expenses as $expenses => $expenses_item)
+                                                <?php  $physical_expenses = $expenses_item['physical']; ?>
+
+                                                <tr>
+                                                    <td rowspan="2">
+                                                        {{ $expenses_item['name'] }}
+                                                    </td>
+                                                    <td rowspan="2">
+                                                        {{ $physical_expenses['total'] }}
                                                     </td>
                                                     <td>
-                                                        @currency($detailsItem['total_finance'])
+                                                        Target
                                                     </td>
-                                                    <?php $monthlyFinance = $detailsItem['monthly_finance'] ?>
-                                                    @foreach ($monthlyFinance as $monthlyFinance => $monthlyFinanceItem)
+
+                                                    {{-- Sekretariat Monthly Physical Expenses --}}
+                                                    <?php  $monthly_physical_expenses = $physical_expenses['monthly']; ?>
+
+                                                    @foreach ($monthly_physical_expenses as $monthly_physical_expenses
+                                                    => $monthly_physical_expenses_item)
                                                     <td>
-                                                        @currency($monthlyFinanceItem)
+                                                        @isset($monthly_physical_expenses_item[0])
+                                                        {{ $monthly_physical_expenses_item[0] }}
+                                                        @endisset
+                                                        @php
+                                                        if (is_null($monthly_physical_expenses_item[0])) {
+                                                        echo "-";
+                                                        }
+                                                        @endphp
                                                     </td>
                                                     @endforeach
+
+                                                    <?php  $monthly_physical_expenses = $physical_expenses['monthly']; ?>
                                                     <td>
-                                                        @currency($detailsItem['total_finance'])
+                                                        {{array_sum(array_column($monthly_physical_expenses, 0)) }}
+                                                    </td>
+                                                    <td rowspan="2">
+                                                        {{ array_sum(array_column($monthly_physical_expenses, 1)) /
+                                                        array_sum(array_column($monthly_physical_expenses,0)) * 100 }}%
+                                                    </td>
+                                                    <td rowspan="2">
+                                                        {{ array_sum(array_column($monthly_physical_expenses, 0)) -
+                                                        array_sum(array_column($monthly_physical_expenses,1)) }}
                                                     </td>
                                                 </tr>
-                                                <tr class="fold">
-                                                    <td colspan="7">
-                                                        <div class="fold-content">
-                                                            <div class="table-container" id="table-container">
-                                                                <table class="table-nested table is-bordered is-narrow fold-table">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th rowspan="2">Rekening</th>
-                                                                            <th rowspan="2">Jumlah Fisik/Anggaran</th>
-                                                                            <th rowspan="2">
-                                                                                Target Realisasi
-                                                                            </th>
-                                                                            <th rowspan="1" colspan="12">
-                                                                                Jumlah Kebutuhan Dana
-                                                                            </th>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <th>Januari</th>
-                                                                            <th>Febuari</th>
-                                                                            <th>Maret</th>
-                                                                            <th>April</th>
-                                                                            <th>Mei</th>
-                                                                            <th>Juni</th>
-                                                                            <th>Juli</th>
-                                                                            <th>Agustus</th>
-                                                                            <th>September</th>
-                                                                            <th>Oktober</th>
-                                                                            <th>November</th>
-                                                                            <th>December</th>
-                                                                            <th colspan="1" rowspan="1">Jumlah</th>
-                                                                            <th>Persentase Realisasi Fisik /Anggaran
-                                                                            </th>
-                                                                            <th>
-                                                                                Sisa Fisik/Anggaran yang belum digunakan
-                                                                            </th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <?php $expenses = $detailsItem['expenses'] ?>
-                                                                        @foreach ($expenses as $expenses =>
-                                                                        $expensesItem)
-                                                                        <?php  $physicalExpenses = $expensesItem['physical']; ?>
-                                                                        <tr class="view">
-                                                                            <td rowspan="2">
-                                                                                {{ $expensesItem['name'] }}
-                                                                            </td>
-                                                                            <td rowspan="2">
-                                                                                {{ $physicalExpenses['total'] }}
-                                                                            </td>
-                                                                            <td>
-                                                                                Target
-                                                                            </td>
-                                                                            <?php  $monthlyPhysicalExpenses = $physicalExpenses['monthly']; ?>
-                                                                            @foreach ($monthlyPhysicalExpenses as
-                                                                            $monthlyPhysicalExpenses =>
-                                                                            $monthlyPhysicalExpensesItem)
-                                                                            <td>
-                                                                                @isset($monthlyPhysicalExpensesItem[0])
-                                                                                {{ $monthlyPhysicalExpensesItem[0] }}
-                                                                                @endisset
-                                                                                @empty($monthlyPhysicalExpensesItem[0])
-                                                                                -
-                                                                                @endempty
-                                                                            </td>
-                                                                            @endforeach
-                                                                            <?php  $monthlyPhysicalExpenses = $physicalExpenses['monthly']; ?>
-                                                                            <td>
-                                                                                {{
-                                                                                array_sum(array_column($monthlyPhysicalExpenses,
-                                                                                0)) }}
-                                                                            </td>
-                                                                            <td rowspan="2">
-                                                                                {{
-                                                                                array_sum(array_column($monthlyPhysicalExpenses,
-                                                                                1)) /
-                                                                                array_sum(array_column($monthlyPhysicalExpenses,
-                                                                                0)) * 100 }}%
-                                                                            </td>
-                                                                            <td rowspan="2">
-                                                                                {{
-                                                                                array_sum(array_column($monthlyPhysicalExpenses,
-                                                                                0)) -
-                                                                                array_sum(array_column($monthlyPhysicalExpenses,
-                                                                                1)) }}
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>Realisasi</td>
-                                                                            <?php  $monthlyPhysicalExpenses = $physicalExpenses['monthly']; ?>
-                                                                            @foreach ($monthlyPhysicalExpenses as
-                                                                            $monthlyPhysicalExpenses =>
-                                                                            $monthlyPhysicalExpensesItem)
-                                                                            <td>
-                                                                                @isset($monthlyPhysicalExpensesItem[1])
-                                                                                {{ $monthlyPhysicalExpensesItem[1] }}
-                                                                                @endisset
-                                                                                @empty($monthlyPhysicalExpensesItem[1])
-                                                                                -
-                                                                                @endempty
-                                                                            </td>
-                                                                            @endforeach
-                                                                            <?php  $monthlyPhysicalExpenses = $physicalExpenses['monthly']; ?>
-                                                                            <td>
-                                                                                {{
-                                                                                array_sum(array_column($monthlyPhysicalExpenses,
-                                                                                1)) }}
-                                                                            </td>
 
-                                                                        </tr>
-                                                                        @endforeach
+                                                <tr>
+                                                    <td>
+                                                        Realisasi
+                                                    </td>
 
-                                                                        <?php $expenses = $detailsItem['expenses'] ?>
-                                                                        @foreach ($expenses as $expenses =>
-                                                                        $expensesItem)
-                                                                        <?php  $financeExpenses = $expensesItem['finance']; ?>
-                                                                        <tr class="view">
-                                                                            <td rowspan="2">
-                                                                                {{ $expensesItem['name'] }}
-                                                                            </td>
-                                                                            <td rowspan="2">
-                                                                                {{ $financeExpenses['total'] }}
-                                                                            </td>
-                                                                            <td>
-                                                                                Target
-                                                                            </td>
-                                                                            <?php  $monthlyFinanceExpenses = $financeExpenses['monthly']; ?>
-                                                                            @foreach ($monthlyFinanceExpenses as
-                                                                            $monthlyFinanceExpenses =>
-                                                                            $monthlyFinanceExpensesItem)
-                                                                            <td>
-                                                                                @isset($monthlyFinanceExpensesItem[0])
-                                                                                @currency($monthlyFinanceExpensesItem[0])
-                                                                                @endisset
-                                                                                @empty($monthlyFinanceExpensesItem[0])
-                                                                                -
-                                                                                @endempty
-                                                                            </td>
-                                                                            @endforeach
-                                                                            <?php  $monthlyFinanceExpenses = $financeExpenses['monthly']; ?>
-                                                                            <td>
-                                                                                {{
-                                                                                array_sum(array_column($monthlyFinanceExpenses,
-                                                                                0)) }}
-                                                                            </td>
-                                                                            <td rowspan="2">
-                                                                                {{
-                                                                                round(array_sum(array_column($monthlyFinanceExpenses,
-                                                                                1)) /
-                                                                                array_sum(array_column($monthlyFinanceExpenses,
-                                                                                0)) * 100) }}%
-                                                                            </td>
-                                                                            <td rowspan="2">
-                                                                                @currency(round(array_sum(array_column($monthlyFinanceExpenses,
-                                                                                0)) -
-                                                                                array_sum(array_column($monthlyFinanceExpenses,
-                                                                                1))))
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>Realisasi</td>
-                                                                            <?php  $monthlyFinanceExpenses = $financeExpenses['monthly']; ?>
-                                                                            @foreach ($monthlyFinanceExpenses as
-                                                                            $monthlyFinanceExpenses =>
-                                                                            $monthlyFinanceExpensesItem)
-                                                                            <td>
-                                                                                @isset($monthlyFinanceExpensesItem[1])
-                                                                                @currency($monthlyFinanceExpensesItem[1])
-                                                                                @endisset
-                                                                                @empty($monthlyFinanceExpensesItem[1])
-                                                                                -
-                                                                                @endempty
-                                                                            </td>
-                                                                            @endforeach
-                                                                            <?php  $monthlyFinanceExpenses = $financeExpenses['monthly']; ?>
-                                                                            <td>
-                                                                                {{
-                                                                                array_sum(array_column($monthlyFinanceExpenses,
-                                                                                1)) }}
-                                                                            </td>
+                                                    {{-- Sekretariat Monthly Realisasi Expenses --}}
+                                                    <?php  $monthly_physical_expenses = $physical_expenses['monthly']; ?>
+                                                    @foreach ($monthly_physical_expenses as
+                                                    $monthly_physical_expenses =>
+                                                    $monthly_physical_expenses_item)
+                                                    <td>
+                                                        @isset($monthly_physical_expenses_item[1])
+                                                        {{ $monthly_physical_expenses_item[1] }}
+                                                        @endisset
+                                                        @php
+                                                        if (is_null($monthly_physical_expenses_item[1])) {
+                                                        echo "-";
+                                                        }
+                                                        @endphp
+                                                    </td>
+                                                    @endforeach
 
-                                                                        </tr>
-                                                                        @endforeach
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
+                                                    <?php  $monthly_physical_expenses = $physical_expenses['monthly']; ?>
+                                                    <td>
+                                                        {{array_sum(array_column($monthly_physical_expenses, 1)) }}
                                                     </td>
                                                 </tr>
+
+                                                <?php $expenses = $details_item['expenses'] ?>
+                                                @foreach ($expenses as $expenses =>
+                                                $expenses_item)
+                                                <?php  $finance_expenses = $expenses_item['finance']; ?>
+
+                                                <tr>
+                                                    <td rowspan="2">
+                                                        {{ $expenses_item['name'] }}
+                                                    </td>
+                                                    <td rowspan="2">
+                                                        {{ $finance_expenses['total'] }}
+                                                    </td>
+                                                    <td>Target</td>
+                                                    <?php  $monthly_finance_expenses = $finance_expenses['monthly']; ?>
+                                                    @foreach ($monthly_finance_expenses as
+                                                    $monthly_finance_expenses =>
+                                                    $monthly_finance_expenses_item)
+                                                    <td>
+                                                        @isset($monthly_finance_expenses_item[0])
+                                                        @currency($monthly_finance_expenses_item[0])
+                                                        @endisset
+                                                        @php
+                                                        if (is_null($monthly_finance_expenses_item[1])) {
+                                                        echo "-";
+                                                        }
+                                                        @endphp
+                                                    </td>
+                                                    @endforeach
+                                                    <?php  $monthly_finance_expenses = $finance_expenses['monthly']; ?>
+                                                    <td>
+                                                        @currency(array_sum(array_column($monthly_finance_expenses,
+                                                        0)))
+                                                    </td>
+                                                    <td rowspan="2">
+                                                        {{
+                                                        round(array_sum(array_column($monthly_finance_expenses,
+                                                        1)) /
+                                                        array_sum(array_column($monthly_finance_expenses,
+                                                        0)) * 100) }}%
+                                                    </td>
+                                                    <td rowspan="2">
+                                                        @php
+                                                        $result =
+                                                        round(array_sum(array_column($monthly_finance_expenses,0)) -
+                                                        array_sum(array_column($monthly_finance_expenses, 1)));
+                                                        @endphp
+                                                        @currency($result)
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Realisasi</td>
+                                                    <?php  $monthly_finance_expenses = $finance_expenses['monthly']; ?>
+                                                    @foreach ($monthly_finance_expenses as
+                                                    $monthly_finance_expenses =>
+                                                    $monthly_finance_expenses_item)
+                                                    <td>
+                                                        @isset($monthly_finance_expenses_item[1])
+                                                        @currency($monthly_finance_expenses_item[1])
+                                                        @endisset
+                                                        @php
+                                                        if (is_null($monthly_finance_expenses_item[1])) {
+                                                        echo "-";
+                                                        }
+                                                        @endphp
+                                                    </td>
+                                                    @endforeach
+                                                    <?php  $monthly_finance_expenses = $finance_expenses['monthly']; ?>
+                                                    <td>
+                                                        @currency(array_sum(array_column($monthly_finance_expenses, 1)))
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+
+                                                @endforeach
                                                 @endforeach
                                             </tbody>
                                         </table>
@@ -324,79 +302,9 @@
                         </tr>
                         @endforeach
                         @endforeach
-
-
-                        <tr class="view">
-                            <td>Company Name</td>
-                            <td class="pcs">457</td>
-                            <td class="pcs">457</td>
-                        </tr>
-                        <tr class="fold">
-                            <td colspan="7">
-                                <div class="fold-content">
-                                    <h3>Company Name</h3>
-                                    <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
-                                        turpis
-                                        egestas.</p>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Company name</th>
-                                                <th>Customer no</th>
-                                                <th>Customer name</th>
-                                                <th>Insurance no</th>
-                                                <th>Strategy</th>
-                                                <th>Start</th>
-                                                <th>Current</th>
-                                                <th>Diff</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Sony</td>
-                                                <td>13245</td>
-                                                <td>John Doe</td>
-                                                <td>064578</td>
-                                                <td>A, 100%</td>
-                                                <td class="cur">20000</td>
-                                                <td class="cur">33000</td>
-                                                <td class="cur">13000</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Sony</td>
-                                                <td>13288</td>
-                                                <td>Claire Bennet</td>
-                                                <td>064877</td>
-                                                <td>B, 100%</td>
-                                                <td class="cur">28000</td>
-                                                <td class="cur">48000</td>
-                                                <td class="cur">20000</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Sony</td>
-                                                <td>12341</td>
-                                                <td>Barry White</td>
-                                                <td>064123</td>
-                                                <td>A, 100%</td>
-                                                <td class="cur">10000</td>
-                                                <td class="cur">22000</td>
-                                                <td class="cur">12000</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <br>
-        <livewire:auth.logout />
     </div>
 </section>
-
-
-<script>
-
-</script>

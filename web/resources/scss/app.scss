@@ -182,8 +182,45 @@ hr {
     }
 }
 
-// html, body {
-//     background-color:hsla(0,48%,97%,1);
-//     background-image:
-//     radial-gradient(at 0% 0%, hsla(343,72%,90%,1) 0, transparent 50%);
-// }
+.sekretariat {
+    .sekretariat-title {
+        font-size: 34px;
+        font-weight: 750;
+        color: #1a202c;
+    }
+}
+.sekretariat-table {
+    .sekretariat-table-head {
+        .sub-kegiatan, .realisasi {
+            text-align: center;
+            vertical-align: middle;
+        }
+    }
+    .sekretariat-table-body {
+        .activity-name {
+            font-size: 14px;
+        }
+    }
+
+    .sekretariat-table-fold-container {
+        padding: 14px;
+
+        .sekretariat-table-nested-head {
+            th {
+                text-align: center;
+                vertical-align: middle;
+            }
+        }
+    }
+    
+    th {
+        color: #1a202c;
+    }
+    td {
+        color: darken($color: #858585, $amount: 10);
+    }
+}
+
+.logout {
+    margin-bottom: 44px;
+}
