@@ -219,6 +219,7 @@
                                                     </td>
                                                 </tr>
 
+                                                {{-- Sekretariat Target Expenses --}}
                                                 <?php $expenses = $details_item['expenses'] ?>
                                                 @foreach ($expenses as $expenses =>
                                                 $expenses_item)
@@ -232,6 +233,8 @@
                                                         {{ $finance_expenses['total'] }}
                                                     </td>
                                                     <td>Target</td>
+
+                                                    {{-- Sekretariat Monthly Finance Expenses --}}
                                                     <?php  $monthly_finance_expenses = $finance_expenses['monthly']; ?>
                                                     @foreach ($monthly_finance_expenses as
                                                     $monthly_finance_expenses =>
@@ -270,6 +273,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>Realisasi</td>
+
                                                     <?php  $monthly_finance_expenses = $finance_expenses['monthly']; ?>
                                                     @foreach ($monthly_finance_expenses as
                                                     $monthly_finance_expenses =>
@@ -295,6 +299,46 @@
                                                 @endforeach
                                                 @endforeach
                                             </tbody>
+                                            <tfoot class="sekretariat-table-nested-foot">
+                                                <tr>
+                                                    <th>
+                                                        Jumlah Realisasi Keuangan
+                                                    </th>
+                                                    <?php $details = $activities_item['detail'];
+                                                    if (is_null($details)) {
+                                                        break;
+                                                    }
+                                                    ?>
+
+                                                    <?php $jumlahRealisasiKeuangan = array(); ?>
+                                                    <?php $jumlahRealisasiJanuari = array(); ?>
+
+                                                    @foreach ($details as $details => $details_item)
+                                                    <?php $jumlahRealisasiKeuangan[] = $details_item['total_finance'] ?>
+
+                                                    <?php $expenses = $details_item['expenses'] ?>
+                                                    @foreach ($expenses as $expenses =>
+                                                    $expenses_item)
+                                                    <?php  $finance_expenses = $expenses_item['finance']; ?>
+
+                                                    <?php  $monthly_finance_expenses = $finance_expenses['monthly']; ?>
+                                                    @foreach ($monthly_finance_expenses as
+                                                    $monthly_finance_expenses =>
+                                                    $monthly_finance_expenses_item)
+                                                    <?php $jumlahRealisasiJanuari[] = $monthly_finance_expenses_item[1]; ?>
+                                                    @endforeach
+
+                                                    @endforeach
+                                                    @endforeach
+
+                                                    <th>
+                                                        @currency(array_sum($jumlahRealisasiKeuangan))
+                                                    </th>
+                                                    <th>
+                                                        &nbsp;
+                                                    </th>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
