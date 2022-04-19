@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Admin;
 
 use App\Models\Summary;
+use App\Models\Utilities;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -28,6 +29,7 @@ class Dashboard extends Component
 
         return view('livewire.admin.dashboard', [
             'summary' => Summary::all(),
+            'utilities' => Utilities::all(),
             'user' => Auth::user(),
             'sekretariat' => $sekretariat,
             'penta' => $penta,
