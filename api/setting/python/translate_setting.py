@@ -12,6 +12,7 @@ class Main():
 
         dictionary_array = []
         for i in range(len(data)):
+            
             detail_array = []
             for j in range(len(data[i][3])):
                 if(type(data[i][3][j]) == list):
