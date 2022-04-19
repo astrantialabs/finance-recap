@@ -22,22 +22,22 @@ class Database():
 class Main():
     def main():
         division_array = []
-        division_length = random.randrange(4, 9)
+        division_length = 4
         for i in range(division_length):
 
             activity_array = []
-            division_length = random.randrange(5, 16)
-            for j in range(division_length):
+            activity_length = random.randrange(5, 10)
+            for j in range(activity_length):
 
                 detail_array = []
-                detail_length = random.randrange(3, 6)
+                detail_length = random.randrange(1, 4)
                 for k in range(detail_length):
                     
                     expenses_array = []
-                    expenses_length = random.randrange(3, 11)
+                    expenses_length = random.randrange(1, 4)
                     for l in range(expenses_length):
                         expenses_physical_monthly_array = [[random.randrange(0, 2), random.randrange(0, 2)] for index in range(12)]
-                        expenses_finance_monthly_array = [[random.randrange(100000, 2000000), random.randrange(0, 2)] for index in range(12)]
+                        expenses_finance_monthly_array = [[random.randrange(100000, 2000000), random.randrange(100000, 2000000)] for index in range(12)]
 
                         temp_expenses_dictionary = {
                             "id": l+1,
