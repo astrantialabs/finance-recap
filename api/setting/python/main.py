@@ -49,11 +49,12 @@ class Main():
             
                 for i in range(len(data)):
                     if(data[i].get("name") == name):
-                        if(event == "previous_button"):
+                        print(detail_count)
+                        if(event == "previous_button" and detail_count != 0):
                             detail_count -= 1
 
-                        elif(event == "next_button"):
-                            detail_count += 1
+                        elif(event == "next_button" and detail_count != len(data[i].get("detail"))-1):
+                            detail_count += 1 
 
                         if(type(data[i].get("detail")[detail_count]) == dict):
                             window["detail_id"].update(data[i].get("detail")[detail_count].get("id"))
