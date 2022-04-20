@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Auth;
 
 use Livewire\Component;
-use \App\Models\User;
+use App\Models\User;
 
 class Register extends Component
 {
@@ -13,14 +13,28 @@ class Register extends Component
     public $password;
     public $password_confirmation;
 
-    public function store()
+    protected $rules = [
+        'name'      => 'required',
+        'username' => 'required',
+        'email'     => 'required|email|unique:users',
+        'password'  => 'required|confirmed'
+    ];
+
+    protected $messages = [
+        'name.required' => 'Nama tidak boleh kosong.',
+        'username.required' => 'username tidak boleh kosong.',
+        'email.required' => 'Alamat email tidak boleh kosong.',
+        'password.required' => 'Password tidak boleh kosong.',
+    ];
+
+    public function render()
     {
-        $this->validate([
-            'name'      => 'required',
-            'username' => 'required',
-            'email'     => 'required|email|unique:users',
-            'password'  => 'required|confirmed'
-        ]);
+        return view('livewire.auth.register');
+    }
+
+    public function register()
+    {
+        $this->validate();
 
         $user = User::create([
             'name'      => $this->name,
@@ -29,15 +43,8 @@ class Register extends Component
             'password'  => bcrypt($this->password)
         ]);
 
-        if($user) {
-            session()->flash('success', 'Register Berhasil!.');
+        if ($user) {
             return redirect()->to('/login');
         }
-
-    }
-
-    public function render()
-    {
-        return view('livewire.auth.register');
     }
 }

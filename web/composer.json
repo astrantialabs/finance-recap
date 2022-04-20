@@ -6,14 +6,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
-        "consoletvs/charts": "7.*",
         "guzzlehttp/guzzle": "^7.2",
         "jenssegers/mongodb": "^3.9",
         "laravel/framework": "^9.2",
         "laravel/sanctum": "^2.14.1",
+        "laravel/telescope": "^4.8",
         "laravel/tinker": "^2.7",
-        "livewire/livewire": "^2.10",
-        "postscripton/laravel-money": "^3.1"
+        "livewire/livewire": "^2.10"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -52,7 +51,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     },
     "config": {

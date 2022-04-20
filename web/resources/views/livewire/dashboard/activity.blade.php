@@ -1,0 +1,1 @@
+@include('livewire.dashboard.base', ['content_type' => $content_type])

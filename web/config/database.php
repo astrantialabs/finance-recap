@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mongodb'),
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -45,8 +45,8 @@ return [
 
         'mongodb' => [
             'driver' => 'mongodb',
-            'dsn' => env('DB_URI', 'mongodb+srv://mirae:mirae@disnakerfinancerecap.7y6vb.mongodb.net/DisnakerFinanceRecap?retryWrites=true&w=majority'),
-            'database' => 'DisnakerFinanceRecap',
+            'dsn' => env('MONGODB_CONNECTION_URI'),
+            'database' => env('MONGODB_DATABASE'),
         ],
 
         'mysql' => [
@@ -153,4 +153,5 @@ return [
         ],
 
     ],
+
 ];

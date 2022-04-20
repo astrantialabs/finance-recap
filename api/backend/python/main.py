@@ -57,7 +57,6 @@ class Main(Database, Utility):
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
         database_name = "DisnakerFinanceRecap"
         
-        
         Main.get_summary_data()
         Main.update_summary_data(mongoDBURI, database_name)
 
@@ -132,23 +131,23 @@ class Main(Database, Utility):
         for i in range(len(detail_range)):
             expenses_array = []
             for j in range(len(detail_range[i][2])):
-                physical_value = workbook.get_value_multiple(detail_range[i][2][j][0], detail_range[i][2][j][1])
-                finance_value = workbook.get_value_multiple(detail_range[i][2][j][2], detail_range[i][2][j][3])
+                physical_value = workbook.get_value_multiple_2d(detail_range[i][2][j][0], detail_range[i][2][j][1])
+                finance_value = workbook.get_value_multiple_2d(detail_range[i][2][j][2], detail_range[i][2][j][3])
 
-                del physical_value[2:4]
-                del physical_value[2:4]
-                del finance_value[2:4]
-                del finance_value[2:4]
+                del physical_value[0][2:4]
+                del physical_value[1][2:4]
+                del finance_value[0][2:4]
+                del finance_value[1][2:4]
 
                 physical_monthly = []
-                for k in range(len(physical_value[2:14])):
-                    temp_physical_monthly = [physical_value[2:14][k], physical_value[2:14][k]]
+                for k in range(len(physical_value[0][2:14])):
+                    temp_physical_monthly = [physical_value[0][2:14][k], physical_value[1][2:14][k]]
                     physical_monthly.append(temp_physical_monthly)
 
                 
                 finance_monthly = []
-                for k in range(len(finance_value[2:14])):
-                    temp_finance_monthly = [finance_value[2:14][k], finance_value[2:14][k]]
+                for k in range(len(finance_value[0][2:14])):
+                    temp_finance_monthly = [finance_value[0][2:14][k], finance_value[1][2:14][k]]
                     finance_monthly.append(temp_finance_monthly)
 
 
@@ -199,12 +198,12 @@ class Main(Database, Utility):
             activity = []
             for j in range(len(value)):
                 if(type(summary_parameter[i].get("detail")[j]) == dict):
-                    print("Processing :", summary_parameter[i].get("detail")[j].get("active_Sheet"), summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
+                    print("Processing :", summary_parameter[i].get("detail")[j].get("active_sheet"), summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
                     
-                    wb_detail_data = Excel(path, summary_parameter[i].get("detail")[j].get("active_Sheet")) 
+                    wb_detail_data = Excel(path, summary_parameter[i].get("detail")[j].get("active_sheet")) 
                     detail = Main.get_detail_data(wb_detail_data, summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
                     
-                    print("Completed  :", summary_parameter[i].get("detail")[j].get("active_Sheet"), summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
+                    print("Completed  :", summary_parameter[i].get("detail")[j].get("active_sheet"), summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
                     print()
 
                 elif(type(summary_parameter[i].get("detail")[j]) != dict):
