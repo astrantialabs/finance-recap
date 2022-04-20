@@ -1,6 +1,8 @@
 import PySimpleGUI as sg
 import json
 
+from matplotlib.pyplot import get
+
 class Utility():
     def write_json(data, path):
         json_object = json.dumps(data, indent = 4)
@@ -229,7 +231,18 @@ class Main(Utility):
             if(detail_count != len(data[data_count].get("detail"))-1):
                     window["next_button"].update(disabled = False)
 
+            if(len(data) == 1):
+                window["delete_division_button"].update(disabled = True)
 
+            if(len(data) != 1):
+                window["delete_division_button"].update(disabled = False)
+            
+            if(len(data[data_count].get("detail")) == 1):
+                window["delete_detail_button"].update(disabled = True)
+
+            if(len(data[data_count].get("detail")) != 1):
+                window["delete_detail_button"].update(disabled = False)
+            
         window.close()
     
 
