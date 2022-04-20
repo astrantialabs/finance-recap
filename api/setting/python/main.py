@@ -1,7 +1,7 @@
 import PySimpleGUI as sg
 import json
 
-from matplotlib.pyplot import get
+from operator import itemgetter
 
 class Utility():
     def write_json(data, path):
@@ -157,8 +157,15 @@ class Main(Utility):
                 confirmation_window.close()
 
             elif(event == "add_division_button"):
+                new_id = len(data) + 1
+                for i in range(len(data)):
+                    if(data[i].get("id") != i+1):
+                        new_id = i+1
+                        break
+
+
                 new_division_dictionary = {
-                    "id": len(data) + 1,
+                    "id": new_id,
                     "name": "null",
                     "start_range": "null",
                     "end_range": "null",
@@ -173,10 +180,11 @@ class Main(Utility):
                     ]
                 }
 
-                data_count = len(data)
-                detail_count = 0  
+                data_count = new_id - 1
+                detail_count = 0
 
                 data.append(new_division_dictionary)
+                data = sorted(data, key=itemgetter('id'))
                 
                 Main.write_json(data, path)
 
@@ -194,17 +202,24 @@ class Main(Utility):
                 Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
 
             elif(event == "add_detail_button"):
+                new_id = len(data[data_count].get("detail")) + 1
+                for i in range(len(data[data_count].get("detail"))):
+                    if(data[data_count].get("detail")[i].get("id") != i+1):
+                        new_id = i+1
+                        break
+
                 new_detail_dictionary = {
-                    "id": len(data[data_count].get("detail")) + 1,
+                    "id": new_id,
                     "active_sheet": "null",
                     "start_range": "null",
                     "end_range": "null",
                     "attribute": "null"
                 }
 
-                detail_count = len(data[data_count].get("detail"))
+                detail_count = new_id - 1
 
                 data[data_count].get("detail").append(new_detail_dictionary)
+                data[data_count]["detail"] = sorted(data[data_count].get("detail"), key=itemgetter('id'))
                 
                 Main.write_json(data, path)
 
