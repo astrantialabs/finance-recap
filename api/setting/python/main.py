@@ -1,7 +1,15 @@
 import PySimpleGUI as sg
 import json
 
-class Main():
+class Utility():
+    def write_json(data, path):
+        json_object = json.dumps(data, indent = 4)
+
+        with open(path, "w") as outfile:
+            outfile.write(json_object)
+
+
+class Main(Utility):
     def main():
         path = "./api/setting/json/setting.json" #path
         data = json.load(open(path))
@@ -20,7 +28,7 @@ class Main():
         ]
 
         layout = [
-            [sg.Listbox(list_data, default_values=data[data_count].get("name"), key="listbox", enable_events=True, size=(100, 4), no_scrollbar=True, select_mode="single")],
+            [sg.Listbox(list_data, default_values=data[data_count].get("name"), key="listbox", enable_events=True, size=(100, 4), select_mode="single")],
             
             [sg.Text("Division")],
             [sg.InputText(default_text=current_data.get("id"), size=(100, 1), key="data_id", enable_events=True, readonly=True)],
@@ -33,7 +41,9 @@ class Main():
             [
                 sg.Button("Previous", key="previous_button", enable_events=True, disabled = True),
                 sg.Button("Next", key="next_button", enable_events=True),
-                sg.Button("Save", key="save_button", enable_events=True)
+                sg.Button("Save", key="save_button", enable_events=True),
+                sg.Button("Add Division", key="add_division_button", enable_events=True),
+                sg.Button("Delete Division", key="delete_division_button", enable_events=True)
             ]
         ]
 
@@ -53,25 +63,7 @@ class Main():
                         detail_count = 0
 
 
-                window["data_id"].update(data[data_count].get("id"))
-
-                for attribute in current_data_attribute:
-                    window[f"data_{attribute}"].update(data[data_count].get(attribute))
-
-
-                if(type(data[data_count].get("detail")[detail_count]) == dict):
-                    window["detail_id"].update(data[data_count].get("detail")[detail_count].get("id"))
-
-                    for attribute in current_data_detail_attribute:
-                        window[f"detail_{attribute}"].update(data[data_count].get("detail")[detail_count].get(attribute))
-
-
-                elif(type(data[data_count].get("detail")[detail_count]) != dict):
-                    window["detail_id"].update(detail_count + 1)
-
-                    for attribute in current_data_detail_attribute:
-                        window[f"detail_{attribute}"].update("null")
-
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
 
             elif(event == "previous_button" or event == "next_button"):
                 if(event == "previous_button" and detail_count != 0):
@@ -80,19 +72,7 @@ class Main():
                 elif(event == "next_button" and detail_count != len(data[data_count].get("detail"))-1):
                     detail_count += 1 
 
-                if(type(data[data_count].get("detail")[detail_count]) == dict):
-                    window["detail_id"].update(data[data_count].get("detail")[detail_count].get("id"))
-
-                    for attribute in current_data_detail_attribute:
-                        window[f"detail_{attribute}"].update(data[data_count].get("detail")[detail_count].get(attribute))
-
-
-                elif(type(data[data_count].get("detail")[detail_count]) != dict):
-                    window["detail_id"].update(detail_count + 1)
-
-                    for attribute in current_data_detail_attribute:
-                        window[f"detail_{attribute}"].update("null")
-            
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
 
             elif(event == "save_button"):
                 confirmation_layout = [
@@ -156,18 +136,51 @@ class Main():
                                 data[data_count].get("detail")[detail_count]["attribute"] = list_of_detail[i+1]
 
 
-                        json_object = json.dumps(data, indent = 4)
+                        Main.write_json(data, path)
 
-                        with open(path, "w") as outfile:
-                            outfile.write(json_object)
-
-
-                        window["listbox"].update([division.get("name") for division in data])
+                        Main.update_listbox(window, data, data_count)
 
                         break
 
 
                 confirmation_window.close()
+
+            elif(event == "add_division_button"):
+                new_division_dictionary = {
+                    "id": len(data) + 1,
+                    "name": "null",
+                    "start_range": "null",
+                    "end_range": "null",
+                    "detail": [
+                        {
+                            "id": 1,
+                            "active_sheet": "null",
+                            "start_range": "null",
+                            "end_range": "null",
+                            "attribute": "null"
+                        }
+                    ]
+                }
+
+                data_count = len(data)
+                detail_count = 0  
+
+                data.append(new_division_dictionary)
+                
+                Main.write_json(data, path)
+
+                Main.update_listbox(window, data, data_count)
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
+
+            elif(event == "delete_division_button"):
+                del data[data_count]
+                data_count = len(data) - 1
+                detail_count = 0
+
+                Main.write_json(data, path)
+
+                Main.update_listbox(window, data, data_count)
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
 
             if(detail_count == 0):
                 window["previous_button"].update(disabled = True)
@@ -183,6 +196,32 @@ class Main():
 
 
         window.close()
+    
+
+    def update_listbox(window, data, data_count):
+        window["listbox"].update([division.get("name") for division in data])
+        window["listbox"].update(set_to_index=[data_count], scroll_to_index=data_count)
+
+
+    def update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count):
+        window["data_id"].update(data[data_count].get("id"))
+
+        for attribute in current_data_attribute:
+            window[f"data_{attribute}"].update(data[data_count].get(attribute))
+
+
+        if(type(data[data_count].get("detail")[detail_count]) == dict):
+            window["detail_id"].update(data[data_count].get("detail")[detail_count].get("id"))
+
+            for attribute in current_data_detail_attribute:
+                window[f"detail_{attribute}"].update(data[data_count].get("detail")[detail_count].get(attribute))
+
+
+        elif(type(data[data_count].get("detail")[detail_count]) != dict):
+            window["detail_id"].update(detail_count + 1)
+
+            for attribute in current_data_detail_attribute:
+                window[f"detail_{attribute}"].update("null")
 
 
 if(__name__ == "__main__"):
