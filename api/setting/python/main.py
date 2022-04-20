@@ -23,6 +23,9 @@ class Main(Utility):
         current_data_attribute = ["name", "start_range", "end_range"]
         current_data_detail_attribute = ["active_sheet", "start_range", "end_range", "attribute"]
 
+        button_width = 15
+        button_height = 1
+
         list_data = [
             division.get("name") for division in data
         ]
@@ -39,17 +42,21 @@ class Main(Utility):
             [[sg.InputText(default_text=current_data_detail.get(attribute), size=(100, 1), key=f"detail_{attribute}", enable_events=True)] for attribute in current_data_detail_attribute],
             
             [
-                sg.Button("Previous", key="previous_button", enable_events=True, disabled = True),
-                sg.Button("Next", key="next_button", enable_events=True),
-                sg.Button("Save", key="save_button", enable_events=True),
-                sg.Button("Add Division", key="add_division_button", enable_events=True),
-                sg.Button("Delete Division", key="delete_division_button", enable_events=True),
-                sg.Button("Add Detail", key="add_detail_button", enable_events=True),
-                sg.Button("Delete Detail", key="delete_detail_button", enable_events=True)
+                sg.Button("Previous", key="previous_button", enable_events=True, disabled = True, size=(button_width, button_height)),
+                sg.Button("Next", key="next_button", enable_events=True, size=(button_width, button_height)),
+                sg.Button("Save", key="save_button", enable_events=True, size=(button_width, button_height))
+            ],
+            [
+                sg.Button("Add Division", key="add_division_button", enable_events=True, size=(button_width, button_height)),
+                sg.Button("Delete Division", key="delete_division_button", enable_events=True, size=(button_width, button_height))
+            ],
+            [
+                sg.Button("Add Detail", key="add_detail_button", enable_events=True, size=(button_width, button_height)),
+                sg.Button("Delete Detail", key="delete_detail_button", enable_events=True, size=(button_width, button_height))
             ]
         ]
 
-        window = sg.Window("Excel Attribute Editor", layout, size=(500, 500))
+        window = sg.Window("Excel Attribute Editor", layout, size=(435, 475))
 
         while True:
             event, values = window.read()
