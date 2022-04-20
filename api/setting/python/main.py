@@ -144,7 +144,7 @@ class Main(Utility):
 
                             data[data_count].get("detail")[detail_count]["id"] = list_of_detail[0]
                             for i, attribute in enumerate(current_data_detail_attribute):
-                                data[data_count].get("detail")[detail_count]["attribute"] = list_of_detail[i+1]
+                                data[data_count].get("detail")[detail_count][attribute] = list_of_detail[i+1]
 
 
                         Main.write_json(data, path)
