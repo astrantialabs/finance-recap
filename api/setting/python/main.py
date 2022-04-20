@@ -43,7 +43,9 @@ class Main(Utility):
                 sg.Button("Next", key="next_button", enable_events=True),
                 sg.Button("Save", key="save_button", enable_events=True),
                 sg.Button("Add Division", key="add_division_button", enable_events=True),
-                sg.Button("Delete Division", key="delete_division_button", enable_events=True)
+                sg.Button("Delete Division", key="delete_division_button", enable_events=True),
+                sg.Button("Add Detail", key="add_detail_button", enable_events=True),
+                sg.Button("Delete Detail", key="delete_detail_button", enable_events=True)
             ]
         ]
 
@@ -176,6 +178,32 @@ class Main(Utility):
                 del data[data_count]
                 data_count = len(data) - 1
                 detail_count = 0
+
+                Main.write_json(data, path)
+
+                Main.update_listbox(window, data, data_count)
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
+
+            elif(event == "add_detail_button"):
+                new_detail_dictionary = {
+                    "id": len(data[data_count].get("detail")) + 1,
+                    "active_sheet": "null",
+                    "start_range": "null",
+                    "end_range": "null",
+                    "attribute": "null"
+                }
+
+                detail_count = len(data[data_count].get("detail"))
+
+                data[data_count].get("detail").append(new_detail_dictionary)
+                
+                Main.write_json(data, path)
+
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
+
+            elif(event == "delete_detail_button"):
+                del data[data_count].get("detail")[detail_count]
+                detail_count = len(data[data_count].get("detail")) - 1
 
                 Main.write_json(data, path)
 
