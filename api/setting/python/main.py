@@ -56,7 +56,7 @@ class Main():
                 window["data_id"].update(data[data_count].get("id"))
 
                 for attribute in current_data_attribute:
-                        window[f"data_{attribute}"].update(data[data_count].get(attribute))
+                    window[f"data_{attribute}"].update(data[data_count].get(attribute))
 
 
                 if(type(data[data_count].get("detail")[detail_count]) == dict):
@@ -139,22 +139,22 @@ class Main():
                             list_of_detail[1] = int(list_of_detail[1])
                             list_of_detail[2] = str(list_of_detail[2])
                             list_of_detail[3] = str(list_of_detail[3])
-                            list_of_detail[4] = (list_of_detail[4]).split(" ")
+                            list_of_detail[4] = (list_of_detail[4].replace("(", "").replace(")", "").replace(",", "")).split(" ")
 
                             for i in range(len(list_of_detail[4])):
-                                list_of_detail[4][i] = int(list_of_detail[4][i])
+                                if(list_of_detail[4][i].isdecimal()):
+                                    list_of_detail[4][i] = int(list_of_detail[4][i])
 
 
                             data[data_count]["id"] = list_of_data[0]
-                            data[data_count]["name"] = list_of_data[1]
-                            data[data_count]["start_range"] = list_of_data[2]
-                            data[data_count]["end_range"] = list_of_data[3]
+                            for i, attribute in enumerate(current_data_attribute):
+                                data[data_count][attribute] = list_of_data[i+1]
+
 
                             data[data_count].get("detail")[detail_count]["id"] = list_of_detail[0]
-                            data[data_count].get("detail")[detail_count]["active_sheet"] = list_of_detail[1]
-                            data[data_count].get("detail")[detail_count]["start_range"] = list_of_detail[2]
-                            data[data_count].get("detail")[detail_count]["end_range"] = list_of_detail[3]
-                            data[data_count].get("detail")[detail_count]["attribute"] = list_of_detail[4]
+                            for i, attribute in enumerate(current_data_detail_attribute):
+                                data[data_count].get("detail")[detail_count]["attribute"] = list_of_detail[i+1]
+
 
                         json_object = json.dumps(data, indent = 4)
 

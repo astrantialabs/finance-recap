@@ -62,6 +62,8 @@ class Main(Database, Utility):
 
         Main.update_utility_data(mongoDBURI, database_name)
 
+        Main.show_summary_data(mongoDBURI, database_name)
+
 
     def get_data(path, active_sheet, start_range, end_range):
         wb_data = Excel(path, active_sheet)
@@ -246,6 +248,17 @@ class Main(Database, Utility):
         utilities_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
         utilities_collection.find_one_and_update({"id": 1}, {"$set" : {"last_modified": translated_excel_last_modified}})
+
+
+    def show_summary_data(mongoDBURI, database_name):
+        collection_name = "summary_recaps"
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+
+        all_data = collection.find()
+        single_data = collection.find({ "name": "Sekretariat" })
+        
+        print(all_data)
+        print(single_data)
 
 
 if(__name__ == "__main__"):
