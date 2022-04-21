@@ -52,6 +52,18 @@ class Utility():
         return temp_data_dictionary
 
 
+    def update_data(mongoDBURI, database_name):
+        excel_path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx"
+
+        excel_last_modified = os.path.getmtime(excel_path)
+        translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%Y-%m-%d %H:%M:%S")
+
+        collection_name = "utilities"
+        utilities_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+
+        utilities_collection.find_one_and_update({"id": 1}, {"$set" : {"last_modified": translated_excel_last_modified}})
+
+
 class Main(Database, Utility):
     def main():
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
@@ -60,7 +72,7 @@ class Main(Database, Utility):
         Main.get_summary_data()
         Main.update_summary_data(mongoDBURI, database_name)
 
-        Main.update_utility_data(mongoDBURI, database_name)
+        Utility.update_data(mongoDBURI, database_name)
 
         Main.show_summary_data(mongoDBURI, database_name)
 
@@ -236,18 +248,6 @@ class Main(Database, Utility):
         attribute = ["name", "activity"]
         
         Main.update_data(sumarry_recaps_collection, "./api/backend/json/summary_recaps.json", attribute) # path
-
-
-    def update_utility_data(mongoDBURI, database_name):
-        excel_path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx"
-
-        excel_last_modified = os.path.getmtime(excel_path)
-        translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%Y-%m-%d %H:%M:%S")
-
-        collection_name = "utilities"
-        utilities_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
-
-        utilities_collection.find_one_and_update({"id": 1}, {"$set" : {"last_modified": translated_excel_last_modified}})
 
 
     def show_summary_data(mongoDBURI, database_name):
