@@ -4,10 +4,10 @@ namespace App\Http\Livewire\Dashboard;
 
 use Livewire\Component;
 
-class Activity extends Component
+class Division extends Component
 {
     public function render()
     {
-        return view('livewire.dashboard.activity');
+        return view('livewire.dashboard.division');
     }
 }

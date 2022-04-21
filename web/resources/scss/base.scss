@@ -1,153 +1,237 @@
 @import "~bulma/bulma.sass";
-
 @import "mixins";
 
-$dark-gunmetal-color: #1a202c;
-$old-silver-color: #858585;
+$manrope-font-family: "Manrope", sans-serif;
+$dm-sans-font-family: "DM Sans", sans-serif;
+$karla-font-family: "Karla", sans-serif;
 
-$manrope-font-family: 'Manrope',
-sans-serif;
-$dm-sans-font-family: 'DM Sans',
-sans-serif;
+$smokyblack-color: #0b0f10;
+$darkgunmetal-color: #1a202c;
+$chinesesilver-color: #c5c8c9;
+$philippinesilver-color: #b5b5be;
+$charleston-color: #292932;
+$white-color: #ffffff;
 
-html, body {
-    overflow-x: hidden; 
+* {
+    box-sizing: border-box;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: 'Manrope', sans-serif;
+body {
+    height: 100vh;
 }
 
-p {
-    font-family: 'DM Sans', sans-serif;
-}
-
-.register-container,
-.login-container {
-    margin-left: 44px;
-
+.dashboard {
     @include breakpoint(extra_small_devices) {
-        margin-left: 0;
+        visibility: hidden;
+        opacity: 0;
+        display: none;
     }
 
-    .logotype {
-        @include font-style(14px, normal, 0.8px, 500);
-        color: $old-silver-color;
-    }
+    .dashboard-menu {
+        width: 20.2rem;
+        height: 100%;
+        padding: 2.1rem 1.2rem;
+        background-color: $smokyblack-color;
+        font-family: $manrope-font-family;
+        transform: all 0.5 ease;
+        position: fixed;
+        top: 0;
+        box-shadow: -2px 14px 15px -3px rgba(0, 0, 0, 0.1);
 
-    .title {
-        @include font-style(32px, normal, normal, 800);
-        color: $dark-gunmetal-color;
-    }
+        .section-list {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid $philippinesilver-color;
+            list-style: none;
 
-    .register-form-container,
-    .login-form-container {
-        max-width: 500px;
-        margin-top: 24px;
+            .section-item {
+                display: flex;
+                align-items: center;
+                position: relative;
+                margin-bottom: 1.1rem;
 
-        .field {
-            label {
-                @include font-style(16px, normal, 0.6px, 600);
-                font-family: $manrope-font-family;
-                color: $dark-gunmetal-color;
+                a {
+                    display: flex;
+                    align-items: center;
+                    position: relative;
+                    margin-bottom: 1.1rem;
+                    color: $chinesesilver-color;
+                    cursor: pointer;
+                    transition: 0.5s ease;
+                    color: $chinesesilver-color;
+
+                    &:hover {
+                        color: $white-color;
+                        transition: 0.5 ease;
+                    }
+                }
+
+                &--icon {
+                    margin-left: 0.6rem;
+                    font-size: 2rem;
+                }
+
+                &--text {
+                    margin-left: 1.5rem;
+                    transition: opacity 0.6s ease;
+                    opacity: 1;
+                    font-weight: 500;
+                }
+
+                &::before {
+                    transition: 0.5 ease;
+                    content: "";
+                    position: absolute;
+                    left: -1.2rem;
+                    height: 100%;
+                    border-left: 3px solid $white-color;
+                    border-radius: 2px;
+                    opacity: 0;
+                    visibility: hidden;
+                }
+
+                &:hover {
+                    color: $white-color;
+                    transition: 0.5 ease;
+                }
+
+                &:hover::before {
+                    transition: 0.5s ease;
+                    content: "";
+                    position: absolute;
+                    left: -1.2rem;
+                    height: 100%;
+                    border-left: 3px solid $white-color;
+                    border-bottom: 2px;
+                    opacity: 0;
+                    visibility: hidden;
+                }
+
+                &:hover {
+                    color: $white-color;
+                    transition: 0.5 ease;
+                }
             }
+        }
 
-            .tag {
-                margin-top: 12px;
+        .division-list {
+            padding-top: 2.1rem;
+            padding-bottom: 2.1rem;
+            margin-bottom: 2.1rem;
+            color: $chinesesilver-color;
+            list-style: none;
+            font-size: 1.2rem;
+            font-weight: 500;
+            border-bottom: 1px solid $philippinesilver-color;
+
+            .division-item {
+                position: relative;
+                padding: 0.9rem 1.1rem;
+                line-height: 1.8rem;
+                cursor: pointer;
+                white-space: nowrap;
+
+                &--status {
+                    height: 0.8rem;
+                    width: 0.8rem;
+                    border-radius: 50%;
+                    border: none;
+                    background-color: white;
+                    display: inline-block;
+                }
+                &--text {
+                    margin-left: 1rem;
+                    transition: opacity 0.6s ease;
+                    opacity: 1;
+                    font-weight: 400;
+
+                    margin-top: 1rem;
+                    margin-bottom: 1rem;
+                }
+                a {
+                    color: $chinesesilver-color;
+
+                    &:hover {
+                        color: $white-color;
+                        transition: 0.5 ease;
+                    }
+                }
+            }
+        }
+        &.collapse {
+            width: 6.4rem;
+        }
+        &.collapse,
+        .section-item:hover .tooltip,
+        .division-item .tooltip {
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.5s ease;
+            opacity: 1;
+        }
+        &.collapse {
+            .dashboard-menu--logo-name,
+            .section-item--text,
+            .division-list--header,
+            .division-item--text,
+            .call-to-action.call-to-action--darkgunmetal {
+                opacity: 0;
+                pointer-events: none;
             }
         }
     }
-}
 
-.register {
-    .illustration-container {
-        .image {
-            img {
-                margin-top: 95px;
-                display: block;
+    .dashboard-content {
+        min-width: 200px;
+        margin: 0 130px 0 110px;
 
-                @include breakpoint(extra_small_devices) {
-                    display: none;
-                    visibility: hidden;
+        .division-container {
+            padding: 18px;
 
-                    max-height: 0;
-                    margin-top: 0;
+            .division-section {
+                margin-top: 24px;
+
+                .division-table {
+                    .division-table-nested {
+                        .division-table-nested-body {
+                            tr:nth-last-child(1),
+                            tr:nth-last-child(2),
+                            tr:nth-last-child(3),
+                            tr:nth-last-child(4) {
+                                display: none;
+                                visibility: hidden;
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-}
-
-.dashboard-content {
-    background: #f8fafb;
-
-    position: absolute;
-    height: 100%; 
-    width: 100%;
-
-    padding: 24px;
-
-    @include breakpoint(extra_small_devices) {
-        position: relative;
-        width: 100%;
-    }
-}
-
-.dashboard-menu {
-    background-color: #ffffff;
-    position: absolute;
-    height: 100%; 
-    width: 17%;
-    box-shadow: -7px -22px 91px -3px rgba(0,0,0,0.1);
-    @include breakpoint(extra_small_devices) {
-        position: relative;
-        width: 100%;
-    }
-
-    .menu-list {
-        li {
-            padding-left: 24px;
-        }
-        .menu-item {
-            margin-top: 4px;
-            margin-bottom: 4px;
-            font-family: $manrope-font-family;
-
-            &:hover {
-                background: transparent !important;
+table.fold-table {
+    > tbody {
+        > tr.view {
+            td,
+            th {
+                cursor: pointer;
             }
         }
-        .menu-item-dashboard {
-            margin-bottom: 8px
-        }
-        .menu-item-activity {
-            @include font-style(14px, normal, 0.5px, 600);
-            margin-top: 8px;
-            margin-bottom: 8px;
+
+        > tr.fold {
+            display: none;
+            visibility: none;
+            &.open {
+                display: table-row;
+                visibility: visible;
+            }
         }
     }
 }
 
-.menu-item-active {
-    font-weight: 700;
-
-    border-radius: 8px;
-    background: darken($color: #ffffff, $amount: 3);
-
-    &:hover {
-        background: darken($color: #ffffff, $amount: 3);
-    }
+table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 .call-to-action {
@@ -162,39 +246,20 @@ html, body {
 
     margin: 0.2rem;
 
-
-    &-dark-gunmetal {
+    &--darkgunmetal {
         position: relative;
         transition: 0.3s;
-        background: $dark-gunmetal-color;
+        background: $darkgunmetal-color;
         box-shadow: 0 0 0.625rem 0.125rem rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         padding: 14px 30px;
 
-        color: #ededee ;
+        color: #ededee;
         font-weight: 450;
 
         &:hover {
             background: lighten($color: #1a202c, $amount: 5);
             color: #ededee;
         }
-    }
-}
-
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.logotype {
-    .logotype-logo {
-        position: relative;
-    }
-    .logotype-text {
-        text-align: center;
-        @include font-style(16px, normal, normal, 900);
-        margin-bottom: 42px;
     }
 }
