@@ -7,15 +7,14 @@ use Illuminate\Support\Facades\Auth;
 
 class Logout extends Component
 {
+    public function render()
+    {
+        return view('livewire.auth.logout');
+    }
 
     public function logout()
     {
         Auth::logout();
         return redirect()->to('/login');
-    }
-
-    public function render()
-    {
-        return view('livewire.auth.logout');
     }
 }
