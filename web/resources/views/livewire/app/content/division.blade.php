@@ -15,9 +15,9 @@ foreach ($payload as $key => $value) {
     </header>
     <section class="division-section">
         <div class="division-table-container table-container">
-            <table class="division-table table is-bordered is-fulwidth fold-table">
+            <table class="division-table table is-fulwidth is-bordered fold-table">
                 <thead class="division-table-head">
-                    <tr>
+                    <tr class="first-row">
                         <th class="sub-kegiatan" colspan="1" rowspan="2">
                             Sub Kegiatan
                         </th>
@@ -25,7 +25,7 @@ foreach ($payload as $key => $value) {
                             Realisasi
                         </th>
                     </tr>
-                    <tr>
+                    <tr class="second-row">
                         <th>
                             Pisikal
                         </th>
@@ -68,8 +68,8 @@ foreach ($payload as $key => $value) {
                             <tr class="fold">
                                 <th>
                                     <div class="division-table-fold-container table-container">
-                                        <table class="sekretariat-table-nested table is-bordered is-fullwidth">
-                                            <thead class="sekretariat-table-nested-head">
+                                        <table class="division-table-nested table is-bordered is-fullwidth">
+                                            <thead class="division-table-nested-head">
                                                 <tr>
                                                     <th rowspan="2">
                                                         Rekening
@@ -116,33 +116,33 @@ foreach ($payload as $key => $value) {
                                                 {{-- Sekretariat Details --}}
                                                 @foreach ((array) $details as $details => $details_item)
                                                     <tr>
-                                                        <th>
+                                                        <td>
                                                             {{ $details_item['account'] }}
-                                                        </th>
-                                                        <th>
+                                                        </td>
+                                                        <td>
                                                             @currency($details_item['total_finance'])
-                                                        </th>
-                                                        <th>
+                                                        </td>
+                                                        <td>
                                                             &nbsp;
-                                                        </th>
+                                                        </td>
 
                                                         {{-- Sekretariat Monthly Finance --}}
                                                         <?php $monthly_finance = $details_item["monthly_finance"]; ?>
                                                         @foreach ((array) $monthly_finance as $monthly_finance => $monthly_finance_item)
-                                                            <th>
+                                                            <td>
                                                                 @currency($monthly_finance_item)
-                                                            </th>
+                                                            </td>
                                                         @endforeach
 
-                                                        <th>
+                                                        <td>
                                                             @currency($details_item['total_finance'])
-                                                        </th>
-                                                        <th>
+                                                        </td>
+                                                        <td>
                                                             &nbsp;
-                                                        </th>
-                                                        <th>
+                                                        </td>
+                                                        <td>
                                                             &nbsp;
-                                                        </th>
+                                                        </td>
                                                     </tr>
 
                                                     {{-- Sekretariat Target Expenses --}}

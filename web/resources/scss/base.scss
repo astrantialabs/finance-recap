@@ -16,6 +16,29 @@ $white-color: #ffffff;
     box-sizing: border-box;
 }
 
+html:focus-within {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    text-rendering: optimizeSpeed;
+    line-height: 1.5;
+}
+
+html,
+body {
+    background: #e7eef7;
+    font-family: "Poppins", sans-serif;
+}
+
+input,
+button,
+textarea,
+select {
+    font: inherit;
+}
+
 body {
     height: 100vh;
 }
@@ -32,7 +55,6 @@ body {
         height: 100%;
         padding: 2.1rem 1.2rem;
         background-color: $smokyblack-color;
-        font-family: $manrope-font-family;
         transform: all 0.5 ease;
         position: fixed;
         top: 0;
@@ -184,15 +206,67 @@ body {
         min-width: 200px;
         margin: 0 130px 0 110px;
 
-        .division-container {
+        .division-container,
+        .dashboard-container {
             padding: 18px;
 
+            .division-header,
+            .index-header {
+                .title {
+                    @include font-style(34px, normal, normal, 700);
+                    color: $smokyblack-color;
+                    margin-bottom: 24px;
+                }
+            }
             .division-section {
                 margin-top: 24px;
 
                 .division-table {
-                    .division-table-nested {
-                        .division-table-nested-body {
+                    background: #e7eef7;
+
+                    &-head {
+                        background: lighten($color: #f4f6fa, $amount: 5);
+                        padding-bottom: 44px !important;
+
+                        tr {
+                            th {
+                                @include font-style(16px, normal, normal, 600);
+                            }
+                        }
+
+                        .first-row {
+                            th {
+                                text-align: center;
+                                vertical-align: middle;
+                            }
+                        }
+                    }
+                    &-body {
+                        background: #f4f6fa;
+
+                        .view {
+                            td {
+                                @include font-style(15px, normal, normal, 400);
+                            }
+                        }
+                    }
+                    &-nested,
+                    .fold {
+                        background: #f4f6fa;
+
+                        &-head {
+                            background: lighten($color: #f4f6fa, $amount: 5);
+                        }
+
+                        &-body {
+                            tr {
+                                th {
+                                    @include font-style(14px, normal, normal, 600);
+                                }
+                                td {
+                                    @include font-style(14px, normal, normal, 400);
+                                }
+                            }
                             tr:nth-last-child(1),
                             tr:nth-last-child(2),
                             tr:nth-last-child(3),
@@ -234,6 +308,12 @@ table {
     white-space: nowrap;
 }
 
+.index-header {
+    .subtitle {
+        margin-top: 42px;
+    }
+}
+
 .call-to-action {
     display: inline-block;
     background: inherit;
@@ -261,5 +341,20 @@ table {
             background: lighten($color: #1a202c, $amount: 5);
             color: #ededee;
         }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html:focus-within {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }

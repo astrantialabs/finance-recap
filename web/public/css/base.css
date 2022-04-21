@@ -10332,110 +10332,309 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   padding: 3rem 1.5rem 6rem;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Manrope", sans-serif;
+* {
+  box-sizing: border-box;
 }
 
-p {
-  font-family: "DM Sans", sans-serif;
+html:focus-within {
+  scroll-behavior: smooth;
 }
 
-.register-container,
-.login-container {
-  margin-left: 44px;
+body {
+  min-height: 100vh;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
 }
+
+html,
+body {
+  background: #e7eef7;
+  font-family: "Poppins", sans-serif;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+body {
+  height: 100vh;
+}
+
 @media only screen and (max-width: 600px) {
-  .register-container,
-.login-container {
-    margin-left: 0;
+  .dashboard {
+    visibility: hidden;
+    opacity: 0;
+    display: none;
   }
 }
-.register-container .logotype,
-.login-container .logotype {
+.dashboard .dashboard-menu {
+  width: 20.2rem;
+  height: 100%;
+  padding: 2.1rem 1.2rem;
+  background-color: #0b0f10;
+  transform: all 0.5 ease;
+  position: fixed;
+  top: 0;
+  box-shadow: -2px 14px 15px -3px rgba(0, 0, 0, 0.1);
+}
+.dashboard .dashboard-menu .section-list {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #b5b5be;
+  list-style: none;
+}
+.dashboard .dashboard-menu .section-list .section-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 1.1rem;
+}
+.dashboard .dashboard-menu .section-list .section-item a {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 1.1rem;
+  color: #c5c8c9;
+  cursor: pointer;
+  transition: 0.5s ease;
+  color: #c5c8c9;
+}
+.dashboard .dashboard-menu .section-list .section-item a:hover {
+  color: #ffffff;
+  transition: 0.5 ease;
+}
+.dashboard .dashboard-menu .section-list .section-item--icon {
+  margin-left: 0.6rem;
+  font-size: 2rem;
+}
+.dashboard .dashboard-menu .section-list .section-item--text {
+  margin-left: 1.5rem;
+  transition: opacity 0.6s ease;
+  opacity: 1;
+  font-weight: 500;
+}
+.dashboard .dashboard-menu .section-list .section-item::before {
+  transition: 0.5 ease;
+  content: "";
+  position: absolute;
+  left: -1.2rem;
+  height: 100%;
+  border-left: 3px solid #ffffff;
+  border-radius: 2px;
+  opacity: 0;
+  visibility: hidden;
+}
+.dashboard .dashboard-menu .section-list .section-item:hover {
+  color: #ffffff;
+  transition: 0.5 ease;
+}
+.dashboard .dashboard-menu .section-list .section-item:hover::before {
+  transition: 0.5s ease;
+  content: "";
+  position: absolute;
+  left: -1.2rem;
+  height: 100%;
+  border-left: 3px solid #ffffff;
+  border-bottom: 2px;
+  opacity: 0;
+  visibility: hidden;
+}
+.dashboard .dashboard-menu .section-list .section-item:hover {
+  color: #ffffff;
+  transition: 0.5 ease;
+}
+.dashboard .dashboard-menu .division-list {
+  padding-top: 2.1rem;
+  padding-bottom: 2.1rem;
+  margin-bottom: 2.1rem;
+  color: #c5c8c9;
+  list-style: none;
+  font-size: 1.2rem;
+  font-weight: 500;
+  border-bottom: 1px solid #b5b5be;
+}
+.dashboard .dashboard-menu .division-list .division-item {
+  position: relative;
+  padding: 0.9rem 1.1rem;
+  line-height: 1.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dashboard .dashboard-menu .division-list .division-item--status {
+  height: 0.8rem;
+  width: 0.8rem;
+  border-radius: 50%;
+  border: none;
+  background-color: white;
+  display: inline-block;
+}
+.dashboard .dashboard-menu .division-list .division-item--text {
+  margin-left: 1rem;
+  transition: opacity 0.6s ease;
+  opacity: 1;
+  font-weight: 400;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.dashboard .dashboard-menu .division-list .division-item a {
+  color: #c5c8c9;
+}
+.dashboard .dashboard-menu .division-list .division-item a:hover {
+  color: #ffffff;
+  transition: 0.5 ease;
+}
+.dashboard .dashboard-menu.collapse {
+  width: 6.4rem;
+}
+.dashboard .dashboard-menu.collapse,
+.dashboard .dashboard-menu .section-item:hover .tooltip,
+.dashboard .dashboard-menu .division-item .tooltip {
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.5s ease;
+  opacity: 1;
+}
+.dashboard .dashboard-menu.collapse .dashboard-menu--logo-name,
+.dashboard .dashboard-menu.collapse .section-item--text,
+.dashboard .dashboard-menu.collapse .division-list--header,
+.dashboard .dashboard-menu.collapse .division-item--text,
+.dashboard .dashboard-menu.collapse .call-to-action.call-to-action--darkgunmetal {
+  opacity: 0;
+  pointer-events: none;
+}
+.dashboard .dashboard-content {
+  min-width: 200px;
+  margin: 0 130px 0 110px;
+}
+.dashboard .dashboard-content .division-container,
+.dashboard .dashboard-content .dashboard-container {
+  padding: 18px;
+}
+.dashboard .dashboard-content .division-container .division-header .title,
+.dashboard .dashboard-content .division-container .index-header .title,
+.dashboard .dashboard-content .dashboard-container .division-header .title,
+.dashboard .dashboard-content .dashboard-container .index-header .title {
+  font-size: 34px;
+  font-size: 2.125rem;
+  line-height: normal;
+  letter-spacing: normal;
+  font-weight: 700;
+  color: #0b0f10;
+  margin-bottom: 24px;
+}
+.dashboard .dashboard-content .division-container .division-section,
+.dashboard .dashboard-content .dashboard-container .division-section {
+  margin-top: 24px;
+}
+.dashboard .dashboard-content .division-container .division-section .division-table,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table {
+  background: #e7eef7;
+}
+.dashboard .dashboard-content .division-container .division-section .division-table-head,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-head {
+  background: white;
+  padding-bottom: 44px !important;
+}
+.dashboard .dashboard-content .division-container .division-section .division-table-head tr th,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-head tr th {
+  font-size: 16px;
+  font-size: 1rem;
+  line-height: normal;
+  letter-spacing: normal;
+  font-weight: 600;
+}
+.dashboard .dashboard-content .division-container .division-section .division-table-head .first-row th,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-head .first-row th {
+  text-align: center;
+  vertical-align: middle;
+}
+.dashboard .dashboard-content .division-container .division-section .division-table-body,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-body {
+  background: #f4f6fa;
+}
+.dashboard .dashboard-content .division-container .division-section .division-table-body .view td,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-body .view td {
+  font-size: 15px;
+  font-size: 0.9375rem;
+  line-height: normal;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+.dashboard .dashboard-content .division-container .division-section .division-table-nested,
+.dashboard .dashboard-content .division-container .division-section .division-table .fold,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-nested,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table .fold {
+  background: #f4f6fa;
+}
+.dashboard .dashboard-content .division-container .division-section .division-table-nested-head,
+.dashboard .dashboard-content .division-container .division-section .division-table .fold-head,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-nested-head,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table .fold-head {
+  background: white;
+}
+.dashboard .dashboard-content .division-container .division-section .division-table-nested-body tr th,
+.dashboard .dashboard-content .division-container .division-section .division-table .fold-body tr th,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-nested-body tr th,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table .fold-body tr th {
   font-size: 14px;
   font-size: 0.875rem;
   line-height: normal;
-  letter-spacing: 0.05rem;
-  margin-right: -0.05rem;
-  font-weight: 500;
-  color: #858585;
+  letter-spacing: normal;
+  font-weight: 600;
 }
-.register-container .title,
-.login-container .title {
-  font-size: 32px;
-  font-size: 2rem;
+.dashboard .dashboard-content .division-container .division-section .division-table-nested-body tr td,
+.dashboard .dashboard-content .division-container .division-section .division-table .fold-body tr td,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-nested-body tr td,
+.dashboard .dashboard-content .dashboard-container .division-section .division-table .fold-body tr td {
+  font-size: 14px;
+  font-size: 0.875rem;
   line-height: normal;
   letter-spacing: normal;
-  font-weight: 800;
-  color: #1a202c;
+  font-weight: 400;
 }
-.register-container .register-form-container,
-.register-container .login-form-container,
-.login-container .register-form-container,
-.login-container .login-form-container {
-  max-width: 500px;
-  margin-top: 24px;
-}
-.register-container .register-form-container .field label,
-.register-container .login-form-container .field label,
-.login-container .register-form-container .field label,
-.login-container .login-form-container .field label {
-  font-size: 16px;
-  font-size: 1rem;
-  line-height: normal;
-  letter-spacing: 0.0375rem;
-  margin-right: -0.0375rem;
-  font-weight: 600;
-  font-family: "Manrope", sans-serif;
-  color: #1a202c;
-}
-.register-container .register-form-container .field .tag,
-.register-container .login-form-container .field .tag,
-.login-container .register-form-container .field .tag,
-.login-container .login-form-container .field .tag {
-  margin-top: 12px;
+.dashboard .dashboard-content .division-container .division-section .division-table-nested-body tr:nth-last-child(1),
+.dashboard .dashboard-content .division-container .division-section .division-table-nested-body tr:nth-last-child(2),
+.dashboard .dashboard-content .division-container .division-section .division-table-nested-body tr:nth-last-child(3),
+.dashboard .dashboard-content .division-container .division-section .division-table-nested-body tr:nth-last-child(4),
+.dashboard .dashboard-content .division-container .division-section .division-table .fold-body tr:nth-last-child(1),
+.dashboard .dashboard-content .division-container .division-section .division-table .fold-body tr:nth-last-child(2),
+.dashboard .dashboard-content .division-container .division-section .division-table .fold-body tr:nth-last-child(3),
+.dashboard .dashboard-content .division-container .division-section .division-table .fold-body tr:nth-last-child(4),
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-nested-body tr:nth-last-child(1),
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-nested-body tr:nth-last-child(2),
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-nested-body tr:nth-last-child(3),
+.dashboard .dashboard-content .dashboard-container .division-section .division-table-nested-body tr:nth-last-child(4),
+.dashboard .dashboard-content .dashboard-container .division-section .division-table .fold-body tr:nth-last-child(1),
+.dashboard .dashboard-content .dashboard-container .division-section .division-table .fold-body tr:nth-last-child(2),
+.dashboard .dashboard-content .dashboard-container .division-section .division-table .fold-body tr:nth-last-child(3),
+.dashboard .dashboard-content .dashboard-container .division-section .division-table .fold-body tr:nth-last-child(4) {
+  display: none;
+  visibility: hidden;
 }
 
-.register .illustration-container .image img {
-  margin-top: 95px;
+table.fold-table > tbody > tr.view td,
+table.fold-table > tbody > tr.view th {
+  cursor: pointer;
+}
+table.fold-table > tbody > tr.fold {
+  display: none;
+  visibility: none;
+}
+table.fold-table > tbody > tr.fold.open {
+  display: table-row;
+  visibility: visible;
+}
+
+table {
   display: block;
-}
-@media only screen and (max-width: 600px) {
-  .register .illustration-container .image img {
-    display: none;
-    visibility: hidden;
-    max-height: 0;
-    margin-top: 0;
-  }
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
-.dashboard-menu {
-  padding: 18px;
-}
-.dashboard-menu .menu-label {
-  font-size: 12px;
-  font-size: 0.75rem;
-  line-height: normal;
-  letter-spacing: 0.03125rem;
-  margin-right: -0.03125rem;
-  font-weight: 600;
-  color: #1a202c;
-  font-family: "Manrope", sans-serif;
-}
-.dashboard-menu .menu-list li .menu-list-item {
-  font-size: 16px;
-  font-size: 1rem;
-  line-height: normal;
-  letter-spacing: normal;
-  font-weight: 500;
-  color: #858585;
-  padding-top: 12px;
-  padding-bottom: 12px;
+.index-header .subtitle {
+  margin-top: 42px;
 }
 
 .call-to-action {
@@ -10449,7 +10648,7 @@ p {
   cursor: pointer;
   margin: 0.2rem;
 }
-.call-to-action-dark-gunmetal {
+.call-to-action--darkgunmetal {
   position: relative;
   transition: 0.3s;
   background: #1a202c;
@@ -10459,14 +10658,24 @@ p {
   color: #ededee;
   font-weight: 450;
 }
-.call-to-action-dark-gunmetal:hover {
+.call-to-action--darkgunmetal:hover {
   background: #232c3c;
   color: #ededee;
 }
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+*::before,
+*::after {
+    -webkit-animation-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+    -webkit-animation-iteration-count: 1 !important;
+            animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
