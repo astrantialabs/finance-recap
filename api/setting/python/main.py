@@ -1,20 +1,34 @@
 import PySimpleGUI as sg
-import json
 
 from operator import itemgetter
+from pymongo import MongoClient
+from dotenv import dotenv_values
 
-class Utility():
-    def write_json(data, path):
-        json_object = json.dumps(data, indent = 4)
-
-        with open(path, "w") as outfile:
-            outfile.write(json_object)
+class Database():
+    def get_cluster(mongoDBURI):
+        cluster = MongoClient(mongoDBURI)
+        return cluster
 
 
-class Main(Utility):
+    def get_database(mongoDBURI, database_name):
+        db = Database.get_cluster(mongoDBURI)[database_name]
+        return db
+
+    
+    def get_collection(mongoDBURI, database_name, collection_name):
+        collection = Database.get_database(mongoDBURI, database_name)[collection_name]
+        return collection
+
+
+class Main(Database):
     def main():
-        path = "./api/setting/json/setting.json" #path
-        data = json.load(open(path))
+        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
+        database_name = "DisnakerFinanceRecap"
+        collection_name = "settings"
+
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+
+        data = list(collection.find({}))
 
         data_count = 0
         detail_count = 0
@@ -147,7 +161,7 @@ class Main(Utility):
                                 data[data_count].get("detail")[detail_count][attribute] = list_of_detail[i+1]
 
 
-                        Main.write_json(data, path)
+                        Main.update_db(data, collection)
 
                         Main.update_listbox(window, data, data_count)
 
@@ -186,7 +200,7 @@ class Main(Utility):
                 data.append(new_division_dictionary)
                 data = sorted(data, key=itemgetter('id'))
                 
-                Main.write_json(data, path)
+                Main.update_db(data, collection)
 
                 Main.update_listbox(window, data, data_count)
                 Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
@@ -196,10 +210,11 @@ class Main(Utility):
                 data_count = len(data) - 1
                 detail_count = 0
 
-                Main.write_json(data, path)
+                Main.delete_db(data_count, collection)
+                Main.update_db(data, collection)
 
                 Main.update_listbox(window, data, data_count)
-                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)              
 
             elif(event == "add_detail_button"):
                 new_id = len(data[data_count].get("detail")) + 1
@@ -221,7 +236,7 @@ class Main(Utility):
                 data[data_count].get("detail").append(new_detail_dictionary)
                 data[data_count]["detail"] = sorted(data[data_count].get("detail"), key=itemgetter('id'))
                 
-                Main.write_json(data, path)
+                Main.update_db(data, collection)
 
                 Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
 
@@ -229,7 +244,7 @@ class Main(Utility):
                 del data[data_count].get("detail")[detail_count]
                 detail_count = len(data[data_count].get("detail")) - 1
 
-                Main.write_json(data, path)
+                Main.update_db(data, collection)
 
                 Main.update_listbox(window, data, data_count)
                 Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
@@ -286,6 +301,17 @@ class Main(Utility):
             for attribute in current_data_detail_attribute:
                 window[f"detail_{attribute}"].update("null")
 
+
+    def update_db(data, collection):  
+        for i in range(len(data)):
+            update_id = data[i].get("id")
+            update_dictionary = data[i]
+
+            collection.find_one_and_update({"id": update_id}, {"$set" : update_dictionary }, upsert=True)
+
+
+    def delete_db(data_count, collection):
+        collection.delete_one({"id": data_count+2})
 
 if(__name__ == "__main__"):
     Main.main()

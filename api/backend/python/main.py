@@ -69,12 +69,12 @@ class Main(Database, Utility):
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
         database_name = "DisnakerFinanceRecap"
         
-        Main.get_summary_data()
+        Main.get_summary_data(mongoDBURI, database_name)
         Main.update_summary_data(mongoDBURI, database_name)
 
         Utility.update_data(mongoDBURI, database_name)
 
-        Main.show_summary_data(mongoDBURI, database_name)
+        # Main.show_summary_data(mongoDBURI, database_name)
 
 
     def get_data(path, active_sheet, start_range, end_range):
@@ -198,29 +198,32 @@ class Main(Database, Utility):
         return detail_array
 
 
-    def get_summary_data():
+    def get_summary_data(mongoDBURI, database_name):
         path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx" # path
         percentage_cell = [1, 2]
         attribute = ["activity", "physical", "finance", "detail"]
-        summary_parameter = json.load(open("./api/backend/json/setting.json"))
+
+        collection_name = "settings"
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+        summary_parameter = collection.find()
         # summary_parameter = json.load(open("./api/backend/json/dummy_setting.json"))
 
         combined_array = []
-        for i in range(len(summary_parameter)):
-            value = Main.get_data(path, 1, summary_parameter[i].get("start_range"), summary_parameter[i].get("end_range"))
+        for i, setting in enumerate(summary_parameter):
+            value = Main.get_data(path, 1, setting.get("start_range"), setting.get("end_range"))
 
             activity = []
             for j in range(len(value)):
-                if(type(summary_parameter[i].get("detail")[j]) == dict):
-                    print("Processing :", summary_parameter[i].get("detail")[j].get("active_sheet"), summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
+                if(type(setting.get("detail")[j]) == dict):
+                    print("Processing :", setting.get("detail")[j].get("active_sheet"), setting.get("detail")[j].get("start_range"), setting.get("detail")[j].get("end_range"), setting.get("detail")[j].get("attribute"))
                     
-                    wb_detail_data = Excel(path, summary_parameter[i].get("detail")[j].get("active_sheet")) 
-                    detail = Main.get_detail_data(wb_detail_data, summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
+                    wb_detail_data = Excel(path, setting.get("detail")[j].get("active_sheet")) 
+                    detail = Main.get_detail_data(wb_detail_data, setting.get("detail")[j].get("start_range"), setting.get("detail")[j].get("end_range"), setting.get("detail")[j].get("attribute"))
                     
-                    print("Completed  :", summary_parameter[i].get("detail")[j].get("active_sheet"), summary_parameter[i].get("detail")[j].get("start_range"), summary_parameter[i].get("detail")[j].get("end_range"), summary_parameter[i].get("detail")[j].get("attribute"))
+                    print("Completed  :", setting.get("detail")[j].get("active_sheet"), setting.get("detail")[j].get("start_range"), setting.get("detail")[j].get("end_range"), setting.get("detail")[j].get("attribute"))
                     print()
 
-                elif(type(summary_parameter[i].get("detail")[j]) != dict):
+                elif(type(setting.get("detail")[j]) != dict):
                     detail = None
 
                 value[j].append(detail)
@@ -231,7 +234,7 @@ class Main(Database, Utility):
 
             temp_dictionary = {
                 "id": i + 1,
-                "name": summary_parameter[i].get("name"),
+                "name": setting.get("name"),
                 "activity": activity
             }
 
