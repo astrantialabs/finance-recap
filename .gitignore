@@ -1,6 +1,9 @@
 web/node_modules
 web/public/hot
 web/public/storage
+web/public/css
+web/public/js
+web/public/vendor/telescope
 web/storage/*.key
 web/vendor
 web/.env
