@@ -2,14 +2,20 @@
 
 ### ❖ Informasi
 
-**Department of Labor and Social Financial Data Recapitulasion System** *(Disnaker Finance Recap)* adalah sebuah aplikasi berbasis website yang dikembangkan oleh [@yehezkieldio](https://github.com/yehezkieldio) dan [@NotHydra](https://github.com/NotHydra).
+**Sistem Rekapitulasi Data Keuangan Dinas Tenaga Kerja dan Transmigrasi** atau disingkat **Disnaker Finance Recap** adalah sebuah aplikasi berbasis website yang bertujuan untuk melakukan ekstraksi data-data pada sebuah excel spreadsheet untuk di manipulasi dan ditampilkan ke website.
 
 Technology stack:
 
-- **Web Framework:** [Laravel](https://laravel.com/) [Livewire](https://laravel-livewire.com)
-- **Database:** [MongoDB Atlas](https://www.mongodb.com/atlas/database) • [SQLite](https://sqlite.org/)
+- **Web Framework:** [Laravel](https://laravel.com/) [Livewire](https://laravel-livewire.com) • [Django](https://www.djangoproject.com/)
+- **Database:** [SQLite](https://sqlite.org/) • [MongoDB Atlas](https://www.mongodb.com/atlas/database)
 - **Programming Language:** [PHP](https://www.php.net/) • [Python](https://www.python.org/)
 
 Application structure:
 
-- *TBA.*
+Sistem arsitektur menggunakan dua microservice independen yang disebut dengan **API service** dan **WEB service**.
+
+- **WEB service** 
+  - Menggunakan konsep metode MVC (Model-View-Controller) dengan [Laravel](https://laravel.com/) sebegai web framework.
+  - Menerapkan sistem user authentication dan authorization dan menggunakan [SQLite](https://sqlite.org/) sebagai database user.
+
+- **API service**

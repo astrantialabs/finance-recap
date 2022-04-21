@@ -52,15 +52,29 @@ class Utility():
         return temp_data_dictionary
 
 
+    def update_data(mongoDBURI, database_name):
+        excel_path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx"
+
+        excel_last_modified = os.path.getmtime(excel_path)
+        translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%Y-%m-%d %H:%M:%S")
+
+        collection_name = "utilities"
+        utilities_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+
+        utilities_collection.find_one_and_update({"id": 1}, {"$set" : {"last_modified": translated_excel_last_modified}})
+
+
 class Main(Database, Utility):
     def main():
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
         database_name = "DisnakerFinanceRecap"
         
-        Main.get_summary_data()
+        Main.get_summary_data(mongoDBURI, database_name)
         Main.update_summary_data(mongoDBURI, database_name)
 
-        Main.update_utility_data(mongoDBURI, database_name)
+        Utility.update_data(mongoDBURI, database_name)
+
+        Main.show_summary_data(mongoDBURI, database_name)
 
 
     def get_data(path, active_sheet, start_range, end_range):
@@ -184,11 +198,14 @@ class Main(Database, Utility):
         return detail_array
 
 
-    def get_summary_data():
+    def get_summary_data(mongoDBURI, database_name):
         path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx" # path
         percentage_cell = [1, 2]
         attribute = ["activity", "physical", "finance", "detail"]
-        summary_parameter = json.load(open("./api/backend/json/setting.json"))
+
+        collection_name = "settings"
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+        summary_parameter = list(collection.find({}))
         # summary_parameter = json.load(open("./api/backend/json/dummy_setting.json"))
 
         combined_array = []
@@ -236,16 +253,15 @@ class Main(Database, Utility):
         Main.update_data(sumarry_recaps_collection, "./api/backend/json/summary_recaps.json", attribute) # path
 
 
-    def update_utility_data(mongoDBURI, database_name):
-        excel_path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx"
+    def show_summary_data(mongoDBURI, database_name):
+        collection_name = "summary_recaps"
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
-        excel_last_modified = os.path.getmtime(excel_path)
-        translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%Y-%m-%d %H:%M:%S")
-
-        collection_name = "utilities"
-        utilities_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
-
-        utilities_collection.find_one_and_update({"id": 1}, {"$set" : {"last_modified": translated_excel_last_modified}})
+        all_data = collection.find()
+        single_data = collection.find({ "name": "Sekretariat" })
+        
+        print(all_data)
+        print(single_data)
 
 
 if(__name__ == "__main__"):

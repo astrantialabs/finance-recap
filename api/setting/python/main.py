@@ -1,10 +1,34 @@
 import PySimpleGUI as sg
-import json
 
-class Main():
+from operator import itemgetter
+from pymongo import MongoClient
+from dotenv import dotenv_values
+
+class Database():
+    def get_cluster(mongoDBURI):
+        cluster = MongoClient(mongoDBURI)
+        return cluster
+
+
+    def get_database(mongoDBURI, database_name):
+        db = Database.get_cluster(mongoDBURI)[database_name]
+        return db
+
+    
+    def get_collection(mongoDBURI, database_name, collection_name):
+        collection = Database.get_database(mongoDBURI, database_name)[collection_name]
+        return collection
+
+
+class Main(Database):
     def main():
-        path = "./api/setting/json/setting.json" #path
-        data = json.load(open(path))
+        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
+        database_name = "DisnakerFinanceRecap"
+        collection_name = "settings"
+
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+
+        data = list(collection.find({}))
 
         data_count = 0
         detail_count = 0
@@ -20,7 +44,7 @@ class Main():
         ]
 
         layout = [
-            [sg.Listbox(list_data, default_values=data[data_count].get("name"), key="listbox", enable_events=True, size=(100, 4), no_scrollbar=True, select_mode="single")],
+            [sg.Listbox(list_data, default_values=data[data_count].get("name"), key="listbox", enable_events=True, size=(100, 4), select_mode="single")],
             
             [sg.Text("Division")],
             [sg.InputText(default_text=current_data.get("id"), size=(100, 1), key="data_id", enable_events=True, readonly=True)],
@@ -31,13 +55,21 @@ class Main():
             [[sg.InputText(default_text=current_data_detail.get(attribute), size=(100, 1), key=f"detail_{attribute}", enable_events=True)] for attribute in current_data_detail_attribute],
             
             [
-                sg.Button("Previous", key="previous_button", enable_events=True, disabled = True),
-                sg.Button("Next", key="next_button", enable_events=True),
-                sg.Button("Save", key="save_button", enable_events=True)
+                sg.Button("Previous", key="previous_button", enable_events=True, disabled = True, size=(button_width, button_height)),
+                sg.Button("Next", key="next_button", enable_events=True, size=(button_width, button_height)),
+                sg.Button("Save", key="save_button", enable_events=True, size=(button_width, button_height))
+            ],
+            [
+                sg.Button("Add Division", key="add_division_button", enable_events=True, size=(button_width, button_height)),
+                sg.Button("Delete Division", key="delete_division_button", enable_events=True, size=(button_width, button_height))
+            ],
+            [
+                sg.Button("Add Detail", key="add_detail_button", enable_events=True, size=(button_width, button_height)),
+                sg.Button("Delete Detail", key="delete_detail_button", enable_events=True, size=(button_width, button_height))
             ]
         ]
 
-        window = sg.Window("Excel Attribute Editor", layout, size=(500, 500))
+        window = sg.Window("Excel Attribute Editor", layout, size=(435, 475))
 
         while True:
             event, values = window.read()
@@ -53,25 +85,7 @@ class Main():
                         detail_count = 0
 
 
-                window["data_id"].update(data[data_count].get("id"))
-
-                for attribute in current_data_attribute:
-                        window[f"data_{attribute}"].update(data[data_count].get(attribute))
-
-
-                if(type(data[data_count].get("detail")[detail_count]) == dict):
-                    window["detail_id"].update(data[data_count].get("detail")[detail_count].get("id"))
-
-                    for attribute in current_data_detail_attribute:
-                        window[f"detail_{attribute}"].update(data[data_count].get("detail")[detail_count].get(attribute))
-
-
-                elif(type(data[data_count].get("detail")[detail_count]) != dict):
-                    window["detail_id"].update(detail_count + 1)
-
-                    for attribute in current_data_detail_attribute:
-                        window[f"detail_{attribute}"].update("null")
-
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
 
             elif(event == "previous_button" or event == "next_button"):
                 if(event == "previous_button" and detail_count != 0):
@@ -80,19 +94,7 @@ class Main():
                 elif(event == "next_button" and detail_count != len(data[data_count].get("detail"))-1):
                     detail_count += 1 
 
-                if(type(data[data_count].get("detail")[detail_count]) == dict):
-                    window["detail_id"].update(data[data_count].get("detail")[detail_count].get("id"))
-
-                    for attribute in current_data_detail_attribute:
-                        window[f"detail_{attribute}"].update(data[data_count].get("detail")[detail_count].get(attribute))
-
-
-                elif(type(data[data_count].get("detail")[detail_count]) != dict):
-                    window["detail_id"].update(detail_count + 1)
-
-                    for attribute in current_data_detail_attribute:
-                        window[f"detail_{attribute}"].update("null")
-            
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
 
             elif(event == "save_button"):
                 confirmation_layout = [
@@ -139,35 +141,110 @@ class Main():
                             list_of_detail[1] = int(list_of_detail[1])
                             list_of_detail[2] = str(list_of_detail[2])
                             list_of_detail[3] = str(list_of_detail[3])
-                            list_of_detail[4] = (list_of_detail[4]).split(" ")
+                            list_of_detail[4] = (list_of_detail[4].replace("(", "").replace(")", "").replace(",", "")).split(" ")
 
                             for i in range(len(list_of_detail[4])):
-                                list_of_detail[4][i] = int(list_of_detail[4][i])
+                                if(list_of_detail[4][i].isdecimal()):
+                                    list_of_detail[4][i] = int(list_of_detail[4][i])
 
 
                             data[data_count]["id"] = list_of_data[0]
-                            data[data_count]["name"] = list_of_data[1]
-                            data[data_count]["start_range"] = list_of_data[2]
-                            data[data_count]["end_range"] = list_of_data[3]
+                            for i, attribute in enumerate(current_data_attribute):
+                                data[data_count][attribute] = list_of_data[i+1]
+
 
                             data[data_count].get("detail")[detail_count]["id"] = list_of_detail[0]
-                            data[data_count].get("detail")[detail_count]["active_sheet"] = list_of_detail[1]
-                            data[data_count].get("detail")[detail_count]["start_range"] = list_of_detail[2]
-                            data[data_count].get("detail")[detail_count]["end_range"] = list_of_detail[3]
-                            data[data_count].get("detail")[detail_count]["attribute"] = list_of_detail[4]
-
-                        json_object = json.dumps(data, indent = 4)
-
-                        with open(path, "w") as outfile:
-                            outfile.write(json_object)
+                            for i, attribute in enumerate(current_data_detail_attribute):
+                                data[data_count].get("detail")[detail_count][attribute] = list_of_detail[i+1]
 
 
-                        window["listbox"].update([division.get("name") for division in data])
+                        Main.update_db(data, collection)
+
+                        Main.update_listbox(window, data, data_count)
 
                         break
 
 
                 confirmation_window.close()
+
+            elif(event == "add_division_button"):
+                new_id = len(data) + 1
+                for i in range(len(data)):
+                    if(data[i].get("id") != i+1):
+                        new_id = i+1
+                        break
+
+
+                new_division_dictionary = {
+                    "id": new_id,
+                    "name": "null",
+                    "start_range": "null",
+                    "end_range": "null",
+                    "detail": [
+                        {
+                            "id": 1,
+                            "active_sheet": "null",
+                            "start_range": "null",
+                            "end_range": "null",
+                            "attribute": "null"
+                        }
+                    ]
+                }
+
+                data_count = new_id - 1
+                detail_count = 0
+
+                data.append(new_division_dictionary)
+                data = sorted(data, key=itemgetter('id'))
+                
+                Main.update_db(data, collection)
+
+                Main.update_listbox(window, data, data_count)
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
+
+            elif(event == "delete_division_button"):
+                del data[data_count]
+                data_count = len(data) - 1
+                detail_count = 0
+
+                Main.delete_db(data_count, collection)
+                Main.update_db(data, collection)
+
+                Main.update_listbox(window, data, data_count)
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)              
+
+            elif(event == "add_detail_button"):
+                new_id = len(data[data_count].get("detail")) + 1
+                for i in range(len(data[data_count].get("detail"))):
+                    if(data[data_count].get("detail")[i].get("id") != i+1):
+                        new_id = i+1
+                        break
+
+                new_detail_dictionary = {
+                    "id": new_id,
+                    "active_sheet": "null",
+                    "start_range": "null",
+                    "end_range": "null",
+                    "attribute": "null"
+                }
+
+                detail_count = new_id - 1
+
+                data[data_count].get("detail").append(new_detail_dictionary)
+                data[data_count]["detail"] = sorted(data[data_count].get("detail"), key=itemgetter('id'))
+                
+                Main.update_db(data, collection)
+
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
+
+            elif(event == "delete_detail_button"):
+                del data[data_count].get("detail")[detail_count]
+                detail_count = len(data[data_count].get("detail")) - 1
+
+                Main.update_db(data, collection)
+
+                Main.update_listbox(window, data, data_count)
+                Main.update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count)
 
             if(detail_count == 0):
                 window["previous_button"].update(disabled = True)
@@ -181,9 +258,57 @@ class Main():
             if(detail_count != len(data[data_count].get("detail"))-1):
                     window["next_button"].update(disabled = False)
 
+            if(len(data) == 1):
+                window["delete_division_button"].update(disabled = True)
 
+            if(len(data) != 1):
+                window["delete_division_button"].update(disabled = False)
+            
+            if(len(data[data_count].get("detail")) == 1):
+                window["delete_detail_button"].update(disabled = True)
+
+            if(len(data[data_count].get("detail")) != 1):
+                window["delete_detail_button"].update(disabled = False)
+            
         window.close()
+    
 
+    def update_listbox(window, data, data_count):
+        window["listbox"].update([division.get("name") for division in data])
+        window["listbox"].update(set_to_index=[data_count], scroll_to_index=data_count)
+
+
+    def update_data(window, data, current_data_attribute, current_data_detail_attribute, data_count, detail_count):
+        window["data_id"].update(data[data_count].get("id"))
+
+        for attribute in current_data_attribute:
+            window[f"data_{attribute}"].update(data[data_count].get(attribute))
+
+
+        if(type(data[data_count].get("detail")[detail_count]) == dict):
+            window["detail_id"].update(data[data_count].get("detail")[detail_count].get("id"))
+
+            for attribute in current_data_detail_attribute:
+                window[f"detail_{attribute}"].update(data[data_count].get("detail")[detail_count].get(attribute))
+
+
+        elif(type(data[data_count].get("detail")[detail_count]) != dict):
+            window["detail_id"].update(detail_count + 1)
+
+            for attribute in current_data_detail_attribute:
+                window[f"detail_{attribute}"].update("null")
+
+
+    def update_db(data, collection):  
+        for i in range(len(data)):
+            update_id = data[i].get("id")
+            update_dictionary = data[i]
+
+            collection.find_one_and_update({"id": update_id}, {"$set" : update_dictionary }, upsert=True)
+
+
+    def delete_db(data_count, collection):
+        collection.delete_one({"id": data_count+2})
 
 if(__name__ == "__main__"):
     Main.main()

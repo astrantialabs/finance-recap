@@ -1,5 +1,24 @@
 import json
 
+from pymongo import MongoClient
+from dotenv import dotenv_values
+
+class Database():
+    def get_cluster(mongoDBURI):
+        cluster = MongoClient(mongoDBURI)
+        return cluster
+
+
+    def get_database(mongoDBURI, database_name):
+        db = Database.get_cluster(mongoDBURI)[database_name]
+        return db
+
+    
+    def get_collection(mongoDBURI, database_name, collection_name):
+        collection = Database.get_database(mongoDBURI, database_name)[collection_name]
+        return collection
+
+
 class Main():
     def main():
         # in_path = "api/setting/json/untranslated_dummy_setting.json"
@@ -46,4 +65,20 @@ class Main():
             outfile.write(json_object)
 
 
+    def update():
+        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
+        database_name = "DisnakerFinanceRecap"
+        collection_name = "settings"
+
+        collection = Database.get_collection(mongoDBURI, database_name, collection_name)
+        
+        data = json.load(open("./api/setting/json/setting.json"))
+        for i in range(len(data)):
+            update_id = data[i].get("id")
+            update_dictionary = data[i]
+
+            collection.find_one_and_update({"id": update_id}, {"$set" : update_dictionary }, upsert=True)
+
+
 Main.main()
+Main.update()
