@@ -17,6 +17,5 @@ Sistem arsitektur menggunakan dua microservice independen yang disebut dengan **
 - **WEB service** 
   - Menggunakan konsep metode MVC (Model-View-Controller) dengan [Laravel](https://laravel.com/) sebegai web framework.
   - Menerapkan sistem user authentication dan authorization dan menggunakan [SQLite](https://sqlite.org/) sebagai database user.
-  - Menggunakan [Bulma](https://bulma.io/) sebagai css framework.
 
 - **API service**
