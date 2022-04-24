@@ -9,6 +9,11 @@ class Excel():
         wb_sheet = self.workbook.sheetnames
 
         self.workbook_sheet = self.workbook[wb_sheet[sheet - 1]]
+    
+
+    def change_sheet(self, sheet):
+        wb_sheet = self.workbook.sheetnames
+        self.workbook_sheet = self.workbook[wb_sheet[sheet - 1]]
 
 
     def create_file(path: str):

@@ -2,6 +2,29 @@
 
 {% block content %}
 
-<h1>Home</h1>
+    <h1>Home</h1>
+    {% for setting in setting_data %}
+        <ul>
+            <li>{{ setting.id }}</li>
+            <li>{{ setting.name }}</li>
+            <li>{{ setting.start_range }}</li>
+            <li>{{ setting.end_range }}</li>
+            
+            {% for detail in setting.detail %}
+                <ul>
+                    <li>{{ detail.id }}</li>
+                    <li>{{ detail.active_sheet }}</li>
+                    <li>{{ detail.start_range }}</li>
+                    <li>{{ detail.end_range }}</li>
+                    <li>{{ detail.attribute }}</li>
+                </ul>
+
+                <br>
+
+            {% endfor %}
+            
+        </ul>
+
+    {% endfor %}
 
 {% endblock %}

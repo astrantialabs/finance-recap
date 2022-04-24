@@ -37,7 +37,10 @@ class Main(Database):
         current_data_detail = current_data.get("detail")[detail_count]
 
         current_data_attribute = ["name", "start_range", "end_range"]
-        current_data_detail_attribute = ["active_sheet", "start_range", "end_range", "attribute"]
+        current_data_detail_attribute = ["active_sheet", "start_range", "end_range", "attribute"]\
+
+        button_width = 15
+        button_height = 1
 
         list_data = [
             division.get("name") for division in data
