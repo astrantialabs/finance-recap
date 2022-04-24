@@ -3,6 +3,6 @@
         <h1 class="title">
             Dashboard
         </h1>
-        <p class="subtitle">¯\_(ツ)_/¯</p>
+        <p class="subtitle">work in progress</p>
     </div>
 </div>
