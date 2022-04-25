@@ -31,6 +31,27 @@ class Utility():
             outfile.write(json_object)
 
 
+    def convert_to_dict(count, value, attribute, percentage_cell=[]):
+        for i in range(len(percentage_cell)):
+            if(type(value[percentage_cell[i]]) in (int, float)): 
+                value[percentage_cell[i]] = math.trunc(value[percentage_cell[i]] * 100)
+
+            if(type(value[percentage_cell[i]]) == str): 
+                if(value[percentage_cell[i]] == "#REF!"):
+                    value[percentage_cell[i]] = None
+
+
+        temp_data_dictionary = {
+            "id": count + 1
+        }
+
+        for i in range(len(attribute)):
+            temp_data_dictionary[attribute[i]] = value[i]
+
+
+        return temp_data_dictionary
+
+
     def update_data(mongoDBURI, database_name):
         excel_path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx"
 
@@ -48,15 +69,15 @@ class Main(Database, Utility):
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
         database_name = "DisnakerFinanceRecap"
         
-        Main.get_summary(mongoDBURI, database_name)
-        Main.update_summary(mongoDBURI, database_name)
+        Main.get_data(mongoDBURI, database_name)
+        Main.update_data(mongoDBURI, database_name)
 
-        # Main.show_summary(mongoDBURI, database_name)
+        # Main.show_data(mongoDBURI, database_name)
         
         Utility.update_data(mongoDBURI, database_name)
 
 
-    def get_summary(mongoDBURI, database_name):
+    def get_data(mongoDBURI, database_name):
         collection_name = "settings"
 
         settings_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
@@ -75,11 +96,9 @@ class Main(Database, Utility):
         for division_count, division_data in enumerate(settings_data):
             activity_array = Main.get_activity(division_data, wb_summary)
 
-            temp_division_dictionary = {
-                "id": division_count+1,
-                "name": division_data.get("name"),
-                "activity": activity_array
-            }
+            division_attribute = ["name", "activity"]
+            division_value = [division_data.get("name"), activity_array]
+            temp_division_dictionary = Main.convert_to_dict(division_count, division_value, division_attribute)
 
             division_array.append(temp_division_dictionary)
 
@@ -93,18 +112,10 @@ class Main(Database, Utility):
         for activity_count, activity_data in enumerate(activity_value):
             detail_array = Main.get_detail(division_data, activity_count, wb_summary)
 
-            for i in range(2):
-                if(type(activity_data[i+1]) in (int, float)):
-                    activity_data[i+1] = math.trunc(activity_data[i+1] * 100)
-
-
-            temp_activity_dictionary = {
-                "id": activity_count+1,
-                "activity": activity_data[0],
-                "physical": activity_data[1],
-                "finance": activity_data[2],
-                "detail": detail_array
-            }
+            activity_attribute = ["activity", "physical", "finance", "detail"]
+            activity_dict_value = [activity_data[0], activity_data[1], activity_data[2], detail_array]
+            activity_percentage_cell = [1, 2]
+            temp_activity_dictionary = Main.convert_to_dict(activity_count, activity_dict_value, activity_attribute, activity_percentage_cell)
 
             activity_array.append(temp_activity_dictionary)
 
@@ -201,13 +212,9 @@ class Main(Database, Utility):
                 value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
                 del value[2:4]
 
-                temp_detail_dictionary = {
-                    "id": i+1,
-                    "account": value[0],
-                    "total_finance": value[1],
-                    "monthly_finance": value[2:14],
-                    "expenses": expenses_array
-                }
+                detail_attribute = ["account", "total_finance", "monthly_finance", "expenses"]
+                detail_dict_value = [value[0], value[1], value[2:14], expenses_array]
+                temp_detail_dictionary = Main.convert_to_dict(i, detail_dict_value, detail_attribute)
 
                 detail_array.append(temp_detail_dictionary)
 
@@ -218,7 +225,7 @@ class Main(Database, Utility):
         return detail_array
     
 
-    def update_summary(mongoDBURI, database_name):
+    def update_data(mongoDBURI, database_name):
         collection_name = "summary_recaps"
         summary_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
@@ -233,7 +240,7 @@ class Main(Database, Utility):
             summary_recaps_collection.find_one_and_update({"id": update_id}, {"$set" : update_dictionary })
 
 
-    def show_summary(mongoDBURI, database_name):
+    def show_data(mongoDBURI, database_name):
         collection_name = "summary_recaps"
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
