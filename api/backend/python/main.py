@@ -65,16 +65,15 @@ class Utility():
 
 
 class Main(Database, Utility):
-    env_value = dotenv_values("./api/.env")
+    env_value = dotenv_values("./api/.env") # path
 
     def main():
         mongoDBURI = Main.env_value.get("APIdbURI")
         database_name = "DisnakerFinanceRecap"
         
         Main.get_data(mongoDBURI, database_name)
-        Main.update_data(mongoDBURI, database_name)
 
-        Main.show_data(mongoDBURI, database_name)
+        # Main.show_data(mongoDBURI, database_name)
         
         Utility.update_data(mongoDBURI, database_name)
 
@@ -92,7 +91,13 @@ class Main(Database, Utility):
 
         division_array = Main.get_division(settings_data, wb_summary)
 
-        Main.write_json(division_array, Main.env_value.get("JSONPath"))
+        if(Main.env_value.get("Status") == "Production"):
+            Main.write_json(division_array, Main.env_value.get("JSONPath"))
+            data = json.load(open(Main.env_value.get("JSONPath")))
+            Main.update_data(mongoDBURI, database_name, data)
+
+        elif(Main.env_value.get("Status") == "Non-Production"):
+            Main.update_data(mongoDBURI, database_name, division_array)
 
 
     def get_division(settings_data, wb_summary):
@@ -233,11 +238,10 @@ class Main(Database, Utility):
         return detail_array
     
 
-    def update_data(mongoDBURI, database_name):
+    def update_data(mongoDBURI, database_name, data):
         collection_name = "summary_recaps"
         summary_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
-        data = json.load(open(Main.env_value.get("JSONPath")))
         for i in range(len(data)):
             update_id = data[i].get("id")
             update_dictionary = {
