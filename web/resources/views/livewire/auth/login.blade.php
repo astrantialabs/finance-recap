@@ -37,7 +37,7 @@
                         </div>
                     </div>
 
-                    <button class="call-to-action call-to-action-darkgunmetal" type="submit">Login</button>
+                    <button class="call-to-action call-to-action--darkgunmetal" type="submit">Login</button>
                 </form>
             </div>
         </div>

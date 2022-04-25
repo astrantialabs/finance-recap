@@ -53,7 +53,7 @@ class Utility():
 
 
     def update_data(mongoDBURI, database_name):
-        excel_path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx"
+        excel_path = Main.env_value.get("ExcelPath")
 
         excel_last_modified = os.path.getmtime(excel_path)
         translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%Y-%m-%d %H:%M:%S")
@@ -65,16 +65,20 @@ class Utility():
 
 
 class Main(Database, Utility):
+    env_value = dotenv_values("./api/.env")
+
     def main():
-        mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
+        mongoDBURI = Main.env_value.get("APIdbURI")
         database_name = "DisnakerFinanceRecap"
         
         Main.get_data(mongoDBURI, database_name)
         Main.update_data(mongoDBURI, database_name)
 
-        # Main.show_data(mongoDBURI, database_name)
+        Main.show_data(mongoDBURI, database_name)
         
         Utility.update_data(mongoDBURI, database_name)
+
+        print("Program Has Finished Running")
 
 
     def get_data(mongoDBURI, database_name):
@@ -83,17 +87,18 @@ class Main(Database, Utility):
         settings_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
         settings_data = list(settings_collection.find({}))
         
-        excel_path = "./api/backend/excel/Rekap Fisik dan Keuangan Test.xlsx" # path
+        excel_path = Main.env_value.get("ExcelPath")
         wb_summary = Excel(excel_path, 1)
 
         division_array = Main.get_division(settings_data, wb_summary)
 
-        Main.write_json(division_array, "./api/backend/json/summary_recaps.json")
+        Main.write_json(division_array, Main.env_value.get("JSONPath"))
 
 
     def get_division(settings_data, wb_summary):
         division_array = []
         for division_count, division_data in enumerate(settings_data):
+            print(f"Processing : {division_data.get('name')}")
             activity_array = Main.get_activity(division_data, wb_summary)
 
             division_attribute = ["name", "activity"]
@@ -101,6 +106,8 @@ class Main(Database, Utility):
             temp_division_dictionary = Main.convert_to_dict(division_count, division_value, division_attribute)
 
             division_array.append(temp_division_dictionary)
+            print(f"Completed  : {division_data.get('name')}")
+            print()
 
         return division_array
 
@@ -126,6 +133,7 @@ class Main(Database, Utility):
     def get_detail(division_data, activity_count, wb_summary):
         detail_setting = division_data.get("detail")[activity_count]
         if(type(detail_setting) == dict):
+            print(f"Processing : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
             detail_array = []
             cell_range = [Excel.convert_range(detail_setting.get("start_range")), Excel.convert_range(detail_setting.get("end_range"))]
 
@@ -229,7 +237,7 @@ class Main(Database, Utility):
         collection_name = "summary_recaps"
         summary_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
-        data = json.load(open("./api/backend/json/summary_recaps.json")) # path
+        data = json.load(open(Main.env_value.get("JSONPath")))
         for i in range(len(data)):
             update_id = data[i].get("id")
             update_dictionary = {
@@ -244,7 +252,7 @@ class Main(Database, Utility):
         collection_name = "summary_recaps"
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
-        all_data = collection.find()
+        all_data = collection.find({})
         single_data = collection.find({ "name": "Sekretariat" })
         
         print(all_data)
