@@ -3,6 +3,8 @@ web/public/hot
 web/public/storage
 web/public/css
 web/public/js
+web/public/styles
+web/public/scripts
 web/public/vendor/telescope
 web/storage/*.key
 web/storage/app/public
