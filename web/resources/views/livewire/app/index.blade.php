@@ -1,1 +1,0 @@
-@include('livewire.dashboard.index')

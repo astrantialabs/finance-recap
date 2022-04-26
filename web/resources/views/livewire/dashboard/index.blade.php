@@ -1,1 +1,0 @@
-@include('livewire.dashboard.base', ['payload' => 'coming soon', 'content_type' => $content_type])
