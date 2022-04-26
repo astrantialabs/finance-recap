@@ -1,4 +1,3 @@
-import math
 import json
 import os
 import datetime
@@ -34,7 +33,7 @@ class Utility():
     def convert_to_dict(count, value, attribute, percentage_cell=[]):
         for i in range(len(percentage_cell)):
             if(type(value[percentage_cell[i]]) in (int, float)): 
-                value[percentage_cell[i]] = math.trunc(value[percentage_cell[i]] * 100)
+                value[percentage_cell[i]] = round(value[percentage_cell[i]] * 100)
 
             if(type(value[percentage_cell[i]]) == str): 
                 if(value[percentage_cell[i]] == "#REF!"):
@@ -239,6 +238,8 @@ class Main(Database, Utility):
     
 
     def update_data(mongoDBURI, database_name, data):
+        print("Uploading Data")
+        print
         collection_name = "summary_recaps"
         summary_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
@@ -251,7 +252,7 @@ class Main(Database, Utility):
 
             summary_recaps_collection.find_one_and_update({"id": update_id}, {"$set" : update_dictionary })
 
-
+        
     def show_data(mongoDBURI, database_name):
         collection_name = "summary_recaps"
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
