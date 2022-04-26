@@ -1,0 +1,234 @@
+*,
+*::before,
+*::after {
+  border-width: 0;
+  border-style: solid;
+  box-sizing: border-box;
+}
+
+html {
+  text-rendering: optimizeLegibility;
+  touch-action: manipulation;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: #2d1e5e;
+  line-height: 1.45;
+}
+
+html,
+body {
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-feature-settings: "kern";
+  background: #ffffff;
+}
+
+.register .register-header .title,
+.register .login-header .title,
+.login .register-header .title,
+.login .login-header .title {
+  color: #2d1e5e;
+  font-size: 44px;
+  font-size: 2.75rem;
+  line-height: 1;
+  letter-spacing: normal;
+  font-weight: 800;
+}
+.register .register-header .secondary-header .subtitle,
+.register .login-header .secondary-header .subtitle,
+.login .register-header .secondary-header .subtitle,
+.login .login-header .secondary-header .subtitle {
+  color: #fb4c53;
+  overflow: hidden;
+  text-align: left;
+  padding-top: 24px;
+  padding-bottom: 28px;
+  font-size: 18px;
+  font-size: 1.125rem;
+  line-height: normal;
+  letter-spacing: normal;
+  font-weight: 600;
+}
+.register .register-header .secondary-header .subtitle::before,
+.register .login-header .secondary-header .subtitle::before,
+.login .register-header .secondary-header .subtitle::before,
+.login .login-header .secondary-header .subtitle::before {
+  display: inline-block;
+  content: "";
+  border-top: 0.3rem solid #fb4c53;
+  border-radius: 14px;
+  vertical-align: middle;
+  width: 6rem;
+  margin-right: 2rem;
+}
+.register .register-form-container .register-form .register-form-field,
+.register .register-form-container .register-form .login-form-field,
+.register .register-form-container .login-form .register-form-field,
+.register .register-form-container .login-form .login-form-field,
+.register .login-form-container .register-form .register-form-field,
+.register .login-form-container .register-form .login-form-field,
+.register .login-form-container .login-form .register-form-field,
+.register .login-form-container .login-form .login-form-field,
+.login .register-form-container .register-form .register-form-field,
+.login .register-form-container .register-form .login-form-field,
+.login .register-form-container .login-form .register-form-field,
+.login .register-form-container .login-form .login-form-field,
+.login .login-form-container .register-form .register-form-field,
+.login .login-form-container .register-form .login-form-field,
+.login .login-form-container .login-form .register-form-field,
+.login .login-form-container .login-form .login-form-field {
+  margin-top: 8px;
+}
+.register .register-form-container .register-form .register-form-field .register-form-label,
+.register .register-form-container .register-form .register-form-field .login-form-label,
+.register .register-form-container .register-form .login-form-field .register-form-label,
+.register .register-form-container .register-form .login-form-field .login-form-label,
+.register .register-form-container .login-form .register-form-field .register-form-label,
+.register .register-form-container .login-form .register-form-field .login-form-label,
+.register .register-form-container .login-form .login-form-field .register-form-label,
+.register .register-form-container .login-form .login-form-field .login-form-label,
+.register .login-form-container .register-form .register-form-field .register-form-label,
+.register .login-form-container .register-form .register-form-field .login-form-label,
+.register .login-form-container .register-form .login-form-field .register-form-label,
+.register .login-form-container .register-form .login-form-field .login-form-label,
+.register .login-form-container .login-form .register-form-field .register-form-label,
+.register .login-form-container .login-form .register-form-field .login-form-label,
+.register .login-form-container .login-form .login-form-field .register-form-label,
+.register .login-form-container .login-form .login-form-field .login-form-label,
+.login .register-form-container .register-form .register-form-field .register-form-label,
+.login .register-form-container .register-form .register-form-field .login-form-label,
+.login .register-form-container .register-form .login-form-field .register-form-label,
+.login .register-form-container .register-form .login-form-field .login-form-label,
+.login .register-form-container .login-form .register-form-field .register-form-label,
+.login .register-form-container .login-form .register-form-field .login-form-label,
+.login .register-form-container .login-form .login-form-field .register-form-label,
+.login .register-form-container .login-form .login-form-field .login-form-label,
+.login .login-form-container .register-form .register-form-field .register-form-label,
+.login .login-form-container .register-form .register-form-field .login-form-label,
+.login .login-form-container .register-form .login-form-field .register-form-label,
+.login .login-form-container .register-form .login-form-field .login-form-label,
+.login .login-form-container .login-form .register-form-field .register-form-label,
+.login .login-form-container .login-form .register-form-field .login-form-label,
+.login .login-form-container .login-form .login-form-field .register-form-label,
+.login .login-form-container .login-form .login-form-field .login-form-label {
+  color: #2c293c;
+  font-weight: 400;
+}
+.register .register-form-container .register-form .register-form-field .register-form-input,
+.register .register-form-container .register-form .register-form-field .login-form-input,
+.register .register-form-container .register-form .login-form-field .register-form-input,
+.register .register-form-container .register-form .login-form-field .login-form-input,
+.register .register-form-container .login-form .register-form-field .register-form-input,
+.register .register-form-container .login-form .register-form-field .login-form-input,
+.register .register-form-container .login-form .login-form-field .register-form-input,
+.register .register-form-container .login-form .login-form-field .login-form-input,
+.register .login-form-container .register-form .register-form-field .register-form-input,
+.register .login-form-container .register-form .register-form-field .login-form-input,
+.register .login-form-container .register-form .login-form-field .register-form-input,
+.register .login-form-container .register-form .login-form-field .login-form-input,
+.register .login-form-container .login-form .register-form-field .register-form-input,
+.register .login-form-container .login-form .register-form-field .login-form-input,
+.register .login-form-container .login-form .login-form-field .register-form-input,
+.register .login-form-container .login-form .login-form-field .login-form-input,
+.login .register-form-container .register-form .register-form-field .register-form-input,
+.login .register-form-container .register-form .register-form-field .login-form-input,
+.login .register-form-container .register-form .login-form-field .register-form-input,
+.login .register-form-container .register-form .login-form-field .login-form-input,
+.login .register-form-container .login-form .register-form-field .register-form-input,
+.login .register-form-container .login-form .register-form-field .login-form-input,
+.login .register-form-container .login-form .login-form-field .register-form-input,
+.login .register-form-container .login-form .login-form-field .login-form-input,
+.login .login-form-container .register-form .register-form-field .register-form-input,
+.login .login-form-container .register-form .register-form-field .login-form-input,
+.login .login-form-container .register-form .login-form-field .register-form-input,
+.login .login-form-container .register-form .login-form-field .login-form-input,
+.login .login-form-container .login-form .register-form-field .register-form-input,
+.login .login-form-container .login-form .register-form-field .login-form-input,
+.login .login-form-container .login-form .login-form-field .register-form-input,
+.login .login-form-container .login-form .login-form-field .login-form-input {
+  margin-top: 8px;
+  background: #fafbff;
+  border-color: #e5e5e9;
+  border-radius: 8px;
+  font-size: 18px;
+  color: #2c293c;
+}
+.register .register-form-container .register-form .register-form-submit,
+.register .register-form-container .register-form .login-form-submit,
+.register .register-form-container .login-form .register-form-submit,
+.register .register-form-container .login-form .login-form-submit,
+.register .login-form-container .register-form .register-form-submit,
+.register .login-form-container .register-form .login-form-submit,
+.register .login-form-container .login-form .register-form-submit,
+.register .login-form-container .login-form .login-form-submit,
+.login .register-form-container .register-form .register-form-submit,
+.login .register-form-container .register-form .login-form-submit,
+.login .register-form-container .login-form .register-form-submit,
+.login .register-form-container .login-form .login-form-submit,
+.login .login-form-container .register-form .register-form-submit,
+.login .login-form-container .register-form .login-form-submit,
+.login .login-form-container .login-form .register-form-submit,
+.login .login-form-container .login-form .login-form-submit {
+  margin-top: 24px;
+}
+
+.register-flex,
+.login-flex {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}
+@media only screen and (max-width: 600px) {
+  .register-flex,
+.login-flex {
+    flex-direction: column;
+  }
+}
+
+.illustration-container {
+  padding: 34px;
+}
+.illustration-container > * {
+  vertical-align: middle;
+}
+@media only screen and (max-width: 600px) {
+  .illustration-container {
+    display: none;
+    visibility: hidden;
+  }
+}
+
+.call-to-action {
+  display: inline-block;
+  background: inherit;
+  font: inherit;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  transition: all 200ms ease-in;
+  cursor: pointer;
+  margin: 0.2rem;
+}
+.call-to-action--accent {
+  position: relative;
+  transition: 0.3s;
+  background: #fb4c53;
+  box-shadow: 0 0 0.625rem 0.125rem rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 14px 30px;
+  color: #ededee;
+  font-weight: 450;
+}
+.call-to-action--accent .bx-right-arrow-alt {
+  font-weight: 600;
+  font-size: 24px;
+}
+.call-to-action--accent > * {
+  vertical-align: middle;
+}
+.call-to-action--accent:hover {
+  background: #fc7e83;
+  color: #ededee;
+}

@@ -1,0 +1,167 @@
+@charset "utf-8";
+
+$primary-background: #ffffff;
+$primary-foreground: #2d1e5e;
+$secondary-foreground: #2c293c;
+$accent: #fb4c53;
+$be-vietnam-pro: "Be Vietnam Pro", sans-serif;
+
+@import "./mixins";
+
+*,
+*::before,
+*::after {
+    border-width: 0;
+    border-style: solid;
+
+    box-sizing: border-box;
+}
+
+html {
+    text-rendering: optimizeLegibility;
+    touch-action: manipulation;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+
+    color: $primary-foreground;
+    line-height: 1.45;
+}
+
+html,
+body {
+    font-family: $be-vietnam-pro;
+    font-feature-settings: "kern";
+    background: $primary-background;
+}
+
+.register,
+.login {
+    .register-header,
+    .login-header {
+        .title {
+            color: $primary-foreground;
+
+            @include font-style(44px, 44px, normal, 800);
+        }
+
+        .secondary-header {
+            .subtitle {
+                color: $accent;
+                overflow: hidden;
+                text-align: left;
+
+                padding-top: 24px;
+                padding-bottom: 28px;
+
+                @include font-style(18px, normal, normal, 600);
+
+                &::before {
+                    display: inline-block;
+                    content: "";
+                    border-top: 0.3rem solid $accent;
+                    border-radius: 14px;
+                    vertical-align: middle;
+                    width: 6rem;
+                    margin-right: 2rem;
+                }
+            }
+        }
+    }
+
+    .register-form-container,
+    .login-form-container {
+        .register-form,
+        .login-form {
+            .register-form-field,
+            .login-form-field {
+                margin-top: 8px;
+                .register-form-label,
+                .login-form-label {
+                    color: $secondary-foreground;
+                    font-weight: 400;
+                }
+                .register-form-input,
+                .login-form-input {
+                    margin-top: 8px;
+
+                    background: #fafbff;
+                    border-color: darken($color: #f3f3f5, $amount: 5);
+                    border-radius: 8px;
+                    font-size: 18px;
+
+                    color: $secondary-foreground;
+                }
+            }
+            .register-form-submit,
+            .login-form-submit {
+                margin-top: 24px;
+            }
+        }
+    }
+}
+
+.register-flex,
+.login-flex {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+
+    @include breakpoint(extra_small_devices) {
+        flex-direction: column;
+    }
+}
+
+.illustration-container {
+    padding: 34px;
+
+    & > * {
+        vertical-align: middle;
+    }
+
+    @include breakpoint(extra_small_devices) {
+        display: none;
+        visibility: hidden;
+    }
+}
+
+.call-to-action {
+    display: inline-block;
+    background: inherit;
+    font: inherit;
+    border: 0;
+    outline: 0;
+    padding: 0;
+    transition: all 200ms ease-in;
+    cursor: pointer;
+
+    margin: 0.2rem;
+
+    &--accent {
+        position: relative;
+        transition: 0.3s;
+        background: $accent;
+        box-shadow: 0 0 0.625rem 0.125rem rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 14px 30px;
+
+        color: #ededee;
+        font-weight: 450;
+
+        .bx-right-arrow-alt {
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+        & > * {
+            vertical-align: middle;
+        }
+
+        &:hover {
+            background: lighten($color: $accent, $amount: 10);
+            color: #ededee;
+        }
+    }
+}

@@ -1,0 +1,1 @@
+<a wire:click="logout" class="call-to-action call-to-action--accent" style="cursor: pointer">Logout</a>
