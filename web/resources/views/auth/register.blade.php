@@ -19,10 +19,10 @@
 
                             <div class="register-flex">
                                 <div class="register-form-field field">
-                                    <label class="register-form-label label" for="nama">Nama</label>
+                                    <label class="register-form-label label" for="name">Name</label>
                                     <div class="control">
-                                        <input class="register-form-input input" type="text" name="nama" id="nama"
-                                            wire:model.lazy="nama">
+                                        <input class="register-form-input input" type="text" name="name" id="name"
+                                            wire:model.lazy="name">
                                     </div>
                                     @error('name')
                                         <p class="help is-danger">
