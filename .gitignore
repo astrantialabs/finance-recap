@@ -5,6 +5,7 @@ web/public/css
 web/public/js
 web/public/vendor/telescope
 web/storage/*.key
+web/storage/app/public
 web/vendor
 web/.env
 web/.env.backup
