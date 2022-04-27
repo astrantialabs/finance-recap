@@ -2195,6 +2195,13 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
+$(function () {
+  $("#js-navbar-burger").on("click", function () {
+    $(this).toggleClass("is-active");
+    $("#js-navbar-menu").toggleClass("is-active");
+  });
+});
+
 /***/ }),
 
 /***/ "./node_modules/lodash/lodash.js":

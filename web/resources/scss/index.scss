@@ -127,6 +127,134 @@ body {
     }
 }
 
+.dashboard {
+    .dashboard-content {
+        margin-top: 44px;
+
+        .title {
+            margin-bottom: 44px;
+            color: $primary-foreground;
+        }
+
+        .dashboard-table {
+            &-container {
+                table {
+                    width: 100%;
+                    overflow-x: auto;
+                    white-space: nowrap;
+
+                    thead {
+                        tr:nth-child(1) {
+                            th:nth-child(1),
+                            th:nth-child(2) {
+                                text-align: center;
+                                vertical-align: middle;
+                            }
+                        }
+                    }
+
+                    tbody {
+                        tr {
+                            .activity {
+                                font-size: 14px;
+                                word-wrap: break-word;
+                            }
+                        }
+                    }
+                    th {
+                        color: $primary-foreground;
+                    }
+                    td {
+                        color: $secondary-foreground;
+                    }
+
+                    &,
+                    th,
+                    td {
+                        padding: 8px;
+                        border: 1px solid darken($color: #f3f3f5, $amount: 5);
+                    }
+                }
+            }
+        }
+    }
+}
+
+.footer {
+    margin-top: 48px;
+
+    .subtitle {
+        color: $primary-foreground;
+        text-align: center;
+        @include font-style(15px, 24px, normal, 400);
+
+        strong {
+            color: $primary-foreground;
+        }
+    }
+}
+
+table.fold-table {
+    > tbody {
+        > tr.table-view {
+            td,
+            th {
+                cursor: pointer;
+            }
+        }
+
+        > tr.table-fold {
+            display: none;
+            visibility: none;
+            &.open {
+                display: table-row;
+                visibility: visible;
+            }
+        }
+    }
+}
+
+.navbar {
+    .navbar-brand {
+        .navbar-title {
+            color: $primary-foreground;
+            @include font-style(18px, 18px, normal, 800);
+        }
+        .navbar-burger {
+            color: $primary-foreground;
+        }
+    }
+    .navbar-menu {
+        .navbar-end {
+            .navbar-item:not(:last-child) {
+                text-decoration: underline;
+                text-transform: lowercase;
+                font-size: 1.063rem;
+                margin-left: 1em;
+
+                &:hover,
+                &:active,
+                &:visited,
+                &:focus {
+                    color: $primary-foreground;
+                }
+            }
+            .logout-button {
+                @include breakpoint(extra_large_devices) {
+                    margin-left: 28px;
+                }
+                &:hover,
+                &:active,
+                &:visited,
+                &:focus {
+                    background: lighten($color: $accent, $amount: 10) !important;
+                    color: #ededee !important;
+                }
+            }
+        }
+    }
+}
+
 .call-to-action {
     display: inline-block;
     background: inherit;
