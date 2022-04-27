@@ -88,20 +88,20 @@ class PDF():
             Excel.create_file(full_excel_file_path)
 
             wb_excel = Excel(full_excel_file_path, 1)
-            wb_excel.write_value_singular("D4", f"Divisi: {division.get('name')}")
-            wb_excel.write_value_multiple("D6", "F6", ["No.", "Sub Kegiatan", "Realisasi"])
-            wb_excel.write_value_multiple("F7", "G7", ["Fisik", "Keuangan"])
+            wb_excel.write_value_singular("A1", f"Divisi: {division.get('name')}")
+            wb_excel.write_value_multiple("A3", "C3", ["No.", "Sub Kegiatan", "Realisasi"])
+            wb_excel.write_value_multiple("c4", "D4", ["Fisik", "Keuangan"])
 
-            wb_excel.merge("D6", "D7")
-            wb_excel.merge("E6", "E7")
-            wb_excel.merge("F6", "G6")
+            wb_excel.merge("A3", "A4")
+            wb_excel.merge("B3", "B4")
+            wb_excel.merge("C3", "D3")
 
-            row_end_range = 7 + len(division.get('activity'))
-            wb_excel.border_multiple("D6", [7, row_end_range], "all", style="thin")
-            wb_excel.alignment_multiple("D6", [7, row_end_range], horizontal="center", vertical="center")
-            wb_excel.alignment_multiple("E8", [5, row_end_range], horizontal="left", vertical="center", wrap=True)
-            wb_excel.font_singular("D4", size=12, bold=True)
-            wb_excel.font_multiple("D6", "G7", bold=True)
+            row_end_range = 4 + len(division.get('activity'))
+            wb_excel.border_multiple("A3", [4, row_end_range], "all", style="thin")
+            wb_excel.alignment_multiple("A3", [4, row_end_range], horizontal="center", vertical="center")
+            wb_excel.alignment_multiple("B5", [2, row_end_range], horizontal="left", vertical="center", wrap=True)
+            wb_excel.font_singular("A1", size=12, bold=True)
+            wb_excel.font_multiple("A3", "D4", bold=True)
 
             for activity_count, activity in enumerate(division.get('activity')):
                 activity_physical_value = None
@@ -120,13 +120,13 @@ class PDF():
                 ]
 
                 wb_excel.write_value_multiple(
-                    [4, 8 + activity_count], [7, 8 + activity_count], activity_value)
+                    [1, 5 + activity_count], [4, 5 + activity_count], activity_value)
 
 
-            wb_excel.workbook_sheet.column_dimensions["D"].width = 5
-            wb_excel.workbook_sheet.column_dimensions["E"].width = 30
-            wb_excel.workbook_sheet.column_dimensions["F"].width = 11
-            wb_excel.workbook_sheet.column_dimensions["G"].width = 11
+            wb_excel.workbook_sheet.column_dimensions["A"].width = 5
+            wb_excel.workbook_sheet.column_dimensions["B"].width = 30
+            wb_excel.workbook_sheet.column_dimensions["C"].width = 11
+            wb_excel.workbook_sheet.column_dimensions["D"].width = 11
             wb_excel.workbook.save(wb_excel.path)
 
             workbook = Workbook(full_excel_file_path)   
