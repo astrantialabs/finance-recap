@@ -1,10 +1,13 @@
 import json
 import os
 import datetime
+import jpype
+import asposecells
 
 from excel import Excel
 from pymongo import MongoClient
 from dotenv import dotenv_values
+from win32com import client
 
 class Database():
     def get_cluster(mongoDBURI):
@@ -60,20 +63,90 @@ class Utility():
         collection_name = "utilities"
         utilities_collection = Database.get_collection(mongoDBURI, database_name, collection_name)
 
-        utilities_collection.find_one_and_update({"id": 1}, {"$set" : {"last_modified": translated_excel_last_modified}})
+        utilities_collection.find_one_and_update({"id": 1}, {"$set": {"last_modified": translated_excel_last_modified}})
 
 
-class Main(Database, Utility):
+class PDF():
+    def create_pdf(file_path, data):
+        jpype.startJVM()
+        from asposecells.api import Workbook, SaveFormat
+
+        for division_count, division in enumerate(data):
+            current_datetime = datetime.datetime.now().strftime("%d-%m-%y %H-%M-%S")
+            excel_folder_path = f"excel/{division.get('name').lower()}"
+            excel_file_path = F"{current_datetime}.xlsx"
+
+            full_excel_file_path = f"{file_path}/{excel_folder_path}/{excel_file_path}"
+
+            pdf_folder_path = f"pdf/{division.get('name').lower()}"
+            pdf_file_path = F"{current_datetime}.pdf"
+
+            full_pdf_file_path = f"{file_path}/{pdf_folder_path}/{pdf_file_path}"
+
+            os.makedirs(f"{file_path}/{excel_folder_path}", exist_ok=True)
+            os.makedirs(f"{file_path}/{pdf_folder_path}", exist_ok=True)
+            Excel.create_file(full_excel_file_path)
+
+            wb_excel = Excel(full_excel_file_path, 1)
+            wb_excel.write_value_singular("D4", f"Divisi: {division.get('name')}")
+            wb_excel.write_value_multiple("D6", "F6", ["No.", "Sub Kegiatan", "Realisasi"])
+            wb_excel.write_value_multiple("F7", "G7", ["Fisik", "Keuangan"])
+
+            wb_excel.merge("D6", "D7")
+            wb_excel.merge("E6", "E7")
+            wb_excel.merge("F6", "G6")
+
+            row_end_range = 7 + len(division.get('activity'))
+            wb_excel.border_multiple("D6", [7, row_end_range], "all", style="thin")
+            wb_excel.alignment_multiple("D6", [7, row_end_range], horizontal="center", vertical="center")
+            wb_excel.alignment_multiple("E8", [5, row_end_range], horizontal="left", vertical="center", wrap=True)
+            wb_excel.font_singular("D4", size=12, bold=True)
+            wb_excel.font_multiple("D6", "G7", bold=True)
+
+            for activity_count, activity in enumerate(division.get('activity')):
+                activity_physical_value = None
+                if(type(activity.get('physical')) in (int, float)):
+                    activity_physical_value = f"{activity.get('physical')}%"
+
+                activity_finance_value = None
+                if(type(activity.get('finance')) in (int, float)):
+                    activity_finance_value = f"{activity.get('finance')}%"
+
+                activity_value = [
+                    activity_count + 1,
+                    activity.get("activity"),
+                    activity_physical_value,
+                    activity_finance_value
+                ]
+
+                wb_excel.write_value_multiple(
+                    [4, 8 + activity_count], [7, 8 + activity_count], activity_value)
+
+
+            wb_excel.workbook_sheet.column_dimensions["D"].width = 5
+            wb_excel.workbook_sheet.column_dimensions["E"].width = 30
+            wb_excel.workbook_sheet.column_dimensions["F"].width = 11
+            wb_excel.workbook_sheet.column_dimensions["G"].width = 11
+            wb_excel.workbook.save(wb_excel.path)
+
+            workbook = Workbook(full_excel_file_path)   
+            workbook.save(full_pdf_file_path, SaveFormat.PDF)
+
+
+        jpype.shutdownJVM()
+
+
+class Main(Database, Utility, PDF):
     env_value = dotenv_values("./api/.env") # path
 
     def main():
         mongoDBURI = Main.env_value.get("APIdbURI")
         database_name = "DisnakerFinanceRecap"
-        
+
         Main.get_data(mongoDBURI, database_name)
 
         # Main.show_data(mongoDBURI, database_name)
-        
+
         Utility.update_data(mongoDBURI, database_name)
 
         print("Program Has Finished Running")
@@ -93,10 +166,14 @@ class Main(Database, Utility):
         if(Main.env_value.get("Status") == "Production"):
             Main.write_json(division_array, Main.env_value.get("JSONPath"))
             data = json.load(open(Main.env_value.get("JSONPath")))
-            Main.update_data(mongoDBURI, database_name, data)
+            # Main.update_data(mongoDBURI, database_name, data)
+
+            Main.create_pdf(Main.env_value.get("FilePath"), data)            
 
         elif(Main.env_value.get("Status") == "Non-Production"):
-            Main.update_data(mongoDBURI, database_name, division_array)
+            # Main.update_data(mongoDBURI, database_name, division_array)
+
+            Main.create_pdf(Main.env_value.get("FilePath"), division_array)         
 
 
     def get_division(settings_data, wb_summary):
@@ -115,7 +192,7 @@ class Main(Database, Utility):
 
         return division_array
 
-    
+
     def get_activity(division_data, wb_summary):
         activity_array = []
         wb_summary.change_sheet(1)
@@ -143,7 +220,7 @@ class Main(Database, Utility):
 
             cell_attribute_index = 0
             cell_attribute_count = 0
-            
+
             detail_range = []
             expenses_range = []
 
@@ -180,7 +257,7 @@ class Main(Database, Utility):
                     cell_attribute_count += 1
                     i += 2        
 
-            
+
             wb_summary.change_sheet(detail_setting.get("active_sheet"))
             for i in range(len(detail_range)):
                 expenses_array = []
@@ -198,7 +275,7 @@ class Main(Database, Utility):
                         temp_physical_monthly = [physical_value[0][2:14][k], physical_value[1][2:14][k]]
                         physical_monthly.append(temp_physical_monthly)
 
-                    
+
                     finance_monthly = []
                     for k in range(len(finance_value[0][2:14])):
                         temp_finance_monthly = [finance_value[0][2:14][k], finance_value[1][2:14][k]]
@@ -219,7 +296,7 @@ class Main(Database, Utility):
                     }
 
                     expenses_array.append(temp_expenses_dictionary)
-                    
+
 
                 value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
                 del value[2:4]
@@ -230,12 +307,12 @@ class Main(Database, Utility):
 
                 detail_array.append(temp_detail_dictionary)
 
-        
+
         elif(type(detail_setting) != dict):
             detail_array = None
 
         return detail_array
-    
+
 
     def update_data(mongoDBURI, database_name, data):
         print("Uploading Data")
@@ -250,16 +327,16 @@ class Main(Database, Utility):
                 "activity": data[i].get("activity")
             }
 
-            summary_recaps_collection.find_one_and_update({"id": update_id}, {"$set" : update_dictionary })
+            summary_recaps_collection.find_one_and_update({"id": update_id}, {"$set": update_dictionary})
 
-        
+
     def show_data(mongoDBURI, database_name):
         collection_name = "summary_recaps"
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
         all_data = collection.find({})
-        single_data = collection.find({ "name": "Sekretariat" })
-        
+        single_data = collection.find({"name": "Sekretariat"})
+
         print(all_data)
         print(single_data)
 
