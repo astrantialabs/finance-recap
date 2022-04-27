@@ -7,7 +7,6 @@ import asposecells
 from excel import Excel
 from pymongo import MongoClient
 from dotenv import dotenv_values
-from win32com import client
 
 class Database():
     def get_cluster(mongoDBURI):
@@ -316,7 +315,8 @@ class Main(Database, Utility, PDF):
 
     def update_data(mongoDBURI, database_name, data):
         print("Uploading Data")
-        print
+        print()
+        
         collection_name = "summary_recaps"
         summary_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
