@@ -69,7 +69,7 @@ foreach ($payload as $key => $value) {
     </main>
     <footer class="footer">
         <p class="subtitle">
-            Dikembangkan oleh <strong>Kodikas</strong> <br> <strong>Yehezkiel Dio</strong> & <strong>Rizky Irswanda</strong>
+            Dikembangkan oleh <strong>kodikasid</strong> <br> <strong>Yehezkiel Dio</strong> & <strong>Rizky Irswanda</strong>
         </p>
     </footer>
 @endsection
