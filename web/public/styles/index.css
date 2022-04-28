@@ -210,6 +210,8 @@ body {
 .dashboard .dashboard-content .dashboard-table-container table {
   width: 100%;
   overflow-x: auto;
+  overflow: scroll;
+  padding: 8px;
   white-space: nowrap;
 }
 .dashboard .dashboard-content .dashboard-table-container table thead tr:nth-child(1) th:nth-child(1),
@@ -232,6 +234,61 @@ body {
 .dashboard .dashboard-content .dashboard-table-container table td {
   padding: 8px;
   border: 1px solid #e5e5e9;
+}
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container {
+  overflow: auto;
+}
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container thead tr th,
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container tfoot tr th {
+  font-size: 14px;
+}
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container thead tr:nth-child(1) th:nth-child(3),
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container tfoot tr:nth-child(1) th:nth-child(3) {
+  vertical-align: middle;
+}
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container tbody tr td {
+  font-size: 14px;
+}
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container .account {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+          hyphens: auto;
+}
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container thead th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container tbody td {
+  position: relative;
+}
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container .fixed-row-one {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.dashboard .dashboard-content .dashboard-table-container .dashboard-nested-table-container .fixed-row-two {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 40px;
+  z-index: 1;
+}
+
+.first-row {
+  background: #e6b9b8;
+}
+
+.second-row {
+  background: #93cddd;
+}
+
+.dashboard-nested-table-container table td {
+  border-collapse: collapse;
+  background-clip: padding-box;
 }
 
 .footer {

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use ConsoleTVs\Charts\Registrar as Charts;
+use ILluminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +26,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(Charts $charts)
     {
         $charts->register([\App\Charts\SampleChart::class]);
+        Blade::directive("currency", function ($expression) {
+            return "Rp. <?php echo number_format($expression,0,',','.'); ?>";
+        });
     }
 }

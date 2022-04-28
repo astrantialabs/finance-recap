@@ -141,6 +141,8 @@ body {
                 table {
                     width: 100%;
                     overflow-x: auto;
+                    overflow: scroll;
+                    padding: 8px;
                     white-space: nowrap;
 
                     thead {
@@ -175,8 +177,101 @@ body {
                         border: 1px solid darken($color: #f3f3f5, $amount: 5);
                     }
                 }
+
+                .dashboard-nested-table-container {
+                    overflow: auto;
+                    thead,
+                    tfoot {
+                        tr {
+                            th {
+                                font-size: 14px;
+                            }
+                        }
+                        tr:nth-child(1) {
+                            th:nth-child(3) {
+                                vertical-align: middle;
+                            }
+                        }
+                    }
+                    tbody {
+                        tr {
+                            td {
+                                font-size: 14px;
+                            }
+                        }
+                    }
+
+                    .account {
+                        overflow-wrap: break-word;
+                        word-wrap: break-word;
+                        hyphens: auto;
+                    }
+
+                    thead th {
+                        position: sticky;
+                        top: 0;
+                        z-index: 1;
+                        // width: 25vw;
+                    }
+                    tbody td {
+                        position: relative;
+                    }
+
+                    .fixed-row-one {
+                        position: sticky;
+                        left: 0;
+                        z-index: 1;
+                    }
+
+                    .fixed-row-two {
+                        position: sticky;
+                        left: 40px;
+                        z-index: 1;
+                    }
+
+                    // .fixed,
+                    // .account {
+                    //     // background: white;
+                    //     position: sticky;
+                    //     left: 0;
+                    //     z-index: 2;
+                    // }
+
+                    // tbody td {
+                    //     position: sticky;
+                    //     left: 0;
+                    //     // z-index: 1;
+                    // }
+                    // tbody {
+                    //     tr:nth-last-child(1),
+                    //     tr:nth-last-child(2),
+                    //     tr:nth-last-child(3),
+                    //     tr:nth-last-child(4) {
+                    //         display: none;
+                    //         visibility: hidden;
+                    //     }
+                    // }
+                }
             }
         }
+    }
+}
+
+$first-row: #e6b9b8;
+$second-row: #93cddd;
+
+.first-row {
+    background: $first-row;
+}
+
+.second-row {
+    background: $second-row;
+}
+
+.dashboard-nested-table-container {
+    table td {
+        border-collapse: collapse;
+        background-clip: padding-box;
     }
 }
 
