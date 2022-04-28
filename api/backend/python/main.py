@@ -1,12 +1,11 @@
 import json
 import os
 import datetime
-import jpype
-import asposecells
 
 from excel import Excel
 from pymongo import MongoClient
 from dotenv import dotenv_values
+from pylovepdf.tools.officepdf import OfficeToPdf
 
 class Database():
     def get_cluster(mongoDBURI):
@@ -67,9 +66,6 @@ class Utility():
 
 class PDF():
     def create_pdf(file_path, data):
-        jpype.startJVM()
-        from asposecells.api import Workbook, SaveFormat
-
         for division_count, division in enumerate(data):
             current_datetime = datetime.datetime.now().strftime("%d-%m-%y %H-%M-%S")
             excel_folder_path = f"excel/{division.get('name').lower()}"
@@ -78,9 +74,8 @@ class PDF():
             full_excel_file_path = f"{file_path}/{excel_folder_path}/{excel_file_path}"
 
             pdf_folder_path = f"pdf/{division.get('name').lower()}"
-            pdf_file_path = F"{current_datetime}.pdf"
 
-            full_pdf_file_path = f"{file_path}/{pdf_folder_path}/{pdf_file_path}"
+            full_pdf_folder_path = f"{file_path}/{pdf_folder_path}"
 
             os.makedirs(f"{file_path}/{excel_folder_path}", exist_ok=True)
             os.makedirs(f"{file_path}/{pdf_folder_path}", exist_ok=True)
@@ -128,12 +123,12 @@ class PDF():
             wb_excel.workbook_sheet.column_dimensions["D"].width = 11
             wb_excel.workbook.save(wb_excel.path)
 
-            workbook = Workbook(full_excel_file_path)   
-            workbook.save(full_pdf_file_path, SaveFormat.PDF)
-
-
-        jpype.shutdownJVM()
-
+            task = OfficeToPdf('project_public_3aa50bd9a581100935a47732c8d97198_hK0jz4270624ccb2b3e6a215595cf22e7b6a9', verify_ssl=True, proxies=None)
+            task.add_file(full_excel_file_path)
+            task.set_output_folder(full_pdf_folder_path)
+            task.execute()
+            task.download()
+            task.delete_current_task()
 
 class Main(Database, Utility, PDF):
     env_value = dotenv_values("./api/.env") # path
