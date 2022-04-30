@@ -20,51 +20,44 @@ class Database():
 
 
 class Main():
+    file_path = "api/setting/json"
+    in_path = f"{file_path}/untranslated_setting.json"
+    out_path = f"{file_path}/setting.json"
+
     def main():
-        # in_path = "api/setting/json/untranslated_dummy_setting.json"
-        # out_path = "api/setting/json/dummy_setting.json"
+        settings_data = json.load(open(Main.in_path))
 
-        in_path = "api/setting/json/untranslated_setting.json"
-        out_path = "api/setting/json/setting.json"
-
-        data = json.load(open(in_path))
-
-        dictionary_array = []
-        for i in range(len(data)):
-            
+        division_array = []
+        for division_index, division_settings in enumerate(settings_data):
             detail_array = []
-            for j in range(len(data[i][3])):
-                if(type(data[i][3][j]) == list):
-                    temp_detail = {
-                        "id": j + 1,
-                        "active_sheet": data[i][3][j][0],
-                        "start_range": data[i][3][j][1],
-                        "end_range": data[i][3][j][2],
-                        "attribute": data[i][3][j][3]
-                    }
+            for detail_index, detail_settings in enumerate(division_settings[3]):
+                temp_detail_dictionary = {
+                    "id": detail_index + 1,
+                    "active_sheet": detail_settings[0],
+                    "start_range": detail_settings[1],
+                    "end_range": detail_settings[2],
+                    "attribute": detail_settings[3]
+                }
 
-                elif(type(data[i][3][j]) != list):
-                    temp_detail = None
+                detail_array.append(temp_detail_dictionary)
+            
 
-                detail_array.append(temp_detail)
-
-
-            temp_dictionary = {
-                "id": i + 1,
-                "name": data[i][2],
-                "start_range": data[i][0],
-                "end_range": data[i][1],
+            temp_division_dictionary = {
+                "id": division_index + 1,
+                "name": division_settings[2],
+                "start_range": division_settings[0],
+                "end_range": division_settings[1],
                 "detail": detail_array
             }
 
-            dictionary_array.append(temp_dictionary)
+            division_array.append(temp_division_dictionary)
 
 
-        json_object = json.dumps(dictionary_array, indent = 4)
-        with open(out_path, "w") as outfile:
+        json_object = json.dumps(division_array, indent = 4)
+        with open(Main.out_path, "w") as outfile:
             outfile.write(json_object)
 
-
+    
     def update():
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
         database_name = "DisnakerFinanceRecap"
@@ -72,12 +65,13 @@ class Main():
 
         collection = Database.get_collection(mongoDBURI, database_name, collection_name)
         
-        data = json.load(open("./api/setting/json/setting.json"))
-        for i in range(len(data)):
-            update_id = data[i].get("id")
-            update_dictionary = data[i]
+        settings_data = json.load(open(Main.out_path))
 
-            collection.find_one_and_update({"id": update_id}, {"$set" : update_dictionary }, upsert=True)
+        for division_settings in settings_data:
+            update_id = division_settings.get("id")
+            update_dictionary = division_settings
+
+            collection.replace_one({"id": update_id}, update_dictionary, upsert=True)
 
 
 Main.main()
