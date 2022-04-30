@@ -227,6 +227,100 @@ class Main(Database):
 
                 Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
 
+            elif(event == "add_detail_button"):
+                window.Disable()
+
+                new_id = len(settings_data[division_count].get("detail")) + 1
+                for detail_index, detail in enumerate(settings_data[division_count].get("detail")):
+                    if(type(detail) == dict):
+                        if(detail.get("id") != detail_index + 1):
+                            new_id = detail_index + 1
+                            break
+                
+                list_of_add_detail_input = [
+                    new_id,
+                    "Active Sheet",
+                    "Start Range",
+                    "End Range",
+                    "Attribute"
+                ]
+
+                list_of_add_detail_button = [
+                    "Cancel",
+                    "Add"
+                ]
+
+                add_detail_layout = [
+                    [sg.Text("Detail")],
+                    [[sg.InputText(default_text=list_of_add_detail_input[attribute_index], size=(100, 1), key=f"add_detail_{attribute}", enable_events=True)] for attribute_index, attribute in enumerate(detail_attribute)],
+
+                    [sg.Button(button, key=f"{button.lower()}_add_detail_button", enable_events=True, size=(12, 1)) for button in list_of_add_detail_button]
+                ]
+
+                add_detail_window = sg.Window("Add Detail", add_detail_layout, size=(245, 205), keep_on_top=True)
+
+                while True:
+                    add_detail_event, add_detail_values = add_detail_window.read()
+                    if(add_detail_event in (sg.WINDOW_CLOSED, "cancel_add_detail_button")):
+                        break
+
+                    elif(add_detail_event == "add_add_detail_button"):
+                        add_detail_is_valid = True
+
+                        list_of_add_detail = []
+                        for attribute in detail_attribute:
+                            list_of_add_detail.append(add_detail_values[f"add_detail_{attribute}"])
+
+                
+                        if(list_of_add_detail[0].isnumeric()):
+                            list_of_add_detail[0] = int(list_of_add_detail[0])
+
+                        else:
+                            add_detail_is_valid = False
+
+                        if(list_of_add_detail[1].isnumeric()):
+                            list_of_add_detail[1] = int(list_of_add_detail[1])
+
+                        else:
+                            add_detail_is_valid = False
+
+                        list_of_add_detail[4] = list_of_add_detail[4].split()
+
+                        temp_list = []
+                        for detail in list_of_add_detail[4]:
+                            if(detail.isnumeric()):
+                                temp_list.append(int(detail))
+
+                            else:
+                                add_detail_is_valid = False
+
+
+                        list_of_add_detail[4] = temp_list
+
+                        if(add_detail_is_valid):
+                            new_detail_dictionary = {
+                                "id": list_of_add_detail[0],
+                                "active_sheet": list_of_add_detail[1],
+                                "start_range": list_of_add_detail[2],
+                                "end_range": list_of_add_detail[3],
+                                "attribute": list_of_add_detail[4]
+                            }
+
+                            detail_count = list_of_add_detail[0] - 1
+
+                            settings_data[division_count].get("detail").append(new_detail_dictionary)
+
+                            Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
+
+                            break
+
+                        elif(not add_detail_is_valid):
+                            sg.Popup('Input Not Valid', keep_on_top=True)
+
+                        
+                add_detail_window.close()
+                window.Enable()
+
             if(detail_count == 0):
                 window["previous_button"].update(disabled = True)
 
