@@ -123,12 +123,13 @@ class PDF():
             wb_excel.workbook_sheet.column_dimensions["D"].width = 11
             wb_excel.workbook.save(wb_excel.path)
 
-            task = OfficeToPdf('project_public_3aa50bd9a581100935a47732c8d97198_hK0jz4270624ccb2b3e6a215595cf22e7b6a9', verify_ssl=True, proxies=None)
-            task.add_file(full_excel_file_path)
-            task.set_output_folder(full_pdf_folder_path)
-            task.execute()
-            task.download()
-            task.delete_current_task()
+            # task = OfficeToPdf('project_public_3aa50bd9a581100935a47732c8d97198_hK0jz4270624ccb2b3e6a215595cf22e7b6a9', verify_ssl=True, proxies=None)
+            # task.add_file(full_excel_file_path)
+            # task.set_output_folder(full_pdf_folder_path)
+            # task.execute()
+            # task.download()
+            # task.delete_current_task()
+
 
 class Main(Database, Utility, PDF):
     env_value = dotenv_values("./api/.env") # path
