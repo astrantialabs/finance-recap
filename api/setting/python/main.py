@@ -220,6 +220,13 @@ class Main(Database):
                 add_division_window.close()
                 window.Enable()
 
+            elif(event == "delete_division_button"):
+                del settings_data[division_count]
+                division_count = len(settings_data) - 1
+                detail_count = 0
+
+                Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
+
             if(detail_count == 0):
                 window["previous_button"].update(disabled = True)
 
