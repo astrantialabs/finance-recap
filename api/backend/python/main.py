@@ -61,7 +61,12 @@ class Utility():
         collection_name = "utilities"
         utilities_collection = Database.get_collection(mongoDBURI, database_name, collection_name)
 
-        utilities_collection.find_one_and_update({"id": 1}, {"$set": {"last_modified": translated_excel_last_modified}})
+        update_dictionary = {
+            "last_modified": translated_excel_last_modified,
+            "last_runned": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        utilities_collection.replace_one({"id": 1}, update_dictionary)
 
 
 class PDF():
@@ -123,12 +128,12 @@ class PDF():
             wb_excel.workbook_sheet.column_dimensions["D"].width = 11
             wb_excel.workbook.save(wb_excel.path)
 
-            task = OfficeToPdf('project_public_3aa50bd9a581100935a47732c8d97198_hK0jz4270624ccb2b3e6a215595cf22e7b6a9', verify_ssl=True, proxies=None)
-            task.add_file(full_excel_file_path)
-            task.set_output_folder(full_pdf_folder_path)
-            task.execute()
-            task.download()
-            task.delete_current_task()
+            # task = OfficeToPdf('project_public_3aa50bd9a581100935a47732c8d97198_hK0jz4270624ccb2b3e6a215595cf22e7b6a9', verify_ssl=True, proxies=None)
+            # task.add_file(full_excel_file_path)
+            # task.set_output_folder(full_pdf_folder_path)
+            # task.execute()
+            # task.download()
+            # task.delete_current_task()
 
 
 class Main(Database, Utility, PDF):
