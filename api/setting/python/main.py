@@ -360,20 +360,10 @@ class Main(Database):
 
         for attribute in division_attribute:
             window[f"division_{attribute}"].update(settings_data[division_count].get(attribute))
-        
-
-        if(type(settings_data[division_count].get("detail")[detail_count]) == dict):
-            for attribute in detail_attribute:
-                window[f"detail_{attribute}"].update(settings_data[division_count].get("detail")[detail_count].get(attribute))
 
 
-        elif(type(settings_data[division_count].get("detail")[detail_count]) != dict):
-            for attribute in detail_attribute:
-                if(attribute == "id"):
-                    window[f"detail_{attribute}"].update(detail_count + 1)
-
-                elif(attribute != "id"):
-                    window[f"detail_{attribute}"].update("Null")
+        for attribute in detail_attribute:
+            window[f"detail_{attribute}"].update(settings_data[division_count].get("detail")[detail_count].get(attribute))
 
 
 if(__name__ == "__main__"):
