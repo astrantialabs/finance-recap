@@ -345,6 +345,12 @@ class Main(Database):
             elif(len(settings_data) != 1):
                 window["delete_division_button"].update(disabled = False)
             
+            if(len(settings_data[division_count].get("detail")) == 1):
+                window["delete_detail_button"].update(disabled = True)
+
+            elif(len(settings_data[division_count].get("detail")) != 1):
+                window["delete_detail_button"].update(disabled = False)
+
         window.close()
 
     
