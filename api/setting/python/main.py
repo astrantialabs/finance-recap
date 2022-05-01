@@ -321,6 +321,12 @@ class Main(Database):
                 add_detail_window.close()
                 window.Enable()
 
+            elif(event == "delete_detail_button"):
+                del settings_data[division_count].get("detail")[detail_count]
+                detail_count = len(settings_data[division_count].get("detail")) - 1
+
+                Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
+
             if(detail_count == 0):
                 window["previous_button"].update(disabled = True)
 
