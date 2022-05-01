@@ -123,12 +123,12 @@ class PDF():
             wb_excel.workbook_sheet.column_dimensions["D"].width = 11
             wb_excel.workbook.save(wb_excel.path)
 
-            # task = OfficeToPdf('project_public_3aa50bd9a581100935a47732c8d97198_hK0jz4270624ccb2b3e6a215595cf22e7b6a9', verify_ssl=True, proxies=None)
-            # task.add_file(full_excel_file_path)
-            # task.set_output_folder(full_pdf_folder_path)
-            # task.execute()
-            # task.download()
-            # task.delete_current_task()
+            task = OfficeToPdf('project_public_3aa50bd9a581100935a47732c8d97198_hK0jz4270624ccb2b3e6a215595cf22e7b6a9', verify_ssl=True, proxies=None)
+            task.add_file(full_excel_file_path)
+            task.set_output_folder(full_pdf_folder_path)
+            task.execute()
+            task.download()
+            task.delete_current_task()
 
 
 class Main(Database, Utility, PDF):
@@ -208,103 +208,100 @@ class Main(Database, Utility, PDF):
 
     def get_detail(division_data, activity_count, wb_summary):
         detail_setting = division_data.get("detail")[activity_count]
-        if(type(detail_setting) == dict):
-            print(f"Processing : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
-            detail_array = []
-            cell_range = [Excel.convert_range(detail_setting.get("start_range")), Excel.convert_range(detail_setting.get("end_range"))]
+        
+        print(f"Processing : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
+        detail_array = []
+        cell_range = [Excel.convert_range(detail_setting.get("start_range")), Excel.convert_range(detail_setting.get("end_range"))]
 
-            cell_attribute_index = 0
-            cell_attribute_count = 0
+        cell_attribute_index = 0
+        cell_attribute_count = 0
 
-            detail_range = []
-            expenses_range = []
+        detail_range = []
+        expenses_range = []
 
-            i = cell_range[0][1]
-            while i < cell_range[1][1] + 2:
-                if(cell_attribute_count == detail_setting.get("attribute")[cell_attribute_index]):  
-                    combined_expenses_range = []
+        i = cell_range[0][1]
+        while i < cell_range[1][1] + 2:
+            if(cell_attribute_count == detail_setting.get("attribute")[cell_attribute_index]):  
+                combined_expenses_range = []
 
-                    j = 0
-                    while j < len(expenses_range):
-                        temp_combined_expenses_range = expenses_range[j] + expenses_range[j+1] 
-                        combined_expenses_range.append(temp_combined_expenses_range)
+                j = 0
+                while j < len(expenses_range):
+                    temp_combined_expenses_range = expenses_range[j] + expenses_range[j+1] 
+                    combined_expenses_range.append(temp_combined_expenses_range)
 
-                        j += 2
-
-
-                    temp_detail.append(combined_expenses_range)
-                    detail_range.append(temp_detail)
-
-                    expenses_range = []
-                    cell_attribute_count = 0
-                    cell_attribute_index += 1
-
-                if(cell_attribute_count == 0):
-                    temp_detail = [[cell_range[0][0], i], [cell_range[1][0], i]]
-
-                    cell_attribute_count += 1
-                    i += 1
-                
-                elif(cell_attribute_count != 0):
-                    temp_expenses = [[cell_range[0][0], i], [cell_range[1][0], i+1]]
-                    expenses_range.append(temp_expenses)
-
-                    cell_attribute_count += 1
-                    i += 2        
+                    j += 2
 
 
-            wb_summary.change_sheet(detail_setting.get("active_sheet"))
-            for i in range(len(detail_range)):
-                expenses_array = []
-                for j in range(len(detail_range[i][2])):
-                    physical_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][0], detail_range[i][2][j][1])
-                    finance_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][2], detail_range[i][2][j][3])
+                temp_detail.append(combined_expenses_range)
+                detail_range.append(temp_detail)
 
-                    del physical_value[0][2:4]
-                    del physical_value[1][2:4]
-                    del finance_value[0][2:4]
-                    del finance_value[1][2:4]
+                expenses_range = []
+                cell_attribute_count = 0
+                cell_attribute_index += 1
 
-                    physical_monthly = []
-                    for k in range(len(physical_value[0][2:14])):
-                        temp_physical_monthly = [physical_value[0][2:14][k], physical_value[1][2:14][k]]
-                        physical_monthly.append(temp_physical_monthly)
+            if(cell_attribute_count == 0):
+                temp_detail = [[cell_range[0][0], i], [cell_range[1][0], i]]
 
+                cell_attribute_count += 1
+                i += 1
+            
+            elif(cell_attribute_count != 0):
+                temp_expenses = [[cell_range[0][0], i], [cell_range[1][0], i+1]]
+                expenses_range.append(temp_expenses)
 
-                    finance_monthly = []
-                    for k in range(len(finance_value[0][2:14])):
-                        temp_finance_monthly = [finance_value[0][2:14][k], finance_value[1][2:14][k]]
-                        finance_monthly.append(temp_finance_monthly)
+                cell_attribute_count += 1
+                i += 2        
 
 
-                    temp_expenses_dictionary = {
-                        "id": j+1,
-                        "name": physical_value[0][0],
-                        "physical": {
-                            "total": physical_value[0][1],
-                            "monthly": physical_monthly
-                        },
-                        "finance": {
-                            "total": finance_value[0][1],
-                            "monthly": finance_monthly
-                        }
+        wb_summary.change_sheet(detail_setting.get("active_sheet"))
+        for i in range(len(detail_range)):
+            expenses_array = []
+            for j in range(len(detail_range[i][2])):
+                physical_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][0], detail_range[i][2][j][1])
+                finance_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][2], detail_range[i][2][j][3])
+
+                del physical_value[0][2:4]
+                del physical_value[1][2:4]
+                del finance_value[0][2:4]
+                del finance_value[1][2:4]
+
+                physical_monthly = []
+                for k in range(len(physical_value[0][2:14])):
+                    temp_physical_monthly = [physical_value[0][2:14][k], physical_value[1][2:14][k]]
+                    physical_monthly.append(temp_physical_monthly)
+
+
+                finance_monthly = []
+                for k in range(len(finance_value[0][2:14])):
+                    temp_finance_monthly = [finance_value[0][2:14][k], finance_value[1][2:14][k]]
+                    finance_monthly.append(temp_finance_monthly)
+
+
+                temp_expenses_dictionary = {
+                    "id": j+1,
+                    "name": physical_value[0][0],
+                    "physical": {
+                        "total": physical_value[0][1],
+                        "monthly": physical_monthly
+                    },
+                    "finance": {
+                        "total": finance_value[0][1],
+                        "monthly": finance_monthly
                     }
+                }
 
-                    expenses_array.append(temp_expenses_dictionary)
-
-
-                value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
-                del value[2:4]
-
-                detail_attribute = ["account", "total_finance", "monthly_finance", "expenses"]
-                detail_dict_value = [value[0], value[1], value[2:14], expenses_array]
-                temp_detail_dictionary = Main.convert_to_dict(i, detail_dict_value, detail_attribute)
-
-                detail_array.append(temp_detail_dictionary)
+                expenses_array.append(temp_expenses_dictionary)
 
 
-        elif(type(detail_setting) != dict):
-            detail_array = None
+            value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
+            del value[2:4]
+
+            detail_attribute = ["account", "total_finance", "monthly_finance", "expenses"]
+            detail_dict_value = [value[0], value[1], value[2:14], expenses_array]
+            temp_detail_dictionary = Main.convert_to_dict(i, detail_dict_value, detail_attribute)
+
+            detail_array.append(temp_detail_dictionary)
+
 
         return detail_array
 
