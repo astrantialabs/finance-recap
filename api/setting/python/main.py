@@ -110,12 +110,23 @@ class Main(Database):
                     save_is_valid = False
 
                 if(save_is_valid):
-                    print("test")
+                    for division_index, division_settings in enumerate(settings_data):
+                        update_dictionary = {
+                            "id": division_settings.get("id"),
+                            "name": division_settings.get("name"),
+                            "start_range": division_settings.get("start_range"),
+                            "end_range": division_settings.get("end_range"),
+                            "detail": division_settings.get("detail")
+                        }
+                        
+                        collection.replace_one({"id": division_index + 1}, update_dictionary, upsert=True)
+
+
+                    settings_data = Main.get_settings_data(collection)
+                    Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
 
                 elif(not save_is_valid):
                     sg.Popup('Input Not Valid', keep_on_top=True)
-
-                settings_data = Main.get_settings_data(collection)
 
             elif(event in ("previous_button", "next_button")):
                 Main.update_input(settings_data, division_attribute, division_count, detail_attribute, detail_count, values)
