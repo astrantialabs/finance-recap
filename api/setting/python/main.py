@@ -44,7 +44,8 @@ class Main(Database):
             ],
             [
                 ["Add Division", "add_division", False],
-                ["Delete Division", "delete_division", False]
+                ["Delete Division", "delete_division", False],
+                ["Cancel", "cancel", False]
             ],
             [
                 ["Add Detail", "add_detail", False],
@@ -73,7 +74,7 @@ class Main(Database):
         while True:
             event, values = window.read()
 
-            if(event == sg.WINDOW_CLOSED):
+            if(event == sg.WINDOW_CLOSED or event == "cancel_button"):
                 break
             
             elif(event == "listbox"):
