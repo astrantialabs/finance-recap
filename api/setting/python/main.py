@@ -87,13 +87,7 @@ class Main(Database):
                 break
             
             elif(event == "listbox"):
-                for division_settings in division_attribute:
-                    settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
-
-
-                for detail_settings in detail_attribute:
-                    settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
-
+                Main.update_input(settings_data, division_attribute, division_count, detail_attribute, detail_count, values)
 
                 name = values["listbox"][0]
 
@@ -106,13 +100,7 @@ class Main(Database):
                 Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
             
             elif(event == "save_button"):
-                for division_settings in division_attribute:
-                    settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
-
-
-                for detail_settings in detail_attribute:
-                    settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
-
+                Main.update_input(settings_data, division_attribute, division_count, detail_attribute, detail_count, values)
 
                 save_is_valid = True
                 try:
@@ -133,13 +121,7 @@ class Main(Database):
                     print("test")
 
             elif(event in ("previous_button", "next_button")):
-                for division_settings in division_attribute:
-                    settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
-
-
-                for detail_settings in detail_attribute:
-                    settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
-
+                Main.update_input(settings_data, division_attribute, division_count, detail_attribute, detail_count, values)
 
                 if(event == "previous_button" and detail_count != 0):
                     detail_count -= 1
@@ -418,6 +400,14 @@ class Main(Database):
         for attribute in detail_attribute:
             window[f"detail_{attribute}"].update(settings_data[division_count].get("detail")[detail_count].get(attribute))
 
+
+    def update_input(settings_data, division_attribute, division_count, detail_attribute, detail_count, values):
+        for division_settings in division_attribute:
+            settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
+
+
+        for detail_settings in detail_attribute:
+            settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
 
 if(__name__ == "__main__"):
     Main.main()
