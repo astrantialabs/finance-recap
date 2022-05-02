@@ -90,6 +90,11 @@ class Main(Database):
                 for division_settings in division_attribute:
                     settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
 
+
+                for detail_settings in detail_attribute:
+                    settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
+
+
                 name = values["listbox"][0]
 
                 for division_index, division in enumerate(settings_data):
@@ -100,6 +105,33 @@ class Main(Database):
 
                 Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
             
+            elif(event == "save_button"):
+                for division_settings in division_attribute:
+                    settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
+
+
+                for detail_settings in detail_attribute:
+                    settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
+
+
+                save_is_valid = True
+                try:
+                    for division_settings in settings_data:
+                        for detail_settings in division_settings.get("detail"): 
+                            detail_settings["id"] = int(detail_settings["id"])
+                            detail_settings["active_sheet"] = int(detail_settings["active_sheet"])
+
+                            int_detail_attribute = [int(x) for x in detail_settings.get("attribute").split()]
+                            detail_settings["attribute"] = int_detail_attribute
+
+                        division_settings["id"] = int(division_settings.get("id"))
+
+                except:
+                    save_is_valid = False
+
+                if(save_is_valid):
+                    print("test")
+
             elif(event in ("previous_button", "next_button")):
                 for division_settings in division_attribute:
                     settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
@@ -116,7 +148,7 @@ class Main(Database):
                     detail_count += 1
                 
                 Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
-
+            
             elif(event == "add_division_button"):
                 window.Disable()
 
