@@ -102,13 +102,18 @@ class Main(Database):
                             int_detail_attribute = [int(x) for x in detail_settings.get("attribute").split()]
                             detail_settings["attribute"] = int_detail_attribute
 
+
                         division_settings["id"] = int(division_settings.get("id"))
+
 
                 except:
                     save_is_valid = False
 
                 if(save_is_valid):
                     print("test")
+
+                elif(not save_is_valid):
+                    sg.Popup('Input Not Valid', keep_on_top=True)
 
                 settings_data = Main.get_settings_data(collection)
 
