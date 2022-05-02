@@ -92,41 +92,62 @@ class Main(Database):
             elif(event == "save_button"):
                 Main.update_input(settings_data, division_attribute, division_count, detail_attribute, detail_count, values)
 
-                save_is_valid = True
-                try:
-                    for division_settings in settings_data:
-                        for detail_settings in division_settings.get("detail"): 
-                            detail_settings["id"] = int(detail_settings["id"])
-                            detail_settings["active_sheet"] = int(detail_settings["active_sheet"])
+                confirmation_layout = [
+                    [sg.Text("Are you sure?", font=12)],
+                    [
+                        sg.Button("Yes", key="yes_button", enable_events=True, size=(8, 2), button_color="#00CC00"),
+                        sg.Button("No", key="no_button", enable_events=True, size=(8, 2), button_color="#CC0000")
+                    ]
+                ]
 
-                            int_detail_attribute = [int(x) for x in detail_settings.get("attribute").split()]
-                            detail_settings["attribute"] = int_detail_attribute
+                confirmation_window = sg.Window("Confirm", confirmation_layout, size=(225, 100), element_justification='c', keep_on_top=True)
 
+                while True:
+                    confirmation_event, confirmation_values = confirmation_window.read()
+                    if(confirmation_event == sg.WINDOW_CLOSED or confirmation_event == "no_button"):
+                        break
 
-                        division_settings["id"] = int(division_settings.get("id"))
+                    elif(confirmation_event == "yes_button"):
+                        save_is_valid = True
+                        try:
+                            for division_settings in settings_data:
+                                for detail_settings in division_settings.get("detail"): 
+                                    detail_settings["id"] = int(detail_settings["id"])
+                                    detail_settings["active_sheet"] = int(detail_settings["active_sheet"])
 
-
-                except:
-                    save_is_valid = False
-
-                if(save_is_valid):
-                    for division_index, division_settings in enumerate(settings_data):
-                        update_dictionary = {
-                            "id": division_settings.get("id"),
-                            "name": division_settings.get("name"),
-                            "start_range": division_settings.get("start_range"),
-                            "end_range": division_settings.get("end_range"),
-                            "detail": division_settings.get("detail")
-                        }
-                        
-                        collection.replace_one({"id": division_index + 1}, update_dictionary, upsert=True)
+                                    int_detail_attribute = [int(x) for x in detail_settings.get("attribute").split()]
+                                    detail_settings["attribute"] = int_detail_attribute
 
 
-                    settings_data = Main.get_settings_data(collection)
-                    Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
+                                division_settings["id"] = int(division_settings.get("id"))
 
-                elif(not save_is_valid):
-                    sg.Popup('Input Not Valid', keep_on_top=True)
+
+                        except:
+                            save_is_valid = False
+
+                        if(save_is_valid):
+                            for division_index, division_settings in enumerate(settings_data):
+                                update_dictionary = {
+                                    "id": division_settings.get("id"),
+                                    "name": division_settings.get("name"),
+                                    "start_range": division_settings.get("start_range"),
+                                    "end_range": division_settings.get("end_range"),
+                                    "detail": division_settings.get("detail")
+                                }
+                                
+                                collection.replace_one({"id": division_index + 1}, update_dictionary, upsert=True)
+
+
+                            settings_data = Main.get_settings_data(collection)
+                            Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
+
+                        elif(not save_is_valid):
+                            sg.Popup('Input Not Valid', keep_on_top=True)
+
+                        break
+
+
+                confirmation_window.close()
 
             elif(event in ("previous_button", "next_button")):
                 Main.update_input(settings_data, division_attribute, division_count, detail_attribute, detail_count, values)
