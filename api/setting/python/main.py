@@ -28,17 +28,7 @@ class Main(Database):
 
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
-        settings_data = list(collection.find({}))
-        for division_settings in settings_data:
-            for detail_settings in division_settings.get("detail"):
-                list_detail_settings = []
-                for attribute in detail_settings.get("attribute"):
-                    list_detail_settings.append(str(attribute))
-
-
-                string_detail_settings = " ".join(list_detail_settings)
-                detail_settings["attribute"] = string_detail_settings
-
+        settings_data = Main.get_settings_data(collection)
 
         division_count = 0
         detail_count = 0
@@ -119,6 +109,8 @@ class Main(Database):
 
                 if(save_is_valid):
                     print("test")
+
+                settings_data = Main.get_settings_data(collection)
 
             elif(event in ("previous_button", "next_button")):
                 Main.update_input(settings_data, division_attribute, division_count, detail_attribute, detail_count, values)
@@ -408,6 +400,23 @@ class Main(Database):
 
         for detail_settings in detail_attribute:
             settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
+
+    
+    def get_settings_data(collection):
+        settings_data = list(collection.find({}))
+        for division_settings in settings_data:
+            for detail_settings in division_settings.get("detail"):
+                list_detail_settings = []
+                for attribute in detail_settings.get("attribute"):
+                    list_detail_settings.append(str(attribute))
+
+
+                string_detail_settings = " ".join(list_detail_settings)
+                detail_settings["attribute"] = string_detail_settings
+
+        
+        return settings_data
+
 
 if(__name__ == "__main__"):
     Main.main()
