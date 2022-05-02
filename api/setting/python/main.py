@@ -29,6 +29,16 @@ class Main(Database):
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
         settings_data = list(collection.find({}))
+        for division_settings in settings_data:
+            for detail_settings in division_settings.get("detail"):
+                list_detail_settings = []
+                for attribute in detail_settings.get("attribute"):
+                    list_detail_settings.append(str(attribute))
+
+
+                string_detail_settings = " ".join(list_detail_settings)
+                detail_settings["attribute"] = string_detail_settings
+
 
         division_count = 0
         detail_count = 0
@@ -77,6 +87,9 @@ class Main(Database):
                 break
             
             elif(event == "listbox"):
+                for division_settings in division_attribute:
+                    settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
+
                 name = values["listbox"][0]
 
                 for division_index, division in enumerate(settings_data):
@@ -88,6 +101,14 @@ class Main(Database):
                 Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
             
             elif(event in ("previous_button", "next_button")):
+                for division_settings in division_attribute:
+                    settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
+
+
+                for detail_settings in detail_attribute:
+                    settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
+
+
                 if(event == "previous_button" and detail_count != 0):
                     detail_count -= 1
 
