@@ -75,7 +75,7 @@ class Main(Database):
         while True:
             event, values = window.read()
 
-            if(event == sg.WINDOW_CLOSED or event == "cancel_button"):
+            if(event == sg.WINDOW_CLOSED):
                 break
             
             elif(event == "listbox"):
@@ -150,6 +150,34 @@ class Main(Database):
 
 
                 confirmation_window.close()
+
+            elif(event == "cancel_button"):
+                cancel_is_valid = False
+
+                confirmation_layout = [
+                    [sg.Text("Are you sure?", font=12)],
+                    [
+                        sg.Button("Yes", key="yes_button", enable_events=True, size=(8, 2), button_color="#00CC00"),
+                        sg.Button("No", key="no_button", enable_events=True, size=(8, 2), button_color="#CC0000")
+                    ]
+                ]
+
+                confirmation_window = sg.Window("Confirm", confirmation_layout, size=(225, 100), element_justification='c', keep_on_top=True)
+
+                while True:
+                    confirmation_event, confirmation_values = confirmation_window.read()
+                    if(confirmation_event == sg.WINDOW_CLOSED or confirmation_event == "no_button"):
+                        break
+                    
+                    elif(confirmation_event == "yes_button"):
+                        cancel_is_valid = True
+                        break
+
+
+                confirmation_window.close()
+
+                if(cancel_is_valid):
+                    break
 
             elif(event == "refresh_button"):
                 confirmation_layout = [
