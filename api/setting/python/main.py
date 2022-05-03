@@ -49,7 +49,8 @@ class Main(Database):
             ],
             [
                 ["Add Detail", "add_detail", False],
-                ["Delete Detail", "delete_detail", False]
+                ["Delete Detail", "delete_detail", False],
+                ["Refresh", "refresh", False]
             ]
         ]
         
@@ -144,6 +145,31 @@ class Main(Database):
 
                         elif(not save_is_valid):
                             sg.Popup('Input Not Valid', keep_on_top=True)
+
+                        break
+
+
+                confirmation_window.close()
+
+            elif(event == "refresh_button"):
+                confirmation_layout = [
+                    [sg.Text("Are you sure?", font=12)],
+                    [
+                        sg.Button("Yes", key="yes_button", enable_events=True, size=(8, 2), button_color="#00CC00"),
+                        sg.Button("No", key="no_button", enable_events=True, size=(8, 2), button_color="#CC0000")
+                    ]
+                ]
+
+                confirmation_window = sg.Window("Confirm", confirmation_layout, size=(225, 100), element_justification='c', keep_on_top=True)
+
+                while True:
+                    confirmation_event, confirmation_values = confirmation_window.read()
+                    if(confirmation_event == sg.WINDOW_CLOSED or confirmation_event == "no_button"):
+                        break
+                    
+                    elif(confirmation_event == "yes_button"):
+                        settings_data = Main.get_settings_data(collection)
+                        Main.update(window, settings_data, division_attribute, detail_attribute, division_count, detail_count)
 
                         break
 
