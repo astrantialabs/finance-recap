@@ -61,6 +61,7 @@ class Utility():
         utilities_collection = Database.get_collection(mongoDBURI, database_name, collection_name)
 
         update_dictionary = {
+            "id": 1,
             "last_modified": translated_excel_last_modified,
             "last_runned": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
