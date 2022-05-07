@@ -5,7 +5,6 @@ import datetime
 from excel import Excel
 from pymongo import MongoClient
 from dotenv import dotenv_values
-from pylovepdf.tools.officepdf import OfficeToPdf
 
 class Database():
     def get_cluster(mongoDBURI):
@@ -69,10 +68,10 @@ class Utility():
         utilities_collection.replace_one({"id": 1}, update_dictionary)
 
 
-class PDF():
-    def create_pdf(file_path, data):
+class File():
+    def create_excel(file_path, data):
         for division_count, division in enumerate(data):
-            current_datetime = datetime.datetime.now().strftime("%d-%m-%y %H-%M-%S")
+            current_datetime = datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")
             excel_folder_path = f"excel/{division.get('name').lower()}"
             excel_file_path = F"{current_datetime}.xlsx"
 
@@ -128,15 +127,19 @@ class PDF():
             wb_excel.workbook_sheet.column_dimensions["D"].width = 11
             wb_excel.workbook.save(wb_excel.path)
 
-            task = OfficeToPdf('project_public_3aa50bd9a581100935a47732c8d97198_hK0jz4270624ccb2b3e6a215595cf22e7b6a9', verify_ssl=True, proxies=None)
-            task.add_file(full_excel_file_path)
-            task.set_output_folder(full_pdf_folder_path)
-            task.execute()
-            task.download()
-            task.delete_current_task()
+
+    def create_pdf():
+        # task = OfficeToPdf('project_public_3aa50bd9a581100935a47732c8d97198_hK0jz4270624ccb2b3e6a215595cf22e7b6a9', verify_ssl=True, proxies=None)
+        # task.add_file(full_excel_file_path)
+        # task.set_output_folder(full_pdf_folder_path)
+        # task.execute()
+        # task.download()
+        # task.delete_current_task() 
+
+        print()    
 
 
-class Main(Database, Utility, PDF):
+class Main(Database, Utility, File):
     env_value = dotenv_values("./api/.env") # path
 
     def main():
@@ -168,12 +171,12 @@ class Main(Database, Utility, PDF):
             data = json.load(open(Main.env_value.get("JSONPath")))
             # Main.update_data(mongoDBURI, database_name, data)
 
-            Main.create_pdf(Main.env_value.get("FilePath"), data)            
+            Main.create_excel(Main.env_value.get("FilePath"), data)            
 
         elif(Main.env_value.get("Status") == "Non-Production"):
             # Main.update_data(mongoDBURI, database_name, division_array)
 
-            Main.create_pdf(Main.env_value.get("FilePath"), division_array)         
+            Main.create_excel(Main.env_value.get("FilePath"), division_array)         
 
 
     def get_division(settings_data, wb_summary):
