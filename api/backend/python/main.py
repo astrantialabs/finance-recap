@@ -327,11 +327,12 @@ class Main(Database, Utility, File):
         for i in range(len(data)):
             update_id = data[i].get("id")
             update_dictionary = {
+                "id": update_id,
                 "name": data[i].get("name"),
                 "activity": data[i].get("activity")
             }
 
-            summary_recaps_collection.find_one_and_update({"id": update_id}, {"$set": update_dictionary})
+            summary_recaps_collection.replace_one({"id": update_id}, update_dictionary, upsert=True)
 
 
     def show_data(mongoDBURI, database_name):
