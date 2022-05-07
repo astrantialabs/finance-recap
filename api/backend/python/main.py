@@ -134,7 +134,7 @@ class File():
 
 
         wb_excel.workbook_sheet.column_dimensions["A"].width = 5
-        wb_excel.workbook_sheet.column_dimensions["B"].width = 30
+        wb_excel.workbook_sheet.column_dimensions["B"].width = 64
         wb_excel.workbook_sheet.column_dimensions["C"].width = 11
         wb_excel.workbook_sheet.column_dimensions["D"].width = 11
         wb_excel.workbook.save(wb_excel.path)
