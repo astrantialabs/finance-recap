@@ -20,6 +20,8 @@ class Database():
 
 
 class Main():
+    env_value = dotenv_values("./api/.env") # path
+    
     file_path = "api/setting/json"
     in_path = f"{file_path}/untranslated_setting.json"
     out_path = f"{file_path}/setting.json"
@@ -61,6 +63,9 @@ class Main():
     def update():
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
         database_name = "DisnakerFinanceRecap"
+        if(Main.env_value.get("Status") == "Production"):
+            database_name = "Production"
+
         collection_name = "settings"
 
         collection = Database.get_collection(mongoDBURI, database_name, collection_name)

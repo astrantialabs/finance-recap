@@ -21,9 +21,14 @@ class Database():
 
 
 class Main(Database):
+    env_value = dotenv_values("./api/.env") # path
+
     def main():
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
         database_name = "DisnakerFinanceRecap"
+        if(Main.env_value.get("Status") == "Production"):
+            database_name = "Production"
+
         collection_name = "settings"
 
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)

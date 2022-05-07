@@ -146,6 +146,8 @@ class Main(Database, Utility, File):
     def main():
         mongoDBURI = Main.env_value.get("APIdbURI")
         database_name = "DisnakerFinanceRecap"
+        if(Main.env_value.get("Status") == "Production"):
+            database_name = "Production"
 
         Main.get_data(mongoDBURI, database_name)
 
@@ -170,12 +172,12 @@ class Main(Database, Utility, File):
         if(Main.env_value.get("Status") == "Production"):
             Main.write_json(division_array, Main.env_value.get("JSONPath"))
             data = json.load(open(Main.env_value.get("JSONPath")))
-            # Main.update_data(mongoDBURI, database_name, data)
+            Main.update_data(mongoDBURI, database_name, data)
 
             Main.create_excel(Main.env_value.get("FilePath"), data)            
 
         elif(Main.env_value.get("Status") == "Non-Production"):
-            # Main.update_data(mongoDBURI, database_name, division_array)
+            Main.update_data(mongoDBURI, database_name, division_array)
 
             Main.create_excel(Main.env_value.get("FilePath"), division_array)         
 
