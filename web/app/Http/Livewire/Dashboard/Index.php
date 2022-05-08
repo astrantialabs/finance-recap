@@ -3,11 +3,15 @@
 namespace App\Http\Livewire\Dashboard;
 
 use Livewire\Component;
+use App\Models\SummaryRecaps;
 
 class Index extends Component
 {
     public function render()
     {
-        return view('livewire.dashboard.index');
+        $summary = SummaryRecaps::all();
+        return view("dashboard.index", [
+            "summary" => $summary,
+        ]);
     }
 }

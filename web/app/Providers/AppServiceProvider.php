@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use ConsoleTVs\Charts\Registrar as Charts;
 use ILluminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,10 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if ($this->app->environment("local")) {
-            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
-            $this->app->register(TelescopeServiceProvider::class);
-        }
+        //
     }
 
     /**
@@ -25,8 +23,9 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(Charts $charts)
     {
+        $charts->register([\App\Charts\SampleChart::class]);
         Blade::directive("currency", function ($expression) {
             return "Rp. <?php echo number_format($expression,0,',','.'); ?>";
         });

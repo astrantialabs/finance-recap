@@ -33,7 +33,7 @@
 }
 
 @function calculateRem($size) {
-    $remSize: $size / 16px;
+    $remSize: math.div($size, 16px);
     @return $remSize * 1rem;
 }
 
@@ -66,20 +66,5 @@
         font-weight: 400;
     } @else {
         font-weight: $font-weight;
-    }
-}
-
-@mixin color-opacity($color, $opacity) {
-    color: rgba($color, $opacity);
-}
-
-@mixin background-opacity($color, $opacity) {
-    background: $color;
-    background: rgba($color, $opacity);
-}
-
-@mixin map-to-css-variables($map: ()) {
-    @each $key, $value in $map {
-        --#{$key}: #{$value};
     }
 }

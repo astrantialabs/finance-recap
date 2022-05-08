@@ -9,12 +9,11 @@ class Logout extends Component
 {
     public function render()
     {
-        return view('livewire.auth.logout');
+        return view("auth.logout");
     }
-
     public function logout()
     {
         Auth::logout();
-        return redirect()->to('/login');
+        return redirect()->to("/login");
     }
 }

@@ -8,6 +8,6 @@ class Base extends Component
 {
     public function render()
     {
-        return view('livewire.dashboard.base');
+        return view('dashboard.base');
     }
 }

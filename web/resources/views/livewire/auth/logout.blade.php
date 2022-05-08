@@ -1,1 +1,0 @@
-<a wire:click="logout" class="call-to-action call-to-action--darkgunmetal" style="cursor: pointer">Logout</a>

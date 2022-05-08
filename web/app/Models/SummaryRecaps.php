@@ -6,6 +6,6 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class SummaryRecaps extends Model
 {
-    protected $collection = 'summary_recaps';
-    protected $connection = 'mongodb';
+    protected $collection = "summary_recaps";
+    protected $connection = "mongodb";
 }

@@ -11,29 +11,28 @@ class Login extends Component
     public $password;
 
     protected $rules = [
-        'username'     => 'required',
-        'password'  => 'required'
+        "username" => "required",
+        "password" => "required",
     ];
 
     protected $messages = [
-        'username.required' => 'Username tidak boleh kosong.',
-        'password.required' => 'Password tidak boleh kosong.',
+        "username.required" => "Username tidak boleh kosong.",
+        "password.required" => "Password tidak boleh kosong.",
     ];
 
     public function render()
     {
-        return view('livewire.auth.login');
+        return view("auth.login");
     }
 
     public function login()
     {
-        
         $this->validate();
 
-        if(Auth::attempt(['username' => $this->username, 'password' => $this->password])) {
-            return redirect()->to('/');
+        if (Auth::attempt(["username" => $this->username, "password" => $this->password])) {
+            return redirect()->to("/");
         } else {
-            return redirect()->to('/login');
+            return redirect()->to("/login");
         }
     }
 }
