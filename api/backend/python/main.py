@@ -68,7 +68,7 @@ class Utility():
             "last_runned": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        utilities_collection.replace_one({"id": 1}, update_dictionary)
+        utilities_collection.replace_one({"id": 1}, update_dictionary, upsert=True)
 
 
 class File():
@@ -199,12 +199,12 @@ class Main(Database, Utility, File):
         if(Main.env_value.get("Status") == "Production"):
             Main.write_json(division_array, Main.env_value.get("JSONPath"))
             data = json.load(open(Main.env_value.get("JSONPath")))
-            # Main.update_data(mongoDBURI, database_name, data)
+            Main.update_data(mongoDBURI, database_name, data)
 
             Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), data)            
 
         elif(Main.env_value.get("Status") == "Non-Production"):
-            # Main.update_data(mongoDBURI, database_name, division_array)
+            Main.update_data(mongoDBURI, database_name, division_array)
 
             Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), division_array)         
 
