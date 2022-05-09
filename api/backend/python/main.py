@@ -1,6 +1,7 @@
 import json
 import os
 import datetime
+import gridfs
 
 from excel import Excel
 from pymongo import MongoClient
@@ -67,11 +68,11 @@ class Utility():
             "last_runned": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        utilities_collection.replace_one({"id": 1}, update_dictionary)
+        utilities_collection.replace_one({"id": 1}, update_dictionary, upsert=True)
 
 
 class File():
-    def create_file(file_path, data):
+    def create_file(mongoDBURI, file_path, data):
         system_path = os.getcwd()
 
         for division in data:
@@ -92,6 +93,7 @@ class File():
 
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path)
+            File.upload_file(mongoDBURI, division.get('name'), current_datetime, full_excel_file_path, full_pdf_folder_path)
 
 
     def create_excel(file_path, division, full_excel_file_path):
@@ -151,6 +153,20 @@ class File():
         excel.Application.Quit()
 
 
+    def upload_file(mongoDBURI, database, file_name, excel_path, pdf_path):
+        database = Database.get_database(mongoDBURI, database)
+        
+        excel_file = open(excel_path, "rb")
+        pdf_file = open(pdf_path, "rb")
+
+        excel_data = excel_file.read()
+        pdf_data = pdf_file.read()
+
+        fs = gridfs.GridFS(database)
+        fs.put(excel_data, filename=f"{file_name}.excel")
+        fs.put(pdf_data, filename=f"{file_name}.pdf")
+
+
 class Main(Database, Utility, File):
     env_value = dotenv_values("./api/.env") # path
 
@@ -183,14 +199,14 @@ class Main(Database, Utility, File):
         if(Main.env_value.get("Status") == "Production"):
             Main.write_json(division_array, Main.env_value.get("JSONPath"))
             data = json.load(open(Main.env_value.get("JSONPath")))
-            # Main.update_data(mongoDBURI, database_name, data)
+            Main.update_data(mongoDBURI, database_name, data)
 
-            Main.create_file(Main.env_value.get("FilePath"), data)            
+            Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), data)            
 
         elif(Main.env_value.get("Status") == "Non-Production"):
-            # Main.update_data(mongoDBURI, database_name, division_array)
+            Main.update_data(mongoDBURI, database_name, division_array)
 
-            Main.create_file(Main.env_value.get("FilePath"), division_array)         
+            Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), division_array)         
 
 
     def get_division(settings_data, wb_summary):
