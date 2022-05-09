@@ -12,5 +12,4 @@ class Main():
             os.rename(old_name, new_name)
 
 
-if __name__ == "__main__":
-    Main.main()
+Main.main()
