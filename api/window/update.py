@@ -2,11 +2,11 @@ import json
 import os
 import datetime
 import openpyxl
-import jpype
-import asposecells
+import gridfs
 
 from pymongo import MongoClient
 from openpyxl.styles import *
+from win32com import client
 
 class Excel():
     def __init__(self, path: str, sheet: int):
@@ -808,90 +808,127 @@ class Utility():
         collection_name = "utilities"
         utilities_collection = Database.get_collection(mongoDBURI, database_name, collection_name)
 
-        utilities_collection.find_one_and_update({"id": 1}, {"$set": {"last_modified": translated_excel_last_modified}})
+        update_dictionary = {
+            "id": 1,
+            "last_modified": translated_excel_last_modified,
+            "last_runned": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        utilities_collection.replace_one({"id": 1}, update_dictionary, upsert=True)
 
 
-class PDF():
-    def create_pdf(file_path, data):
-        jpype.startJVM()
-        from asposecells.api import Workbook, SaveFormat
+class File():
+    def create_file(mongoDBURI, file_path, data):
+        system_path = os.getcwd()
 
-        for division_count, division in enumerate(data):
-            current_datetime = datetime.datetime.now().strftime("%d-%m-%y %H-%M-%S")
+        for division in data:
+            current_datetime = datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")
+
             excel_folder_path = f"excel/{division.get('name').lower()}"
             excel_file_path = F"{current_datetime}.xlsx"
-
             full_excel_file_path = f"{file_path}/{excel_folder_path}/{excel_file_path}"
+            system_excel_path = os.path.join(system_path, full_excel_file_path)
 
             pdf_folder_path = f"pdf/{division.get('name').lower()}"
             pdf_file_path = F"{current_datetime}.pdf"
-
-            full_pdf_file_path = f"{file_path}/{pdf_folder_path}/{pdf_file_path}"
+            full_pdf_folder_path = f"{file_path}/{pdf_folder_path}/{pdf_file_path}"
+            system_pdf_path = os.path.join(system_path, full_pdf_folder_path)
 
             os.makedirs(f"{file_path}/{excel_folder_path}", exist_ok=True)
             os.makedirs(f"{file_path}/{pdf_folder_path}", exist_ok=True)
-            Excel.create_file(full_excel_file_path)
 
-            wb_excel = Excel(full_excel_file_path, 1)
-            wb_excel.write_value_singular("A1", f"Divisi: {division.get('name')}")
-            wb_excel.write_value_multiple("A3", "C3", ["No.", "Sub Kegiatan", "Realisasi"])
-            wb_excel.write_value_multiple("c4", "D4", ["Fisik", "Keuangan"])
-
-            wb_excel.merge("A3", "A4")
-            wb_excel.merge("B3", "B4")
-            wb_excel.merge("C3", "D3")
-
-            row_end_range = 4 + len(division.get('activity'))
-            wb_excel.border_multiple("A3", [4, row_end_range], "all", style="thin")
-            wb_excel.alignment_multiple("A3", [4, row_end_range], horizontal="center", vertical="center")
-            wb_excel.alignment_multiple("B5", [2, row_end_range], horizontal="left", vertical="center", wrap=True)
-            wb_excel.font_singular("A1", size=12, bold=True)
-            wb_excel.font_multiple("A3", "D4", bold=True)
-
-            for activity_count, activity in enumerate(division.get('activity')):
-                activity_physical_value = None
-                if(type(activity.get('physical')) in (int, float)):
-                    activity_physical_value = f"{activity.get('physical')}%"
-
-                activity_finance_value = None
-                if(type(activity.get('finance')) in (int, float)):
-                    activity_finance_value = f"{activity.get('finance')}%"
-
-                activity_value = [
-                    activity_count + 1,
-                    activity.get("activity"),
-                    activity_physical_value,
-                    activity_finance_value
-                ]
-
-                wb_excel.write_value_multiple(
-                    [1, 5 + activity_count], [4, 5 + activity_count], activity_value)
+            File.create_excel(file_path, division, full_excel_file_path)
+            File.create_pdf(system_excel_path, system_pdf_path)
+            File.upload_file(mongoDBURI, division.get('name'), current_datetime, full_excel_file_path, full_pdf_folder_path)
 
 
-            wb_excel.workbook_sheet.column_dimensions["A"].width = 5
-            wb_excel.workbook_sheet.column_dimensions["B"].width = 30
-            wb_excel.workbook_sheet.column_dimensions["C"].width = 11
-            wb_excel.workbook_sheet.column_dimensions["D"].width = 11
-            wb_excel.workbook.save(wb_excel.path)
+    def create_excel(file_path, division, full_excel_file_path):
+        Excel.create_file(full_excel_file_path)
 
-            workbook = Workbook(full_excel_file_path)   
-            workbook.save(full_pdf_file_path, SaveFormat.PDF)
+        wb_excel = Excel(full_excel_file_path, 1)
+        wb_excel.write_value_singular("A1", f"Divisi: {division.get('name')}")
+        wb_excel.write_value_multiple("A3", "C3", ["No.", "Sub Kegiatan", "Realisasi"])
+        wb_excel.write_value_multiple("c4", "D4", ["Fisik", "Keuangan"])
+
+        wb_excel.merge("A3", "A4")
+        wb_excel.merge("B3", "B4")
+        wb_excel.merge("C3", "D3")
+
+        row_end_range = 4 + len(division.get('activity'))
+        wb_excel.border_multiple("A3", [4, row_end_range], "all", style="thin")
+        wb_excel.alignment_multiple("A3", [4, row_end_range], horizontal="center", vertical="center")
+        wb_excel.alignment_multiple("B5", [2, row_end_range], horizontal="left", vertical="center", wrap=True)
+        wb_excel.font_singular("A1", size=12, bold=True)
+        wb_excel.font_multiple("A3", "D4", bold=True)
+
+        for activity_count, activity in enumerate(division.get('activity')):
+            activity_physical_value = None
+            if(type(activity.get('physical')) in (int, float)):
+                activity_physical_value = f"{activity.get('physical')}%"
+
+            activity_finance_value = None
+            if(type(activity.get('finance')) in (int, float)):
+                activity_finance_value = f"{activity.get('finance')}%"
+
+            activity_value = [
+                activity_count + 1,
+                activity.get("activity"),
+                activity_physical_value,
+                activity_finance_value
+            ]
+
+            wb_excel.write_value_multiple(
+                [1, 5 + activity_count], [4, 5 + activity_count], activity_value)
 
 
-        jpype.shutdownJVM()
+        wb_excel.workbook_sheet.column_dimensions["A"].width = 5
+        wb_excel.workbook_sheet.column_dimensions["B"].width = 64
+        wb_excel.workbook_sheet.column_dimensions["C"].width = 11
+        wb_excel.workbook_sheet.column_dimensions["D"].width = 11
+        wb_excel.workbook.save(wb_excel.path)
 
 
-class Main(Database, Utility, PDF):
+    def create_pdf(system_excel_path, system_pdf_path):
+        excel = client.Dispatch("Excel.Application")
+
+        sheets = excel.Workbooks.Open(system_excel_path)
+        work_sheets = sheets.Worksheets[0]
+    
+        work_sheets.ExportAsFixedFormat(0, system_pdf_path)
+
+        excel.Application.Quit()
+
+
+    def upload_file(mongoDBURI, database, file_name, excel_path, pdf_path):
+        database = Database.get_database(mongoDBURI, database)
+        
+        excel_file = open(excel_path, "rb")
+        pdf_file = open(pdf_path, "rb")
+
+        excel_data = excel_file.read()
+        pdf_data = pdf_file.read()
+
+        fs = gridfs.GridFS(database)
+        fs.put(excel_data, filename=f"{file_name}.excel")
+        fs.put(pdf_data, filename=f"{file_name}.pdf")
+
+
+class Main(Database, Utility, File):
     db_URI = None
-    excel_path = "Rekap Fisik dan Keuangan.xlsx"
-    file_path = "file"
-    production_status = "Non-Production"
+    excel_path = None
+    json_path = None
+    file_path = None
+    production_status = None
 
     def main():
         mongoDBURI = Main.db_URI
         database_name = "DisnakerFinanceRecap"
+        if(Main.production_status == "Production"):
+            database_name = "Production"
 
         Main.get_data(mongoDBURI, database_name)
+
+        # Main.show_data(mongoDBURI, database_name)
 
         Utility.update_data(mongoDBURI, database_name)
 
@@ -909,10 +946,17 @@ class Main(Database, Utility, PDF):
 
         division_array = Main.get_division(settings_data, wb_summary)
 
-        if(Main.production_status == "Non-Production"):
+        if(Main.production_status == "Production"):
+            Main.write_json(division_array, Main.json_path)
+            data = json.load(open(Main.json_path))
+            Main.update_data(mongoDBURI, database_name, data)
+
+            Main.create_file(mongoDBURI, Main.file_path, data)            
+
+        elif(Main.production_status == "Non-Production"):
             Main.update_data(mongoDBURI, database_name, division_array)
 
-            Main.create_pdf(Main.file_path, division_array)         
+            Main.create_file(mongoDBURI, Main.file_path, division_array)
 
 
     def get_division(settings_data, wb_summary):
@@ -952,103 +996,101 @@ class Main(Database, Utility, PDF):
 
     def get_detail(division_data, activity_count, wb_summary):
         detail_setting = division_data.get("detail")[activity_count]
-        if(type(detail_setting) == dict):
-            print(f"Processing : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
-            detail_array = []
-            cell_range = [Excel.convert_range(detail_setting.get("start_range")), Excel.convert_range(detail_setting.get("end_range"))]
 
-            cell_attribute_index = 0
-            cell_attribute_count = 0
+        print(f"Processing : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
+        
+        detail_array = []
+        cell_range = [Excel.convert_range(detail_setting.get("start_range")), Excel.convert_range(detail_setting.get("end_range"))]
 
-            detail_range = []
-            expenses_range = []
+        cell_attribute_index = 0
+        cell_attribute_count = 0
 
-            i = cell_range[0][1]
-            while i < cell_range[1][1] + 2:
-                if(cell_attribute_count == detail_setting.get("attribute")[cell_attribute_index]):  
-                    combined_expenses_range = []
+        detail_range = []
+        expenses_range = []
 
-                    j = 0
-                    while j < len(expenses_range):
-                        temp_combined_expenses_range = expenses_range[j] + expenses_range[j+1] 
-                        combined_expenses_range.append(temp_combined_expenses_range)
+        i = cell_range[0][1]
+        while i < cell_range[1][1] + 2:
+            if(cell_attribute_count == detail_setting.get("attribute")[cell_attribute_index]):  
+                combined_expenses_range = []
 
-                        j += 2
+                j = 0
+                while j < len(expenses_range):
+                    temp_combined_expenses_range = expenses_range[j] + expenses_range[j+1] 
+                    combined_expenses_range.append(temp_combined_expenses_range)
 
-
-                    temp_detail.append(combined_expenses_range)
-                    detail_range.append(temp_detail)
-
-                    expenses_range = []
-                    cell_attribute_count = 0
-                    cell_attribute_index += 1
-
-                if(cell_attribute_count == 0):
-                    temp_detail = [[cell_range[0][0], i], [cell_range[1][0], i]]
-
-                    cell_attribute_count += 1
-                    i += 1
-                
-                elif(cell_attribute_count != 0):
-                    temp_expenses = [[cell_range[0][0], i], [cell_range[1][0], i+1]]
-                    expenses_range.append(temp_expenses)
-
-                    cell_attribute_count += 1
-                    i += 2        
+                    j += 2
 
 
-            wb_summary.change_sheet(detail_setting.get("active_sheet"))
-            for i in range(len(detail_range)):
-                expenses_array = []
-                for j in range(len(detail_range[i][2])):
-                    physical_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][0], detail_range[i][2][j][1])
-                    finance_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][2], detail_range[i][2][j][3])
+                temp_detail.append(combined_expenses_range)
+                detail_range.append(temp_detail)
 
-                    del physical_value[0][2:4]
-                    del physical_value[1][2:4]
-                    del finance_value[0][2:4]
-                    del finance_value[1][2:4]
+                expenses_range = []
+                cell_attribute_count = 0
+                cell_attribute_index += 1
 
-                    physical_monthly = []
-                    for k in range(len(physical_value[0][2:14])):
-                        temp_physical_monthly = [physical_value[0][2:14][k], physical_value[1][2:14][k]]
-                        physical_monthly.append(temp_physical_monthly)
+            if(cell_attribute_count == 0):
+                temp_detail = [[cell_range[0][0], i], [cell_range[1][0], i]]
 
+                cell_attribute_count += 1
+                i += 1
+            
+            elif(cell_attribute_count != 0):
+                temp_expenses = [[cell_range[0][0], i], [cell_range[1][0], i+1]]
+                expenses_range.append(temp_expenses)
 
-                    finance_monthly = []
-                    for k in range(len(finance_value[0][2:14])):
-                        temp_finance_monthly = [finance_value[0][2:14][k], finance_value[1][2:14][k]]
-                        finance_monthly.append(temp_finance_monthly)
+                cell_attribute_count += 1
+                i += 2        
 
 
-                    temp_expenses_dictionary = {
-                        "id": j+1,
-                        "name": physical_value[0][0],
-                        "physical": {
-                            "total": physical_value[0][1],
-                            "monthly": physical_monthly
-                        },
-                        "finance": {
-                            "total": finance_value[0][1],
-                            "monthly": finance_monthly
-                        }
+        wb_summary.change_sheet(detail_setting.get("active_sheet"))
+        for i in range(len(detail_range)):
+            expenses_array = []
+            for j in range(len(detail_range[i][2])):
+                physical_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][0], detail_range[i][2][j][1])
+                finance_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][2], detail_range[i][2][j][3])
+
+                del physical_value[0][2:4]
+                del physical_value[1][2:4]
+                del finance_value[0][2:4]
+                del finance_value[1][2:4]
+
+                physical_monthly = []
+                for k in range(len(physical_value[0][2:14])):
+                    temp_physical_monthly = [physical_value[0][2:14][k], physical_value[1][2:14][k]]
+                    physical_monthly.append(temp_physical_monthly)
+
+
+                finance_monthly = []
+                for k in range(len(finance_value[0][2:14])):
+                    temp_finance_monthly = [finance_value[0][2:14][k], finance_value[1][2:14][k]]
+                    finance_monthly.append(temp_finance_monthly)
+
+
+                temp_expenses_dictionary = {
+                    "id": j+1,
+                    "name": physical_value[0][0],
+                    "physical": {
+                        "total": physical_value[0][1],
+                        "monthly": physical_monthly
+                    },
+                    "finance": {
+                        "total": finance_value[0][1],
+                        "monthly": finance_monthly
                     }
+                }
 
-                    expenses_array.append(temp_expenses_dictionary)
-
-
-                value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
-                del value[2:4]
-
-                detail_attribute = ["account", "total_finance", "monthly_finance", "expenses"]
-                detail_dict_value = [value[0], value[1], value[2:14], expenses_array]
-                temp_detail_dictionary = Main.convert_to_dict(i, detail_dict_value, detail_attribute)
-
-                detail_array.append(temp_detail_dictionary)
+                expenses_array.append(temp_expenses_dictionary)
 
 
-        elif(type(detail_setting) != dict):
-            detail_array = None
+            value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
+            del value[2:4]
+
+            detail_attribute = ["account", "total_finance", "monthly_finance", "expenses"]
+            detail_dict_value = [value[0], value[1], value[2:14], expenses_array]
+            temp_detail_dictionary = Main.convert_to_dict(i, detail_dict_value, detail_attribute)
+
+            detail_array.append(temp_detail_dictionary)
+
 
         return detail_array
 
@@ -1063,11 +1105,23 @@ class Main(Database, Utility, PDF):
         for i in range(len(data)):
             update_id = data[i].get("id")
             update_dictionary = {
+                "id": update_id,
                 "name": data[i].get("name"),
                 "activity": data[i].get("activity")
             }
 
-            summary_recaps_collection.find_one_and_update({"id": update_id}, {"$set": update_dictionary })
+            summary_recaps_collection.replace_one({"id": update_id}, update_dictionary, upsert=True)
+
+
+    def show_data(mongoDBURI, database_name):
+        collection_name = "summary_recaps"
+        collection = Main.get_collection(mongoDBURI, database_name, collection_name)
+
+        all_data = collection.find({})
+        single_data = collection.find({"name": "Sekretariat"})
+
+        print(all_data)
+        print(single_data)
 
 
 Main.main()

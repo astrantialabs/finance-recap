@@ -206,7 +206,7 @@ class Main(Database, Utility, File):
         elif(Main.env_value.get("Status") == "Non-Production"):
             Main.update_data(mongoDBURI, database_name, division_array)
 
-            Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), division_array)         
+            Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), division_array)
 
 
     def get_division(settings_data, wb_summary):
@@ -246,8 +246,9 @@ class Main(Database, Utility, File):
 
     def get_detail(division_data, activity_count, wb_summary):
         detail_setting = division_data.get("detail")[activity_count]
-        
+
         print(f"Processing : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
+        
         detail_array = []
         cell_range = [Excel.convert_range(detail_setting.get("start_range")), Excel.convert_range(detail_setting.get("end_range"))]
 
@@ -347,7 +348,7 @@ class Main(Database, Utility, File):
     def update_data(mongoDBURI, database_name, data):
         print("Uploading Data")
         print()
-        
+
         collection_name = "summary_recaps"
         summary_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
 
