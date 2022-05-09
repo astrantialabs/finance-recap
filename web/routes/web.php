@@ -18,9 +18,12 @@ Route::get("/logout", \App\Http\Livewire\Auth\Logout::class);
 
 Route::group(["middleware" => "auth"], function () {
     Route::get("/", \App\Http\Livewire\Dashboard\Index::class);
-    Route::get("/{id}", \App\Http\Livewire\Dashboard\Division::class);
-});
 
-Route::group(["middleware" => ["role:super-admin"]], function () {
-    Route::get("/register", \App\Http\Livewire\Auth\Register::class);
+    Route::group(["middleware" => ["role:superadmin"]], function () {
+        Route::get("/register", \App\Http\Livewire\Auth\Register::class);
+        Route::get("/users", \App\Http\Livewire\Users\Index::class);
+        Route::get("/users/edit/{id}", \App\Http\Livewire\Users\Edit::class);
+    });
+
+    Route::get("/{id}", \App\Http\Livewire\Dashboard\Division::class);
 });

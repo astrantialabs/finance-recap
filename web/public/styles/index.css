@@ -382,3 +382,7 @@ table.fold-table > tbody > tr.table-fold.open {
   background: #fc7e83;
   color: #ededee;
 }
+
+.users .users-content {
+  margin-top: 44px;
+}
