@@ -57,7 +57,7 @@ class Utility():
         excel_path = Main.env_value.get("ExcelPath")
 
         excel_last_modified = os.path.getmtime(excel_path)
-        translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%Y-%m-%d %H:%M:%S")
+        translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%y-%m-%d-%H-%M-%S")
 
         collection_name = "utilities"
         utilities_collection = Database.get_collection(mongoDBURI, database_name, collection_name)
@@ -65,7 +65,7 @@ class Utility():
         update_dictionary = {
             "id": 1,
             "last_modified": translated_excel_last_modified,
-            "last_runned": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "last_runned": datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")
         }
 
         utilities_collection.replace_one({"id": 1}, update_dictionary, upsert=True)
