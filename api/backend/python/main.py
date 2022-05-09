@@ -93,7 +93,12 @@ class File():
 
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path)
-            File.upload_file(mongoDBURI, division.get('name'), current_datetime, full_excel_file_path, full_pdf_folder_path)
+
+            database_name = division.get('name')
+            if(Main.env_value.get("Status") == "Production"):
+                database_name = f"Pro{division.get('name')}"
+
+            File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
 
 
     def create_excel(file_path, division, full_excel_file_path):
