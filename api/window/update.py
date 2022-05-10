@@ -849,7 +849,7 @@ class File():
             if(Main.production_status == "Production"):
                 database_name = f"Pro{division.get('name')}"
 
-            if(Main.production_status == "Production"):
+            if(Main.production_status == "Development"):
                 database_name = f"Dev{division.get('name')}"
 
             print(f"Uploading  : {division.get('name')} Files")
