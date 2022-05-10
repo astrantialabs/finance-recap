@@ -29,7 +29,7 @@ class Main(Database):
         if(Main.env_value.get("Status") == "Production"):
             database_name = "Production"
 
-        if(Main.env_value.get("Status") == "Development"):
+        elif(Main.env_value.get("Status") == "Development"):
             database_name = "DisnakerFinanceRecap"
 
         collection_name = "settings"
