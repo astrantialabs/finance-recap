@@ -800,6 +800,8 @@ class Utility():
 
 
     def update_data(mongoDBURI, database_name):
+        print("Updating   : Utilities")
+
         excel_path = Main.excel_path
 
         excel_last_modified = os.path.getmtime(excel_path)
@@ -815,6 +817,9 @@ class Utility():
         }
 
         utilities_collection.replace_one({"id": 1}, update_dictionary, upsert=True)
+
+        print("Completed  : Utilities")
+        print()
 
 
 class File():
@@ -837,16 +842,20 @@ class File():
             os.makedirs(f"{file_path}/{excel_folder_path}", exist_ok=True)
             os.makedirs(f"{file_path}/{pdf_folder_path}", exist_ok=True)
 
+            print(f"Creating   : {division.get('name')} Files")
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path)
 
             if(Main.production_status == "Production"):
                 database_name = f"Pro{division.get('name')}"
 
-            elif(Main.production_status == "Development"):
+            if(Main.production_status == "Production"):
                 database_name = f"Dev{division.get('name')}"
 
+            print(f"Uploading  : {division.get('name')} Files")
             File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
+            print(f"Completed  : {division.get('name')} Files")
+            print()
 
 
     def create_excel(file_path, division, full_excel_file_path):
@@ -932,7 +941,7 @@ class Main(Database, Utility, File):
         if(Main.production_status == "Production"):
             database_name = "Production"
 
-        elif(Main.production_status == "Development"):
+        if(Main.production_status == "Development"):
             database_name = "DisnakerFinanceRecap"
 
         Main.get_data(mongoDBURI, database_name)
@@ -1105,8 +1114,7 @@ class Main(Database, Utility, File):
 
 
     def update_data(mongoDBURI, database_name, data):
-        print("Uploading Data")
-        print()
+        print("Uploading  : Data")
 
         collection_name = "summary_recaps"
         summary_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
@@ -1120,6 +1128,10 @@ class Main(Database, Utility, File):
             }
 
             summary_recaps_collection.replace_one({"id": update_id}, update_dictionary, upsert=True)
+
+
+        print("Completed  : Data")
+        print()
 
 
     def show_data(mongoDBURI, database_name):
