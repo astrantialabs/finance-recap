@@ -840,9 +840,11 @@ class File():
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path)
 
-            database_name = division.get('name')
             if(Main.production_status == "Production"):
                 database_name = f"Pro{division.get('name')}"
+
+            elif(Main.production_status == "Development"):
+                database_name = f"Dev{division.get('name')}"
 
             File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
 
@@ -927,9 +929,11 @@ class Main(Database, Utility, File):
 
     def main():
         mongoDBURI = Main.db_URI
-        database_name = "DisnakerFinanceRecap"
         if(Main.production_status == "Production"):
             database_name = "Production"
+
+        elif(Main.production_status == "Development"):
+            database_name = "DisnakerFinanceRecap"
 
         Main.get_data(mongoDBURI, database_name)
 
@@ -958,7 +962,7 @@ class Main(Database, Utility, File):
 
             Main.create_file(mongoDBURI, Main.file_path, data)            
 
-        elif(Main.production_status == "Non-Production"):
+        elif(Main.production_status == "Development"):
             Main.update_data(mongoDBURI, database_name, division_array)
 
             Main.create_file(mongoDBURI, Main.file_path, division_array)
