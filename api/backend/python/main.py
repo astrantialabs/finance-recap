@@ -179,7 +179,7 @@ class File():
         pdf_data = pdf_file.read()
 
         fs = gridfs.GridFS(database)
-        fs.put(excel_data, filename=f"{file_name}.excel")
+        fs.put(excel_data, filename=f"{file_name}.xlsx")
         fs.put(pdf_data, filename=f"{file_name}.pdf")
 
 
