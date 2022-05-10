@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Utilities;
+use Dotenv\Util\Regex;
 use Illuminate\Support\Facades\Storage;
 
 if (!function_exists("divnum")) {
@@ -23,22 +24,35 @@ if (!function_exists("utilities")) {
 }
 
 if (!function_exists("gridfs")) {
-    function gridfs($format = "pdf")
+    function gridfs($division, $format = "pdf")
     {
         $client = new MongoDB\Client(
             "mongodb+srv://mirae:mirae@disnakerfinancerecap.7y6vb.mongodb.net/DisnakerFinanceRecap?retryWrites=true&w=majority"
         );
-        $db = $client->ProSekretariat;
+        $db = $client->$division;
         $bucket = $db->selectGridFSBucket();
 
+        $file = $bucket->find([], ["sort" => ["uploadDate" => -1]]);
+        $files = $file->toArray();
+
+        $filename = [];
+        foreach ($files as $file) {
+            $filename = json_decode(json_encode($files), true);
+        }
+        $sort = [];
+        foreach ($filename as $key => $value) {
+            $sort[$key] = $value["filename"];
+        }
+        $sliced_array = array_slice($sort, 0, 2);
+
         if ($format == "pdf") {
-            $file = $bucket->findOne(["filename" => utilities() . ".pdf"]);
-            $contents = stream_get_contents($file);
-            Storage::disk("local")->put("pdf/" . utilities() . ".pdf", $contents);
+            $stream = $bucket->openDownloadStreamByName($sliced_array[0]);
+            $contents = stream_get_contents($stream);
+            Storage::disk("local")->put("files/$division.pdf", $contents);
         } else {
-            $file = $bucket->findOne(["filename" => utilities() . ".xlsx"]);
-            $contents = stream_get_contents($file);
-            Storage::disk("local")->put("xlsx/" . utilities() . ".xlsx", $contents);
+            $stream = $bucket->openDownloadStreamByName($sliced_array[1]);
+            $contents = stream_get_contents($stream);
+            Storage::disk("local")->put("files/$division.xlsx", $contents);
         }
     }
 }

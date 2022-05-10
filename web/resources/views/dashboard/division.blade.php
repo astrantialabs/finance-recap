@@ -812,6 +812,25 @@ foreach ($payload as $key => $value) {
     </main>
     <footer class="footer">
         <p class="subtitle">
+            <?php if ($payload[0]->name == "Sekretariat") { ?>
+            <a class="call-to-action call-to-action--accent" wire:click='export("ProSekretariat", "pdf")'>Download Sekretariat PDF</a>
+            <a class="call-to-action call-to-action--accent" wire:click='export("ProSekretariat", "xlsx")'>Download Sekretariat XLSX</a>
+            <?php } ?>
+            <?php if ($payload[0]->name == "Penta") { ?>
+                <a class="call-to-action call-to-action--accent" wire:click='export("ProPenta", "pdf")'>Download Penta PDF</a>
+                <a class="call-to-action call-to-action--accent" wire:click='export("ProPenta", "xlsx")'>Download Penta XLSX</a>
+                <?php } ?>
+                <?php if ($payload[0]->name == "Lattas") { ?>
+                    <a class="call-to-action call-to-action--accent" wire:click='export("ProLattas", "pdf")'>Download Lattas PDF</a>
+                    <a class="call-to-action call-to-action--accent" wire:click='export("ProLattas", "xlsx")'>Download Lattas XLSX</a>
+                    <?php } ?>
+                    <?php if ($payload[0]->name == "HI") { ?>
+                        <a class="call-to-action call-to-action--accent" wire:click='export("ProHI", "pdf")'>Download HI PDF</a>
+                        <a class="call-to-action call-to-action--accent" wire:click='export("ProHI", "xlsx")'>Download HI XLSX</a>
+            <?php } ?>
+
+        </p>
+        <p class="subtitle">
             Dikembangkan oleh <strong>kodikasid</strong> <br> <strong>Yehezkiel Dio</strong> & <strong>Rizky
                 Irswanda</strong>
         </p>

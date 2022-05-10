@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get("/login", \App\Http\Livewire\Auth\Login::class);
 Route::get("/logout", \App\Http\Livewire\Auth\Logout::class);
 
+Route::get("/download", [\App\Http\Livewire\Dashboard\Index::class, "export"]);
+
 Route::group(["middleware" => "auth"], function () {
     Route::get("/", \App\Http\Livewire\Dashboard\Index::class);
 

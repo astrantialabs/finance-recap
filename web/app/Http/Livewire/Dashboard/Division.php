@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Dashboard;
 use Livewire\Component;
 use App\Models\SummaryRecaps;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class Division extends Component
 {
@@ -70,6 +71,16 @@ class Division extends Component
             $this->isActive = $id;
         } else {
             return redirect()->to("/");
+        }
+    }
+    public function export($division, $type)
+    {
+        if ($type == "pdf") {
+            gridfs($division, "pdf");
+            redirect()->to("/storage/files/$division.pdf");
+        } else {
+            gridfs($division, "xlsx");
+            redirect()->to("/storage/files/$division.xlsx");
         }
     }
     public function render()
