@@ -803,7 +803,7 @@ class Utility():
         excel_path = Main.excel_path
 
         excel_last_modified = os.path.getmtime(excel_path)
-        translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%Y-%m-%d %H:%M:%S")
+        translated_excel_last_modified = datetime.datetime.fromtimestamp(excel_last_modified).strftime("%y-%m-%d-%H-%M-%S")
 
         collection_name = "utilities"
         utilities_collection = Database.get_collection(mongoDBURI, database_name, collection_name)
@@ -811,7 +811,7 @@ class Utility():
         update_dictionary = {
             "id": 1,
             "last_modified": translated_excel_last_modified,
-            "last_runned": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "last_runned": datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")
         }
 
         utilities_collection.replace_one({"id": 1}, update_dictionary, upsert=True)
@@ -839,7 +839,12 @@ class File():
 
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path)
-            File.upload_file(mongoDBURI, division.get('name'), current_datetime, full_excel_file_path, full_pdf_folder_path)
+
+            database_name = division.get('name')
+            if(Main.production_status == "Production"):
+                database_name = f"Pro{division.get('name')}"
+
+            File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
 
 
     def create_excel(file_path, division, full_excel_file_path):
