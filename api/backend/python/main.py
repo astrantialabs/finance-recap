@@ -54,6 +54,8 @@ class Utility():
 
 
     def update_data(mongoDBURI, database_name):
+        print("Updating   : Utilities")
+
         excel_path = Main.env_value.get("ExcelPath")
 
         excel_last_modified = os.path.getmtime(excel_path)
@@ -69,6 +71,9 @@ class Utility():
         }
 
         utilities_collection.replace_one({"id": 1}, update_dictionary, upsert=True)
+
+        print("Completed  : Utilities")
+        print()
 
 
 class File():
@@ -91,14 +96,20 @@ class File():
             os.makedirs(f"{file_path}/{excel_folder_path}", exist_ok=True)
             os.makedirs(f"{file_path}/{pdf_folder_path}", exist_ok=True)
 
+            print(f"Creating   : {division.get('name')} Files")
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path)
 
-            database_name = division.get('name')
             if(Main.env_value.get("Status") == "Production"):
                 database_name = f"Pro{division.get('name')}"
 
+            elif(Main.env_value.get("Status") == "Development"):
+                database_name = f"Dev{division.get('name')}"
+
+            print(f"Uploading  : {division.get('name')} Files")
             File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
+            print(f"Completed  : {division.get('name')} Files")
+            print()
 
 
     def create_excel(file_path, division, full_excel_file_path):
@@ -141,7 +152,7 @@ class File():
 
 
         wb_excel.workbook_sheet.column_dimensions["A"].width = 5
-        wb_excel.workbook_sheet.column_dimensions["B"].width = 64
+        wb_excel.workbook_sheet.column_dimensions["B"].width = 60
         wb_excel.workbook_sheet.column_dimensions["C"].width = 11
         wb_excel.workbook_sheet.column_dimensions["D"].width = 11
         wb_excel.workbook.save(wb_excel.path)
@@ -168,7 +179,7 @@ class File():
         pdf_data = pdf_file.read()
 
         fs = gridfs.GridFS(database)
-        fs.put(excel_data, filename=f"{file_name}.excel")
+        fs.put(excel_data, filename=f"{file_name}.xlsx")
         fs.put(pdf_data, filename=f"{file_name}.pdf")
 
 
@@ -177,9 +188,11 @@ class Main(Database, Utility, File):
 
     def main():
         mongoDBURI = Main.env_value.get("APIdbURI")
-        database_name = "DisnakerFinanceRecap"
         if(Main.env_value.get("Status") == "Production"):
             database_name = "Production"
+
+        elif(Main.env_value.get("Status") == "Development"):
+            database_name = "DisnakerFinanceRecap"
 
         Main.get_data(mongoDBURI, database_name)
 
@@ -208,7 +221,7 @@ class Main(Database, Utility, File):
 
             Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), data)            
 
-        elif(Main.env_value.get("Status") == "Non-Production"):
+        elif(Main.env_value.get("Status") == "Development"):
             Main.update_data(mongoDBURI, database_name, division_array)
 
             Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), division_array)
@@ -351,8 +364,7 @@ class Main(Database, Utility, File):
 
 
     def update_data(mongoDBURI, database_name, data):
-        print("Uploading Data")
-        print()
+        print("Uploading  : Data")
 
         collection_name = "summary_recaps"
         summary_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
@@ -366,6 +378,10 @@ class Main(Database, Utility, File):
             }
 
             summary_recaps_collection.replace_one({"id": update_id}, update_dictionary, upsert=True)
+
+
+        print("Completed  : Data")
+        print()
 
 
     def show_data(mongoDBURI, database_name):

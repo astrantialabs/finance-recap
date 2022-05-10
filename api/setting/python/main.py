@@ -29,6 +29,9 @@ class Main(Database):
         if(Main.env_value.get("Status") == "Production"):
             database_name = "Production"
 
+        elif(Main.env_value.get("Status") == "Development"):
+            database_name = "DisnakerFinanceRecap"
+
         collection_name = "settings"
 
         collection = Main.get_collection(mongoDBURI, database_name, collection_name)
