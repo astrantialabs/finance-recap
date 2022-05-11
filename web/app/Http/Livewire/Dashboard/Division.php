@@ -38,28 +38,28 @@ class Division extends Component
         if (in_array($id, $summary_activity_title)) {
             switch ($id) {
                 case "sekretariat":
-                    if ($user->hasRole(["sekretariat", "super-admin"])) {
+                    if ($user->hasRole(["sekretariat", "superadmin", "admin"])) {
                         $this->payload = SummaryRecaps::all()->where("name", "Sekretariat");
                     } else {
                         return redirect()->to("/");
                     }
                     break;
                 case "penta":
-                    if ($user->hasRole(["penta", "super-admin"])) {
+                    if ($user->hasRole(["penta", "superadmin", "admin"])) {
                         $this->payload = SummaryRecaps::all()->where("name", "Penta");
                     } else {
                         return redirect()->to("/");
                     }
                     break;
                 case "lattas":
-                    if ($user->hasRole(["lattas", "super-admin"])) {
+                    if ($user->hasRole(["lattas", "superadmin", "admin"])) {
                         $this->payload = SummaryRecaps::all()->where("name", "Lattas");
                     } else {
                         return redirect()->to("/");
                     }
                     break;
                 case "hi":
-                    if ($user->hasRole(["hi", "super-admin"])) {
+                    if ($user->hasRole(["hi", "superadmin", "admin"])) {
                         $this->payload = SummaryRecaps::all()->where("name", "HI");
                     } else {
                         return redirect()->to("/");
