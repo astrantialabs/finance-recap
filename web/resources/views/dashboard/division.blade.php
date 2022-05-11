@@ -142,6 +142,8 @@ foreach ($payload as $key => $value) {
                                                     <?php $expenses = $details_item["expenses"]; ?>
                                                     @foreach ((array) $expenses as $expenses => $expenses_item)
                                                         <?php $physical_expenses = $expenses_item["physical"]; ?>
+                                                        <?php $finance_expenses = $expenses_item["finance"]; ?>
+
                                                         <tr>
                                                             <td class="first-row fixed fixed-row-one " rowspan="2">
                                                                 {{ $expenses_item['name'] }}
@@ -213,13 +215,6 @@ foreach ($payload as $key => $value) {
                                                                 {{ array_sum(array_column($monthly_physical_expenses, 1)) }}
                                                             </td>
                                                         </tr>
-                                                    
-                                                    @endforeach
-
-                                                    {{-- Sekretariat Target Expenses --}}
-                                                    <?php $expenses = $details_item["expenses"]; ?>
-                                                    @foreach ((array) $expenses as $expenses => $expenses_item)
-                                                        <?php $finance_expenses = $expenses_item["finance"]; ?>
 
                                                         <tr>
                                                             <td class="second-row fixed" rowspan="2">
