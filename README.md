@@ -6,7 +6,7 @@
 
 Technology stack:
 
-- **Web Framework:** [Laravel](https://laravel.com/) [Livewire](https://laravel-livewire.com) • [Django](https://www.djangoproject.com/)
+- **Web Framework:** [Laravel](https://laravel.com/) [Livewire](https://laravel-livewire.com)
 - **Database:** [SQLite](https://sqlite.org/) • [MongoDB Atlas](https://www.mongodb.com/atlas/database)
 - **Programming Language:** [PHP](https://www.php.net/) • [Python](https://www.python.org/)
 
