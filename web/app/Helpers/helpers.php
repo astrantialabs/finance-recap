@@ -26,10 +26,26 @@ if (!function_exists("utilities")) {
 if (!function_exists("gridfs")) {
     function gridfs($division, $format = "pdf")
     {
+        $file_name = $division;
+        switch ($division) {
+            case 'Sekretariat':
+                $file_name = "DevSekretariat";
+                break;
+            case 'Lattas':
+                $file_name = "DevLattas";
+                break;
+            case 'Penta':
+                $file_name = "DevPenta";
+                break;
+            case 'HI':
+                $file_name = "DevHI";
+                break;
+        }
+
         $client = new MongoDB\Client(
             "mongodb+srv://mirae:mirae@disnakerfinancerecap.7y6vb.mongodb.net/DisnakerFinanceRecap?retryWrites=true&w=majority"
         );
-        $db = $client->$division;
+        $db = $client->$file_name;
         $bucket = $db->selectGridFSBucket();
 
         $file = $bucket->find([], ["sort" => ["uploadDate" => -1]]);

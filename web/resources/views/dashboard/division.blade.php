@@ -811,20 +811,20 @@ foreach ($payload as $key => $value) {
     <footer class="footer">
         <p class="subtitle">
             <?php if ($payload[0]->name == "Sekretariat") { ?>
-            <a class="call-to-action call-to-action--accent" wire:click='export("DevSekretariat", "pdf")'>Download Sekretariat PDF</a>
-            <a class="call-to-action call-to-action--accent" wire:click='export("DevSekretariat", "xlsx")'>Download Sekretariat XLSX</a>
+            <a class="call-to-action call-to-action--accent" wire:click='export("Sekretariat", "pdf")'>Download Sekretariat PDF</a>
+            <a class="call-to-action call-to-action--accent" wire:click='export("Sekretariat", "xlsx")'>Download Sekretariat XLSX</a>
             <?php } ?>
             <?php if ($payload[0]->name == "Penta") { ?>
-                <a class="call-to-action call-to-action--accent" wire:click='export("DevPenta", "pdf")'>Download Penta PDF</a>
-                <a class="call-to-action call-to-action--accent" wire:click='export("DevPenta", "xlsx")'>Download Penta XLSX</a>
+                <a class="call-to-action call-to-action--accent" wire:click='export("Penta", "pdf")'>Download Penta PDF</a>
+                <a class="call-to-action call-to-action--accent" wire:click='export("Penta", "xlsx")'>Download Penta XLSX</a>
                 <?php } ?>
                 <?php if ($payload[0]->name == "Lattas") { ?>
-                    <a class="call-to-action call-to-action--accent" wire:click='export("DevLattas", "pdf")'>Download Lattas PDF</a>
-                    <a class="call-to-action call-to-action--accent" wire:click='export("DevLattas", "xlsx")'>Download Lattas XLSX</a>
+                    <a class="call-to-action call-to-action--accent" wire:click='export("Lattas", "pdf")'>Download Lattas PDF</a>
+                    <a class="call-to-action call-to-action--accent" wire:click='export("Lattas", "xlsx")'>Download Lattas XLSX</a>
                     <?php } ?>
                     <?php if ($payload[0]->name == "HI") { ?>
-                        <a class="call-to-action call-to-action--accent" wire:click='export("DevHI", "pdf")'>Download HI PDF</a>
-                        <a class="call-to-action call-to-action--accent" wire:click='export("DevHI", "xlsx")'>Download HI XLSX</a>
+                        <a class="call-to-action call-to-action--accent" wire:click='export("HI", "pdf")'>Download HI PDF</a>
+                        <a class="call-to-action call-to-action--accent" wire:click='export("HI", "xlsx")'>Download HI XLSX</a>
             <?php } ?>
 
         </p>
