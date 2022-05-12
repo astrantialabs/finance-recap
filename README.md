@@ -1,7 +1,6 @@
 <h5 align="center"> ━━━━━━   <strong>•</strong>   ━━━━━━ </h5>
 
 <br/>
-<br/>
 
 <div align="center">
   <h3 align="center"> <strong>Disnaker Finance Recap</strong> </h3>
@@ -14,6 +13,8 @@
   
 </div>
 
+<br/>
+
 ### Mengenai proyek ini.
-**Sistem Rekapitulasi Data Keuangan Dinas Tenaga Kerja dan Transmigrasi** *(DisnakerFinanceRecap)* dalah sebuah aplikasi berbasis website yang bertujuan untuk melakukan ekstraksi data-data pada sebuah excel spreadsheet untuk di manipulasi dan ditampilkan ke website.
+**Sistem Rekapitulasi Data Keuangan Dinas Tenaga Kerja dan Transmigrasi** *(DisnakerFinanceRecap)* adalah sebuah aplikasi berbasis website yang bertujuan untuk melakukan ekstraksi data-data pada sebuah excel spreadsheet untuk di manipulasi dan ditampilkan ke website.
 
