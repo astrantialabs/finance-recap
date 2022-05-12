@@ -18,3 +18,12 @@
 ### Mengenai proyek ini.
 **Sistem Rekapitulasi Data Keuangan Dinas Tenaga Kerja dan Transmigrasi** *(DisnakerFinanceRecap)* adalah sebuah aplikasi berbasis website yang bertujuan untuk melakukan ekstraksi data-data pada sebuah excel spreadsheet untuk di manipulasi dan ditampilkan ke website.
 
+### Mengenai metodologi proyek ini.
+**Sistem Rekapitulasi Data Keuangan Dinas Tenaga Kerja dan Transmigrasi** menggunakan teknologi terbaru yang berkembang saat ini, dengan memperhatikan kecepatan, ketepatan, dan kecermatan pengolahan data.
+
+#### Komponen teknologi sistem
+
+- **System Architecture**: **Distributed Infrastructure**
+- **Web Framework:** [Laravel](https://laravel.com/) [Livewire](https://laravel-livewire.com)
+- **Database:** [SQLite](https://sqlite.org/) • [MongoDB Atlas](https://www.mongodb.com/atlas/database)
+- **Programming Language:** [PHP](https://www.php.net/) • [Python](https://www.python.org/)
