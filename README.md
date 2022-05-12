@@ -1,24 +1,19 @@
-<h2 align="center"> ━━━━━━  ❖  ━━━━━━ </h2>
+<h5 align="center"> ━━━━━━   <strong>•</strong>   ━━━━━━ </h5>
 
-### ❖ Informasi
+<br/>
+<br/>
 
-**Sistem Rekapitulasi Data Keuangan Dinas Tenaga Kerja dan Transmigrasi** atau disingkat **Disnaker Finance Recap** adalah sebuah aplikasi berbasis website yang bertujuan untuk melakukan ekstraksi data-data pada sebuah excel spreadsheet untuk di manipulasi dan ditampilkan ke website.
+<div align="center">
+  <h3 align="center"> <strong>Disnaker Finance Recap</strong> </h3>
+  <p align="center"> <em>Sistem Rekapitulasi Data Keuangan Dinas Tenaga Kerja dan Transmigrasi</em> </p>
 
-Technology stack:
+ ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+ ![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
+ ![Laravel](https://img.shields.io/badge/laravel-%23FF2D20.svg?style=for-the-badge&logo=laravel&logoColor=white)
+ ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+  
+</div>
 
-- **Web Framework:** [Laravel](https://laravel.com/) [Livewire](https://laravel-livewire.com)
-- **Database:** [SQLite](https://sqlite.org/) • [MongoDB Atlas](https://www.mongodb.com/atlas/database)
-- **Programming Language:** [PHP](https://www.php.net/) • [Python](https://www.python.org/)
+### Mengenai proyek ini.
+**Sistem Rekapitulasi Data Keuangan Dinas Tenaga Kerja dan Transmigrasi** *(DisnakerFinanceRecap)* dalah sebuah aplikasi berbasis website yang bertujuan untuk melakukan ekstraksi data-data pada sebuah excel spreadsheet untuk di manipulasi dan ditampilkan ke website.
 
-Application structure:
-
-Sistem arsitektur menggunakan dua microservice independen yang disebut dengan **API service** dan **WEB service**.
-
-- **WEB service** 
-  - Menggunakan konsep metode MVC (Model-View-Controller) dengan [Laravel](https://laravel.com/) sebagai web framework.
-  - Menerapkan sistem user authentication dan authorization dan menggunakan [SQLite](https://sqlite.org/) sebagai database user.
-
-- **API service**
-  - Memproses & menerjemahkan Excel ke [JSON](https://www.json.org/json-en.html) dengan menggunakan [Python](https://www.python.org/) sebagai programming language.
-  - Menyimpan data-data penting dengan menggunakan cloud service [MongoDB Atlas](https://www.mongodb.com/atlas/database)
-  - Menggunakan [PySimpleGUI](https://pysimplegui.readthedocs.io/en/latest/) untuk mengubah pengaturan & konfigurasi program melalui aplikasi berbasis GUI
