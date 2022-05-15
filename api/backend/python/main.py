@@ -79,6 +79,7 @@ class Utility():
 class File():
     def create_file(mongoDBURI, file_path, data):
         system_path = os.getcwd()
+        excel_client_dispatch = client.Dispatch("Excel.Application")
 
         for division in data:
             current_datetime = datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")
@@ -98,7 +99,7 @@ class File():
 
             print(f"Creating   : {division.get('name')} Files")
             File.create_excel(file_path, division, full_excel_file_path)
-            File.create_pdf(system_excel_path, system_pdf_path)
+            File.create_pdf(system_excel_path, system_pdf_path, excel_client_dispatch)
 
             if(Main.env_value.get("Status") == "Production"):
                 database_name = f"Pro{division.get('name')}"
@@ -110,6 +111,9 @@ class File():
             File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
             print(f"Completed  : {division.get('name')} Files")
             print()
+
+        
+        excel_client_dispatch.Application.Quit()
 
 
     def create_excel(file_path, division, full_excel_file_path):
@@ -158,19 +162,15 @@ class File():
         wb_excel.workbook.save(wb_excel.path)
 
 
-    def create_pdf(system_excel_path, system_pdf_path):
-        excel = client.Dispatch("Excel.Application")
-
-        sheets = excel.Workbooks.Open(system_excel_path)
+    def create_pdf(system_excel_path, system_pdf_path, excel_client_dispatch):
+        sheets = excel_client_dispatch.Workbooks.Open(system_excel_path)
         work_sheets = sheets.Worksheets[0]
     
         work_sheets.ExportAsFixedFormat(0, system_pdf_path)
 
-        excel.Application.Quit()
 
-
-    def upload_file(mongoDBURI, database, file_name, excel_path, pdf_path):
-        database = Database.get_database(mongoDBURI, database)
+    def upload_file(mongoDBURI, database_name, file_name, excel_path, pdf_path):
+        database = Database.get_database(mongoDBURI, database_name)
         
         excel_file = open(excel_path, "rb")
         pdf_file = open(pdf_path, "rb")

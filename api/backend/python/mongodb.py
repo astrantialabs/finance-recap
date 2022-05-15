@@ -13,7 +13,7 @@ class Main():
         elif(Main.env_value.get("production_status") == "Development"):
             database = cluster["Development"]
         
-        Main.drop_file_database(cluster, database)
+        # Main.drop_file_database(cluster, database)
 
 
     def drop_file_database(cluster, database):
