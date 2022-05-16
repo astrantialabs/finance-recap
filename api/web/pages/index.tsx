@@ -1,10 +1,10 @@
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
-const Home: NextPage = ({ settings }:any) => {
+const Home: NextPage = ({ settings }: any) => {
     return (
         <div>
 			<Head>
@@ -24,8 +24,8 @@ const Home: NextPage = ({ settings }:any) => {
     );
 };
 
-export async function getServerSideProps(){
-  	const settings = await prisma.settings.findMany();
+export const getServerSideProps: GetServerSideProps = async () => {
+	const settings = await prisma.settings.findMany();
 
 	return {
 		props: {
