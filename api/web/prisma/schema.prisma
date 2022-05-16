@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type SettingsDetail {
+  id           Int
+  active_sheet Int
+  start_range  String
+  end_range    String
+  attribute    Int[]
+}
+
+type SummaryRecapsActivity {
+  activity String
+  detail   SummaryRecapsActivityDetail[]
+  finance  Int?
+  id       Int
+  physical Int?
+}
+
+type SummaryRecapsActivityDetail {
+  account         String
+  expenses        SummaryRecapsActivityDetailExpenses[]
+  id              Int
+  /// Multiple data types found: Array(Int): 36.6%, Array(Unknown): 63.4% out of 134 sampled entries
+  monthly_finance Json
+  total_finance   Int
+}
+
+type SummaryRecapsActivityDetailExpenses {
+  finance  SummaryRecapsActivityDetailExpensesFinance
+  id       Int
+  name     String
+  physical SummaryRecapsActivityDetailExpensesPhysical
+}
+
+type SummaryRecapsActivityDetailExpensesFinance {
+  monthly Json
+  /// Multiple data types found: String: 1.9%, Int: 98.1% out of 259 sampled entries
+  total   Json
+}
+
+type SummaryRecapsActivityDetailExpensesPhysical {
+  monthly Json
+  total   String
+}
+
+model settings {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  id_         Int              @map("id")
+  name        String
+  start_range String
+  end_range   String
+  detail      SettingsDetail[]
+}
+
+model summary_recaps {
+  id       String                  @id @default(auto()) @map("_id") @db.ObjectId
+  activity SummaryRecapsActivity[]
+  id_      Int                     @map("id")
+  name     String
+}
+
+model utilities {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  id_           Int    @map("id")
+  last_modified String
+  last_runned   String
+}
