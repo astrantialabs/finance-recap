@@ -21,6 +21,8 @@ web/.vscode
 api/backend/excel
 api/backend/file
 api/backend/json/summary_recaps.json
+api/backend/json/summary_recaps_old.json
+api/backend/json/dummy_summary_recaps.json
 api/backend/json/dummy_summary_recaps.json
 api/backend/python/random_data_dependency.py
 api/window/dist

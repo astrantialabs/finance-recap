@@ -218,12 +218,21 @@ class Main(Database, Utility, File):
 
         division_array = Main.get_division(settings_data, wb_summary)
 
-        if(Main.env_value.get("Status") == "Development"):
-            Main.write_json(division_array, Main.env_value.get("JSONPath"))
-            data = json.load(open(Main.env_value.get("JSONPath")))
-            Main.update_data(mongoDBURI, database_name, data)
+        recap_array = [
+            {
+                "id": 1,
+                "tahun": 2022,
+                "divisi": division_array
+            }
+        ]
+        
 
-            Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), data)            
+        if(Main.env_value.get("Status") == "Development"):
+            Main.write_json(recap_array, Main.env_value.get("JSONPath"))
+            # data = json.load(open(Main.env_value.get("JSONPath")))
+            # Main.update_data(mongoDBURI, database_name, data)
+
+            # Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), data)            
 
         elif(Main.env_value.get("Status") == "Production"):
             Main.update_data(mongoDBURI, database_name, division_array)
@@ -238,7 +247,7 @@ class Main(Database, Utility, File):
             activity_array = Main.get_activity(division_data, wb_summary)
 
             division_attribute = ["divisi", "sub_kegiatan"]
-            division_value = [division_data.get("name"), activity_array]
+            division_value = [str(division_data.get("name")), activity_array]
             temp_division_dictionary = Main.convert_to_dict(division_count, division_value, division_attribute)
 
             division_array.append(temp_division_dictionary)
@@ -256,7 +265,7 @@ class Main(Database, Utility, File):
             detail_array = Main.get_detail(division_data, activity_count, wb_summary)
 
             activity_attribute = ["sub_kegiatan", "fisik", "keuangan", "detail"]
-            activity_dict_value = [activity_data[0], activity_data[1], activity_data[2], detail_array]
+            activity_dict_value = [str(activity_data[0]), activity_data[1], activity_data[2], detail_array]
             activity_percentage_cell = [1, 2]
             temp_activity_dictionary = Main.convert_to_dict(activity_count, activity_dict_value, activity_attribute, activity_percentage_cell)
 
@@ -330,8 +339,14 @@ class Main(Database, Utility, File):
                 for k in range(len(physical_value[0][2:14])):
                     temp_physical_monthly_dictionary = {
                         "id": k + 1,
-                        "target": physical_value[0][2:14][k],
-                        "realisasi": physical_value[1][2:14][k]
+                        "target": {
+                            "total": physical_value[0][2:14][k],
+                            "note": None
+                        },
+                        "realisasi": {
+                            "total": physical_value[1][2:14][k],
+                            "note": None
+                        }
                     }
 
                     physical_monthly.append(temp_physical_monthly_dictionary)
@@ -341,8 +356,14 @@ class Main(Database, Utility, File):
                 for k in range(len(finance_value[0][2:14])):
                     temp_finance_monthly_dictionary = {
                         "id": k + 1,
-                        "target": finance_value[0][2:14][k],
-                        "realisasi": finance_value[1][2:14][k]
+                        "target": {
+                            "total": finance_value[0][2:14][k],
+                            "note": None
+                        },
+                        "realisasi": {
+                            "total": finance_value[1][2:14][k],
+                            "note": None
+                        }
                     }
 
                     finance_monthly.append(temp_finance_monthly_dictionary)
@@ -350,13 +371,13 @@ class Main(Database, Utility, File):
 
                 temp_expenses_dictionary = {
                     "id": j+1,
-                    "biaya": physical_value[0][0],
+                    "biaya": str(physical_value[0][0]),
                     "fisik": {
-                        "jumlah_fisik": physical_value[0][1],
+                        "jumlah_fisik": str(physical_value[0][1]),
                         "jumlah_Kebutuhan_dana": physical_monthly
                     },
                     "keuangan": {
-                        "jumlah_anggaran": finance_value[0][1],
+                        "jumlah_anggaran": str(finance_value[0][1]),
                         "jumlah_Kebutuhan_dana": finance_monthly
                     }
                 }
@@ -371,7 +392,8 @@ class Main(Database, Utility, File):
             for monthly_value_index, monthly_value in enumerate(value[2:14]):
                 new_value_dict = {
                     "id": monthly_value_index + 1,
-                    "total": monthly_value
+                    "total": monthly_value,
+                    "note": None
                 }
 
                 monthly_total.append(new_value_dict)
@@ -379,7 +401,7 @@ class Main(Database, Utility, File):
 
             temp_detail_dictionary = {
                 "id": 1,
-                "rekening": value[0],
+                "rekening": str(value[0]),
                 "jumlah_fisik_anggaran": value[1],
                 "jumlah_Kebutuhan_dana": monthly_total,
                 "biaya": expenses_array
