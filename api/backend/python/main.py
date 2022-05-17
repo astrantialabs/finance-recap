@@ -81,16 +81,16 @@ class File():
         system_path = os.getcwd()
         excel_client_dispatch = client.Dispatch("Excel.Application")
 
-        for division in data:
-            current_datetime = datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")
+        current_datetime = datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")
+        excel_file_path = f"{current_datetime}.xlsx"
+        pdf_file_path = f"{current_datetime}.pdf"
 
+        for division in data:
             excel_folder_path = f"excel/{division.get('name').lower()}"
-            excel_file_path = F"{current_datetime}.xlsx"
             full_excel_file_path = f"{file_path}/{excel_folder_path}/{excel_file_path}"
             system_excel_path = os.path.join(system_path, full_excel_file_path)
 
             pdf_folder_path = f"pdf/{division.get('name').lower()}"
-            pdf_file_path = F"{current_datetime}.pdf"
             full_pdf_folder_path = f"{file_path}/{pdf_folder_path}/{pdf_file_path}"
             system_pdf_path = os.path.join(system_path, full_pdf_folder_path)
 
@@ -167,6 +167,8 @@ class File():
         work_sheets = sheets.Worksheets[0]
     
         work_sheets.ExportAsFixedFormat(0, system_pdf_path)
+
+        sheets.Close(True)
 
 
     def upload_file(mongoDBURI, database_name, file_name, excel_path, pdf_path):
