@@ -85,6 +85,12 @@ class File():
         excel_file_path = f"{current_datetime}.xlsx"
         pdf_file_path = f"{current_datetime}.pdf"
 
+        if(Main.env_value.get("Status") == "Production"):
+            database_phase = "Pro"
+
+        elif(Main.env_value.get("Status") == "Development"):
+            database_phase = "Dev"
+
         for division in data:
             excel_folder_path = f"excel/{division.get('name').lower()}"
             full_excel_file_path = f"{file_path}/{excel_folder_path}/{excel_file_path}"
@@ -101,13 +107,8 @@ class File():
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path, excel_client_dispatch)
 
-            if(Main.env_value.get("Status") == "Production"):
-                database_name = f"Pro{division.get('name')}"
-
-            elif(Main.env_value.get("Status") == "Development"):
-                database_name = f"Dev{division.get('name')}"
-
             print(f"Uploading  : {division.get('name')} Files")
+            database_name = f"{database_phase}{division.get('name')}"
             File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
             print(f"Completed  : {division.get('name')} Files")
             print()
