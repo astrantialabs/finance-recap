@@ -62,11 +62,10 @@ class Main():
     
     def update():
         mongoDBURI = dotenv_values("./api/.env").get("APIdbURI") # path
-        database_name = "DisnakerFinanceRecap"
-        if(Main.env_value.get("Status") == "Production"):
-            database_name = "Production"
+        if(Main.env_value.get("Status") == "Development"):
+            database_name = "Development"
 
-        elif(Main.env_value.get("Status") == "Development"):
+        elif(Main.env_value.get("Status") == "Production"):
             database_name = "DisnakerFinanceRecap"
 
         collection_name = "settings"

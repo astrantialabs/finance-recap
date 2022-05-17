@@ -191,10 +191,10 @@ class Main(Database, Utility, File):
 
     def main():
         mongoDBURI = Main.env_value.get("APIdbURI")
-        if(Main.env_value.get("Status") == "Production"):
-            database_name = "Production"
+        if(Main.env_value.get("Status") == "Development"):
+            database_name = "Development"
 
-        elif(Main.env_value.get("Status") == "Development"):
+        elif(Main.env_value.get("Status") == "Production"):
             database_name = "DisnakerFinanceRecap"
 
         Main.get_data(mongoDBURI, database_name)
@@ -217,14 +217,14 @@ class Main(Database, Utility, File):
 
         division_array = Main.get_division(settings_data, wb_summary)
 
-        if(Main.env_value.get("Status") == "Production"):
+        if(Main.env_value.get("Status") == "Development"):
             Main.write_json(division_array, Main.env_value.get("JSONPath"))
             data = json.load(open(Main.env_value.get("JSONPath")))
             Main.update_data(mongoDBURI, database_name, data)
 
             Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), data)            
 
-        elif(Main.env_value.get("Status") == "Development"):
+        elif(Main.env_value.get("Status") == "Production"):
             Main.update_data(mongoDBURI, database_name, division_array)
 
             Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), division_array)
