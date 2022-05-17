@@ -1,0 +1,53 @@
+[
+    {
+        "id": 1,
+        "divisi": "String",
+        "sub_kegiatan": [
+            {
+                "id": 1,
+                "sub_kegiatan": "String",
+                "fisik": 1,
+                "keuangan": 1,
+                "detail": [
+                    {
+                        "id": 1,
+                        "rekening": "String",
+                        "jumlah_fisik_anggaran": 1,
+                        "jumlah_Kebutuhan_dana": [
+                            {
+                                "id": 1,
+                                "total": 1
+                            }
+                        ],
+                        "biaya": [
+                            {
+                                "id": 1,
+                                "biaya": "String",
+                                "fisik": {
+                                    "jumlah_fisik": "36 Paket / Tahun",
+                                    "jumlah_Kebutuhan_dana": [
+                                        {
+                                            "id": 1,
+                                            "target": 1,
+                                            "realisasi": 1
+                                        }
+                                    ]
+                                },
+                                "keuangan": {
+                                    "jumlah_anggaran": "36 Paket / Tahun",
+                                    "jumlah_Kebutuhan_dana": [
+                                        {
+                                            "id": 1,
+                                            "target": 1,
+                                            "realisasi": 1
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

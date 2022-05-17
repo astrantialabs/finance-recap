@@ -1,3 +1,4 @@
+import enum
 import json
 import os
 import datetime
@@ -236,7 +237,7 @@ class Main(Database, Utility, File):
             print(f"Processing : {division_data.get('name')}")
             activity_array = Main.get_activity(division_data, wb_summary)
 
-            division_attribute = ["name", "activity"]
+            division_attribute = ["divisi", "sub_kegiatan"]
             division_value = [division_data.get("name"), activity_array]
             temp_division_dictionary = Main.convert_to_dict(division_count, division_value, division_attribute)
 
@@ -254,7 +255,7 @@ class Main(Database, Utility, File):
         for activity_count, activity_data in enumerate(activity_value):
             detail_array = Main.get_detail(division_data, activity_count, wb_summary)
 
-            activity_attribute = ["activity", "physical", "finance", "detail"]
+            activity_attribute = ["sub_kegiatan", "fisik", "keuangan", "detail"]
             activity_dict_value = [activity_data[0], activity_data[1], activity_data[2], detail_array]
             activity_percentage_cell = [1, 2]
             temp_activity_dictionary = Main.convert_to_dict(activity_count, activity_dict_value, activity_attribute, activity_percentage_cell)
@@ -327,26 +328,36 @@ class Main(Database, Utility, File):
 
                 physical_monthly = []
                 for k in range(len(physical_value[0][2:14])):
-                    temp_physical_monthly = [physical_value[0][2:14][k], physical_value[1][2:14][k]]
-                    physical_monthly.append(temp_physical_monthly)
+                    temp_physical_monthly_dictionary = {
+                        "id": k + 1,
+                        "target": physical_value[0][2:14][k],
+                        "realisasi": physical_value[1][2:14][k]
+                    }
+
+                    physical_monthly.append(temp_physical_monthly_dictionary)
 
 
                 finance_monthly = []
                 for k in range(len(finance_value[0][2:14])):
-                    temp_finance_monthly = [finance_value[0][2:14][k], finance_value[1][2:14][k]]
-                    finance_monthly.append(temp_finance_monthly)
+                    temp_finance_monthly_dictionary = {
+                        "id": k + 1,
+                        "target": finance_value[0][2:14][k],
+                        "realisasi": finance_value[1][2:14][k]
+                    }
+
+                    finance_monthly.append(temp_finance_monthly_dictionary)
 
 
                 temp_expenses_dictionary = {
                     "id": j+1,
-                    "name": physical_value[0][0],
-                    "physical": {
-                        "total": physical_value[0][1],
-                        "monthly": physical_monthly
+                    "biaya": physical_value[0][0],
+                    "fisik": {
+                        "jumlah_fisik": physical_value[0][1],
+                        "jumlah_Kebutuhan_dana": physical_monthly
                     },
-                    "finance": {
-                        "total": finance_value[0][1],
-                        "monthly": finance_monthly
+                    "keuangan": {
+                        "jumlah_anggaran": finance_value[0][1],
+                        "jumlah_Kebutuhan_dana": finance_monthly
                     }
                 }
 
@@ -356,9 +367,23 @@ class Main(Database, Utility, File):
             value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
             del value[2:4]
 
-            detail_attribute = ["account", "total_finance", "monthly_finance", "expenses"]
-            detail_dict_value = [value[0], value[1], value[2:14], expenses_array]
-            temp_detail_dictionary = Main.convert_to_dict(i, detail_dict_value, detail_attribute)
+            monthly_total = []
+            for monthly_value_index, monthly_value in enumerate(value[2:14]):
+                new_value_dict = {
+                    "id": monthly_value_index + 1,
+                    "total": monthly_value
+                }
+
+                monthly_total.append(new_value_dict)
+
+
+            temp_detail_dictionary = {
+                "id": 1,
+                "rekening": value[0],
+                "jumlah_fisik_anggaran": value[1],
+                "jumlah_Kebutuhan_dana": monthly_total,
+                "biaya": expenses_array
+            }
 
             detail_array.append(temp_detail_dictionary)
 
