@@ -1,6 +1,7 @@
 import json
 import os
 import datetime
+import timeit
 import openpyxl
 import gridfs
 
@@ -9,23 +10,78 @@ from openpyxl.styles import *
 from win32com import client
 
 class Excel():
-    def __init__(self, path: str, sheet: int):
-        self.path = path
-        self.workbook = openpyxl.load_workbook(self.path, data_only=True)
+    def __init__(self, file_path: str, active_sheet: int = 1):
+        self.file_path = file_path
+        self.workbook = openpyxl.load_workbook(self.file_path, data_only=True)
 
         wb_sheet = self.workbook.sheetnames
 
-        self.workbook_sheet = self.workbook[wb_sheet[sheet - 1]]
+        self.active_sheet = self.workbook[wb_sheet[active_sheet - 1]]
+
+
+    def create_file(file_path: str):
+        wb = openpyxl.Workbook()
+        wb.save(file_path)
+
+
+    def save(self):
+        self.workbook.save(self.file_path)
+
+
+    def create_sheet(self, new_sheet_name: str):
+        self.workbook.create_sheet(new_sheet_name)
+
+
+    def change_sheet(self, active_sheet: int or str):
+        if(type(active_sheet) == int):
+            self.active_sheet = self.workbook[self.workbook.sheetnames[active_sheet - 1]]
+
+        elif(type(active_sheet) == str):
+            self.active_sheet = self.workbook[active_sheet]
+
+
+    def change_sheet_name(self, old_sheet_name, new_sheet_name):
+        self.workbook[old_sheet_name].title = new_sheet_name
     
 
-    def change_sheet(self, sheet):
-        wb_sheet = self.workbook.sheetnames
-        self.workbook_sheet = self.workbook[wb_sheet[sheet - 1]]
+    def delete_sheet(self, deleted_sheet: int or str):
+        if(type(deleted_sheet) == int):
+            del self.workbook[self.workbook.sheetnames[deleted_sheet - 1]]
+
+        elif(type(deleted_sheet) == str):
+            del self.workbook[deleted_sheet]
 
 
-    def create_file(path: str):
-        wb = openpyxl.Workbook()
-        wb.save(path)
+    def adjust_width(self, start_range: any, end_range: any, extra_width: int = 0, width_limit: int = 0):
+        start_column, start_row = Excel.convert_range(start_range)
+        end_column, end_row = Excel.convert_range(end_range)
+
+        width_dict = {}
+        for column in range(start_column, end_column + 1):
+            temp_width_array = []
+            cell_column_letter =  self.active_sheet.cell(row = 1, column = column).column_letter
+
+            for row in range(start_row, end_row + 1):
+                temp_value = self.active_sheet.cell(row = row, column = column).value
+
+                if(type(temp_value) in (int, str)):
+                    temp_width_array.append(len(str(temp_value)))
+
+
+            max_width_value = max(temp_width_array)
+
+            if(width_limit > 0):
+                if(max_width_value > width_limit):
+                    max_width_value = width_limit
+
+                    self.alignment_multiple([column, start_row], [column, end_row], wrap = True)
+
+
+            width_dict[cell_column_letter] = max_width_value
+
+        
+        for column, width in width_dict.items():
+            self.active_sheet.column_dimensions[column].width = (width + 1 + extra_width)
 
 
     def check_range(range: any):
@@ -92,10 +148,24 @@ class Excel():
         return attributes_string
 
 
+    def change_cell_number_format_singular(self, range: any, number_format: str):
+        column, row = Excel.convert_range(range)
+        self.active_sheet.cell(row = row, column = column).number_format = number_format
+
+
+    def change_cell_number_format_multiple(self, start_range: any, end_range: any, number_format: str):
+        start_column, start_row = Excel.convert_range(start_range)
+        end_column, end_row = Excel.convert_range(end_range)
+
+        for row in range(start_row, end_row + 1):
+            for column in range(start_column, end_column + 1):
+                self.active_sheet.cell(row = row, column = column).number_format = number_format
+
+
     #region Get
     def get_value_singular(self, range: any):
         column, row = Excel.convert_range(range)
-        value = self.workbook_sheet.cell(row = row, column = column).value
+        value = self.active_sheet.cell(row = row, column = column).value
 
         return value
 
@@ -107,7 +177,7 @@ class Excel():
         value = []
         for row in range(start_row, end_row + 1):
             for column in range(start_column, end_column + 1):
-                temp_value = self.workbook_sheet.cell(row = row, column = column).value
+                temp_value = self.active_sheet.cell(row = row, column = column).value
                 value.append(temp_value)
 
         return value
@@ -121,7 +191,7 @@ class Excel():
         for row in range(start_row, end_row + 1):
             temp_value_array = []
             for column in range(start_column, end_column + 1):
-                temp_value = self.workbook_sheet.cell(row = row, column = column).value
+                temp_value = self.active_sheet.cell(row = row, column = column).value
                 temp_value_array.append(temp_value)
             
             value_array.append(temp_value_array)
@@ -138,8 +208,7 @@ class Excel():
 
         column, row = Excel.convert_range(range)
             
-        self.workbook_sheet.cell(row = row, column = column, value = value)
-        self.workbook.save(self.path)
+        self.active_sheet.cell(row = row, column = column, value = value)
 
 
     def write_value_multiple(self, start_range: any, end_range: any, value: any):
@@ -151,18 +220,18 @@ class Excel():
                 if(type(check_value) == list):
                     raise TypeError("Use write_value_multiple_2d function if the value is a 2D list")
 
+
             value_counter = 0
             for row in range(start_row, end_row + 1):
                 for column in range(start_column, end_column + 1):
-                    self.workbook_sheet.cell(row = row, column = column, value = value[value_counter])
+                    self.active_sheet.cell(row = row, column = column, value = value[value_counter])
                     value_counter += 1
+
 
         elif(type(value) in (str, int, bool, float)):
             for row in range(start_row, end_row + 1):
                 for column in range(start_column, end_column + 1):
-                    self.workbook_sheet.cell(row = row, column = column, value = value)       
-
-        self.workbook.save(self.path)
+                    self.active_sheet.cell(row = row, column = column, value = value)       
 
 
     def write_value_multiple_2d(self, start_range: any, value: any):
@@ -172,15 +241,15 @@ class Excel():
                 if(type(check_value) != list):
                     value_is_valid = False
 
+
             if(value_is_valid):
                 start_column, start_row = Excel.convert_range(start_range)
                 end_column, end_row = start_column + len(value[0]), start_row + len(value)
 
                 for x, row in enumerate(range(start_row, end_row)):
                     for y, column in enumerate(range(start_column, end_column)):
-                        self.workbook_sheet.cell(row = row, column = column, value = value[x][y])
+                        self.active_sheet.cell(row = row, column = column, value = value[x][y])
 
-                self.workbook.save(self.path)
 
             elif(not value_is_valid):
                 raise TypeError("Value must be a 2D list")
@@ -196,17 +265,15 @@ class Excel():
         start_column, start_row = Excel.convert_range(start_range)
         end_column, end_row = Excel.convert_range(end_range)
 
-        self.workbook_sheet.merge_cells(start_row = start_row, start_column = start_column, end_row = end_row, end_column = end_column)
-        self.workbook.save(self.path)
+        self.active_sheet.merge_cells(start_row = start_row, start_column = start_column, end_row = end_row, end_column = end_column)
 
     
     def unmerge(self, start_range: any, end_range: any):
         start_column, start_row = Excel.convert_range(start_range)
         end_column, end_row = Excel.convert_range(end_range)
 
-        self.workbook_sheet.unmerge_cells(start_row = start_row, start_column = start_column, end_row = end_row, end_column = end_column)
-        self.workbook.save(self.path)
-    
+        self.active_sheet.unmerge_cells(start_row = start_row, start_column = start_column, end_row = end_row, end_column = end_column)
+
     #endregion Merge & Unmerge
 
 
@@ -292,8 +359,8 @@ class Excel():
 
         attributes_string = Excel.font_attributes(**attributes)
 
-        self.workbook_sheet.cell(row = row, column = column).font = eval(f"Font({attributes_string})")
-        self.workbook.save(self.path)
+        font = eval(f"Font({attributes_string})")
+        self.active_sheet.cell(row = row, column = column).font = font
 
     
     def font_multiple(self, start_range: any, end_range: any, **attributes: any):
@@ -302,126 +369,13 @@ class Excel():
 
         attributes_string = Excel.font_attributes(**attributes)
 
+        font = eval(f"Font({attributes_string})")
         for row in range(start_row, end_row + 1):
             for column in range(start_column, end_column + 1):
-                self.workbook_sheet.cell(row = row, column = column).font = eval(f"Font({attributes_string})")
+                self.active_sheet.cell(row = row, column = column).font = font
 
-        self.workbook.save(self.path)
     
     #endregion Font
-
-
-    #region Fill
-    def fill_attributes(**attributes: str):
-        list_of_attributes = []
-
-        if("type" in attributes):
-            if(type(attributes.get("type")) == str):
-                fill_type = attributes.get("type")
-                fill_type = (fill_type[0].lower() + fill_type[1:]).replace(' ', '')
-                temp_attribute = f"fill_type='{fill_type}'"
-
-                list_of_attributes.append(temp_attribute)
-
-            elif(attributes.get("type") == None):
-                temp_attribute = f"fill_type=None"
-
-                list_of_attributes.append(temp_attribute)
-
-            else:
-                raise TypeError("Type data type needs to be a string or None")
-
-        if("main_color" in attributes):
-            if(type(attributes.get("main_color")) == str):
-                fill_color = attributes.get("main_color")
-
-                temp_attribute = f"start_color='{fill_color}'"
-                
-                list_of_attributes.append(temp_attribute)
-
-        if("second_color" in attributes):
-            if(type(attributes.get("second_color")) == str):
-                fill_color = attributes.get("second_color")
-                
-                temp_attribute = f"end_color='{fill_color}'"
-                    
-                list_of_attributes.append(temp_attribute)
-
-        return Excel.attributes_string(list_of_attributes)
-
-
-    def shade_attributes(**attributes: str):
-        list_of_attributes = []
-
-        if("shade" in attributes):
-            if(type(attributes.get("shade")) != bool):
-                raise TypeError("Shade data type needs to be a boolean")
-
-        if("type" in attributes):
-            if(type(attributes.get("type")) == str):
-                fill_type = attributes.get("type")
-                fill_type = (fill_type[0].lower() + fill_type[1:]).replace(' ', '')
-                temp_attribute = f"fill_type='{fill_type}'"
-
-                list_of_attributes.append(temp_attribute)
-
-            elif(attributes.get("type") == None):
-                temp_attribute = f"fill_type=None"
-
-                list_of_attributes.append(temp_attribute)
-
-            else:
-                raise TypeError("Type data type needs to be a string or None")
-
-        if("main_color" in attributes):
-            if(type(attributes.get("main_color")) == str):
-                fill_color = attributes.get("main_color")
-                temp_attribute = f"end_color='{fill_color}'"
-                
-                list_of_attributes.append(temp_attribute)
-
-        if("second_color" in attributes):
-            if(type(attributes.get("second_color")) == str):
-                fill_color = attributes.get("second_color")
-                temp_attribute = f"start_color='{fill_color}'"
-                    
-                list_of_attributes.append(temp_attribute)
-
-        return Excel.attributes_string(list_of_attributes)
-
-
-    def fill_singular(self, cell_range: any, **attributes: any):
-        column, row = Excel.convert_range(cell_range)
-            
-        attributes_string = Excel.fill_attributes(**attributes)
-
-        self.workbook_sheet.cell(row = row, column = column).fill = eval(f"PatternFill({attributes_string})")
-        self.workbook.save(self.path)
-
-    
-    def fill_multiple(self, start_range: any, end_range: any, **attributes: any):
-        start_column, start_row = Excel.convert_range(start_range)
-        end_column, end_row = Excel.convert_range(end_range)
-            
-        main_attributes_string = Excel.fill_attributes(**attributes)
-
-        shade = False
-        if("shade" in attributes):
-            shade = attributes.get("shade")
-
-        if(shade):    
-            second_attributes_string = Excel.shade_attributes(**attributes)
-
-        for row in range(start_row, end_row + 1):
-            for column in range(start_column, end_column + 1):
-                self.workbook_sheet.cell(row = row, column = column).fill = eval(f"PatternFill({main_attributes_string})")
-
-                if(shade and column % 2 == 0):
-                    self.workbook_sheet.cell(row = row, column = column).fill = eval(f"PatternFill({second_attributes_string})")
-                
-        self.workbook.save(self.path)
-    
-    #endregion Fill
 
 
     #region Border
@@ -454,8 +408,8 @@ class Excel():
 
         return Excel.attributes_string(list_of_attributes)
 
-    
-    def set_border(self, row, column, side, border):
+
+    def border_set(side, attribute):
         if(type(side) == str):
             side = side.lower()
         
@@ -463,24 +417,24 @@ class Excel():
             raise TypeError("Side data type needs to be a string")
 
         if(side == "all"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(top = border, left = border, right = border, bottom = border)
+            border = Border(top = attribute, left = attribute, right = attribute, bottom = attribute)
 
         elif(side == "top"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(top = border)
+            border = Border(top = attribute)
 
         elif(side == "left"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(left = border)
+            border = Border(left = attribute)
 
         elif(side == "right"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(right = border)
+            border = Border(right = attribute)
 
         elif(side == "bottom"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(bottom = border)
+            border = Border(bottom = attribute)
         
         else:
             raise TypeError("Side value can only be all, top, left, right, bottom")
 
-        self.workbook.save(self.path)
+        return border
 
 
     def border_singular(self, cell_range: any, side: str, **attributes: any):
@@ -488,8 +442,9 @@ class Excel():
             
         attributes_string = Excel.border_attributes(**attributes)
         
-        border = eval(f"Side({attributes_string})")
-        self.set_border(row, column, side, border)
+        side = eval(f"Side({attributes_string})")
+        border = Excel.border_set(side)
+        self.active_sheet.cell(row = row, column = column).border = border
 
     
     def border_multiple(self, start_range: any, end_range: any, side: str, **attributes: any):
@@ -498,10 +453,12 @@ class Excel():
             
         attributes_string = Excel.border_attributes(**attributes)
         
-        border = eval(f"Side({attributes_string})")
+        attribute = eval(f"Side({attributes_string})")
+        border = Excel.border_set(side, attribute)
+
         for row in range(start_row, end_row + 1):
             for column in range(start_column, end_column + 1):
-                self.set_border(row, column, side, border)
+                self.active_sheet.cell(row = row, column = column).border = border
     
     #endregion
 
@@ -579,8 +536,8 @@ class Excel():
 
         attributes_string = Excel.alignment_attributes(**attributes)
         
-        self.workbook_sheet.cell(row = row, column = column).alignment = eval(f"Alignment({attributes_string})")
-        self.workbook.save(self.path)
+        alignment = eval(f"Alignment({attributes_string})")
+        self.active_sheet.cell(row = row, column = column).alignment = alignment
 
     
     def alignment_multiple(self, start_range: any, end_range: any, **attributes: any):
@@ -589,168 +546,12 @@ class Excel():
 
         attributes_string = Excel.alignment_attributes(**attributes)
 
+        alignment = eval(f"Alignment({attributes_string})")
         for row in range(start_row, end_row + 1):
             for column in range(start_column, end_column + 1):
-                self.workbook_sheet.cell(row = row, column = column).alignment = eval(f"Alignment({attributes_string})")
+                self.active_sheet.cell(row = row, column = column).alignment = alignment
                 
-        self.workbook.save(self.path)
     
-    #endregion
-
-
-    #region Function
-    def summary(self, start_range:any, end_range:any):
-        array_of_value = self.get_value_multiple(start_range, end_range)
-
-        sum_value = 0
-        for value in array_of_value:
-            if (type(value) == int):
-                sum_value += value
-
-            elif (type(value) == str):
-                if(value.isnumeric()):
-                    sum_value += int(value)
-
-        return sum_value
-
-
-    def count(self, start_range:any, end_range:any):
-        value_array = self.get_value_multiple(start_range, end_range)
-        
-        value = 0
-        for i in value_array:
-            if(type(i) in (int, float)):
-                value += 1
-
-        return value
-
-
-    def count_a(self, start_range:any, end_range:any):
-        value_array = self.get_value_multiple(start_range, end_range)
-
-        value = 0
-        for i in value_array:
-            if(type(i) in (str, int, float, bool)):
-                value += 1
-
-        return value
-
-
-    def count_blank(self, start_range:any, end_range:any):
-        value_array = self.get_value_multiple(start_range, end_range)
-
-        value = 0
-        for i in value_array:
-            if(type(i) not in (str, int, float, bool)):
-                value += 1
-
-        return value
-
-
-    def average(self, start_range:any, end_range:any):
-        total = self.summary(start_range, end_range)
-        count = self.count(start_range, end_range)
-
-        value = total / count
-
-        return value
-
-
-    def excel_if(self, range1: any, logic: str, range2: any, return1: any, return2: any): 
-        value1 = self.get_value_singular(range1)
-        value2 = self.get_value_singular(range2)
-
-        if(logic == "="):
-            if(value1 == value2):
-                is_true = True
-            
-            else:
-                is_true = False
-
-        elif(logic == "!="):
-            if(value1 != value2):
-                is_true = True
-            
-            else:
-                is_true = False
-
-        elif(logic == ">"):
-            if(value1 > value2):
-                is_true = True
-            
-            else:
-                is_true = False
-
-        elif(logic == "<"):
-            if(value1 < value2):
-                is_true = True
-            
-            else:
-                is_true = False
-
-        elif(logic == ">="):
-            if(value1 >= value2):
-                is_true = True
-            
-            else:
-                is_true = False
-        
-        elif(logic == "<="):
-            if(value1 <= value2):
-                is_true = True
-            
-            else:
-                is_true = False
-  
-        if(is_true):
-            return return1
-    
-        elif(not is_true):
-            return return2
-
-
-    def summary_if(self, start_criteria_range: any, end_criteria_range: any, criteria: str, sum_start_range: any, sum_end_range: any): 
-        criteria_array = self.get_value_multiple(start_criteria_range, end_criteria_range)
-        sum_array = self.get_value_multiple(sum_start_range, sum_end_range)
-
-        if(len(criteria_array) == len(sum_array)):
-            sum_value = 0
-            for i in range(len(criteria_array)):
-                if criteria_array[i] == criteria:
-                    sum_value += sum_array[i]
-
-            return sum_value
-
-
-    def count_if(self, start_range: any, end_range: any, criteria: str): 
-        value_array = self.get_value_multiple(start_range, end_range)
-
-        value = 0
-        for i in value_array:
-                if(i == criteria):
-                    value += 1
-
-        return value
-
-    
-    def average_if(self, start_criteria_range: any, end_criteria_range: any, criteria: str, sum_start_range: any, sum_end_range: any):
-        total_value = self.summary_if(start_criteria_range, end_criteria_range, criteria, sum_start_range, sum_end_range)
-        count_value = self.count_if(start_criteria_range, end_criteria_range, criteria)
-
-        return total_value / count_value
-
-
-    def excel_max(self, start_range: any, end_range: any):
-        max_value = max(self.get_value_multiple(start_range, end_range))
-
-        return max_value
-
-
-    def excel_min(self, start_range: any, end_range: any):
-        min_value = min(self.get_value_multiple(start_range, end_range))
-
-        return min_value
-
     #endregion
 
 
@@ -827,35 +628,37 @@ class File():
         system_path = os.getcwd()
         excel_client_dispatch = client.Dispatch("Excel.Application")
 
-        for division in data:
-            current_datetime = datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")
+        current_datetime = datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")
+        excel_file_path = f"{current_datetime}.xlsx"
+        pdf_file_path = f"{current_datetime}.pdf"
 
-            excel_folder_path = f"excel/{division.get('name').lower()}"
-            excel_file_path = F"{current_datetime}.xlsx"
+        if(Main.production_status == "Production"):
+            database_phase = "Pro"
+
+        elif(Main.production_status == "Development"):
+            database_phase = "Dev"
+
+        for division in data[0].get("divisi"):
+
+            excel_folder_path = f"excel/{division.get('divisi').lower()}"
             full_excel_file_path = f"{file_path}/{excel_folder_path}/{excel_file_path}"
             system_excel_path = os.path.join(system_path, full_excel_file_path)
 
-            pdf_folder_path = f"pdf/{division.get('name').lower()}"
-            pdf_file_path = F"{current_datetime}.pdf"
+            pdf_folder_path = f"pdf/{division.get('divisi').lower()}"
             full_pdf_folder_path = f"{file_path}/{pdf_folder_path}/{pdf_file_path}"
             system_pdf_path = os.path.join(system_path, full_pdf_folder_path)
 
             os.makedirs(f"{file_path}/{excel_folder_path}", exist_ok=True)
             os.makedirs(f"{file_path}/{pdf_folder_path}", exist_ok=True)
 
-            print(f"Creating   : {division.get('name')} Files")
+            print(f"Creating   : {division.get('divisi')} Files")
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path, excel_client_dispatch)
 
-            if(Main.production_status == "Production"):
-                database_name = f"Pro{division.get('name')}"
-
-            if(Main.production_status == "Development"):
-                database_name = f"Dev{division.get('name')}"
-
-            print(f"Uploading  : {division.get('name')} Files")
+            print(f"Uploading  : {division.get('divisi')} Files")
+            database_name = f"{database_phase}{division.get('divisi')}"
             File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
-            print(f"Completed  : {division.get('name')} Files")
+            print(f"Completed  : {division.get('divisi')} Files")
             print()
 
         
@@ -866,7 +669,7 @@ class File():
         Excel.create_file(full_excel_file_path)
 
         wb_excel = Excel(full_excel_file_path, 1)
-        wb_excel.write_value_singular("A1", f"Divisi: {division.get('name')}")
+        wb_excel.write_value_singular("A1", f"Divisi: {division.get('divisi')}")
         wb_excel.write_value_multiple("A3", "C3", ["No.", "Sub Kegiatan", "Realisasi"])
         wb_excel.write_value_multiple("c4", "D4", ["Fisik", "Keuangan"])
 
@@ -874,25 +677,25 @@ class File():
         wb_excel.merge("B3", "B4")
         wb_excel.merge("C3", "D3")
 
-        row_end_range = 4 + len(division.get('activity'))
+        row_end_range = 4 + len(division.get('sub_kegiatan'))
         wb_excel.border_multiple("A3", [4, row_end_range], "all", style="thin")
         wb_excel.alignment_multiple("A3", [4, row_end_range], horizontal="center", vertical="center")
         wb_excel.alignment_multiple("B5", [2, row_end_range], horizontal="left", vertical="center", wrap=True)
         wb_excel.font_singular("A1", size=12, bold=True)
         wb_excel.font_multiple("A3", "D4", bold=True)
 
-        for activity_count, activity in enumerate(division.get('activity')):
+        for activity_count, activity in enumerate(division.get('sub_kegiatan')):
             activity_physical_value = None
-            if(type(activity.get('physical')) in (int, float)):
-                activity_physical_value = f"{activity.get('physical')}%"
+            if(type(activity.get('fisik')) in (int, float)):
+                activity_physical_value = f"{activity.get('fisik')}%"
 
             activity_finance_value = None
-            if(type(activity.get('finance')) in (int, float)):
-                activity_finance_value = f"{activity.get('finance')}%"
+            if(type(activity.get('keuangan')) in (int, float)):
+                activity_finance_value = f"{activity.get('keuangan')}%"
 
             activity_value = [
                 activity_count + 1,
-                activity.get("activity"),
+                activity.get("sub_kegiatan"),
                 activity_physical_value,
                 activity_finance_value
             ]
@@ -901,11 +704,11 @@ class File():
                 [1, 5 + activity_count], [4, 5 + activity_count], activity_value)
 
 
-        wb_excel.workbook_sheet.column_dimensions["A"].width = 5
-        wb_excel.workbook_sheet.column_dimensions["B"].width = 60
-        wb_excel.workbook_sheet.column_dimensions["C"].width = 11
-        wb_excel.workbook_sheet.column_dimensions["D"].width = 11
-        wb_excel.workbook.save(wb_excel.path)
+        wb_excel.active_sheet.column_dimensions["A"].width = 5
+        wb_excel.active_sheet.column_dimensions["B"].width = 60
+        wb_excel.active_sheet.column_dimensions["C"].width = 11
+        wb_excel.active_sheet.column_dimensions["D"].width = 11
+        wb_excel.save()
 
 
     def create_pdf(system_excel_path, system_pdf_path, excel_client_dispatch):
@@ -913,6 +716,8 @@ class File():
         work_sheets = sheets.Worksheets[0]
     
         work_sheets.ExportAsFixedFormat(0, system_pdf_path)
+
+        sheets.Close(True)
 
 
     def upload_file(mongoDBURI, database_name, file_name, excel_path, pdf_path):
@@ -937,11 +742,13 @@ class Main(Database, Utility, File):
     production_status = None
 
     def main():
-        mongoDBURI = Main.db_URI
-        if(Main.production_status == "Production"):
-            database_name = "Production"
+        start_time = timeit.default_timer()
 
+        mongoDBURI = Main.db_URI
         if(Main.production_status == "Development"):
+            database_name = "Development"
+
+        if(Main.production_status == "Production"):
             database_name = "DisnakerFinanceRecap"
 
         Main.get_data(mongoDBURI, database_name)
@@ -950,7 +757,13 @@ class Main(Database, Utility, File):
 
         Utility.update_data(mongoDBURI, database_name)
 
-        print("Program Has Finished Running")
+        stop_time = timeit.default_timer()
+        elapsed_time = stop_time - start_time
+
+        print(f"Elapsed time: {elapsed_time} seconds")
+        print()
+        print("You can close the program...")
+        input()
 
 
     def get_data(mongoDBURI, database_name):
@@ -964,17 +777,26 @@ class Main(Database, Utility, File):
 
         division_array = Main.get_division(settings_data, wb_summary)
 
-        if(Main.production_status == "Production"):
-            Main.write_json(division_array, Main.json_path)
+        recap_array = [
+            {
+                "id": 1,
+                "tahun": 2022,
+                "divisi": division_array
+            }
+        ]
+
+
+        if(Main.production_status == "Development"):
+            Main.write_json(recap_array, Main.json_path)
             data = json.load(open(Main.json_path))
             Main.update_data(mongoDBURI, database_name, data)
 
             Main.create_file(mongoDBURI, Main.file_path, data)            
 
-        elif(Main.production_status == "Development"):
-            Main.update_data(mongoDBURI, database_name, division_array)
+        elif(Main.production_status == "Production"):
+            Main.update_data(mongoDBURI, database_name, recap_array)
 
-            Main.create_file(mongoDBURI, Main.file_path, division_array)
+            Main.create_file(mongoDBURI, Main.file_path, recap_array)
 
 
     def get_division(settings_data, wb_summary):
@@ -983,8 +805,8 @@ class Main(Database, Utility, File):
             print(f"Processing : {division_data.get('name')}")
             activity_array = Main.get_activity(division_data, wb_summary)
 
-            division_attribute = ["name", "activity"]
-            division_value = [division_data.get("name"), activity_array]
+            division_attribute = ["divisi", "sub_kegiatan"]
+            division_value = [str(division_data.get("name")), activity_array]
             temp_division_dictionary = Main.convert_to_dict(division_count, division_value, division_attribute)
 
             division_array.append(temp_division_dictionary)
@@ -1001,8 +823,8 @@ class Main(Database, Utility, File):
         for activity_count, activity_data in enumerate(activity_value):
             detail_array = Main.get_detail(division_data, activity_count, wb_summary)
 
-            activity_attribute = ["activity", "physical", "finance", "detail"]
-            activity_dict_value = [activity_data[0], activity_data[1], activity_data[2], detail_array]
+            activity_attribute = ["sub_kegiatan", "fisik", "keuangan", "detail"]
+            activity_dict_value = [str(activity_data[0]), activity_data[1], activity_data[2], detail_array]
             activity_percentage_cell = [1, 2]
             temp_activity_dictionary = Main.convert_to_dict(activity_count, activity_dict_value, activity_attribute, activity_percentage_cell)
 
@@ -1074,26 +896,48 @@ class Main(Database, Utility, File):
 
                 physical_monthly = []
                 for k in range(len(physical_value[0][2:14])):
-                    temp_physical_monthly = [physical_value[0][2:14][k], physical_value[1][2:14][k]]
-                    physical_monthly.append(temp_physical_monthly)
+                    temp_physical_monthly_dictionary = {
+                        "id": k + 1,
+                        "target": {
+                            "total": physical_value[0][2:14][k],
+                            "note": None
+                        },
+                        "realisasi": {
+                            "total": physical_value[1][2:14][k],
+                            "note": None
+                        }
+                    }
+
+                    physical_monthly.append(temp_physical_monthly_dictionary)
 
 
                 finance_monthly = []
                 for k in range(len(finance_value[0][2:14])):
-                    temp_finance_monthly = [finance_value[0][2:14][k], finance_value[1][2:14][k]]
-                    finance_monthly.append(temp_finance_monthly)
+                    temp_finance_monthly_dictionary = {
+                        "id": k + 1,
+                        "target": {
+                            "total": finance_value[0][2:14][k],
+                            "note": None
+                        },
+                        "realisasi": {
+                            "total": finance_value[1][2:14][k],
+                            "note": None
+                        }
+                    }
+
+                    finance_monthly.append(temp_finance_monthly_dictionary)
 
 
                 temp_expenses_dictionary = {
                     "id": j+1,
-                    "name": physical_value[0][0],
-                    "physical": {
-                        "total": physical_value[0][1],
-                        "monthly": physical_monthly
+                    "biaya": str(physical_value[0][0]),
+                    "fisik": {
+                        "jumlah_fisik": str(physical_value[0][1]),
+                        "jumlah_Kebutuhan_dana": physical_monthly
                     },
-                    "finance": {
-                        "total": finance_value[0][1],
-                        "monthly": finance_monthly
+                    "keuangan": {
+                        "jumlah_anggaran": str(finance_value[0][1]),
+                        "jumlah_Kebutuhan_dana": finance_monthly
                     }
                 }
 
@@ -1103,9 +947,24 @@ class Main(Database, Utility, File):
             value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
             del value[2:4]
 
-            detail_attribute = ["account", "total_finance", "monthly_finance", "expenses"]
-            detail_dict_value = [value[0], value[1], value[2:14], expenses_array]
-            temp_detail_dictionary = Main.convert_to_dict(i, detail_dict_value, detail_attribute)
+            monthly_total = []
+            for monthly_value_index, monthly_value in enumerate(value[2:14]):
+                new_value_dict = {
+                    "id": monthly_value_index + 1,
+                    "total": monthly_value,
+                    "note": None
+                }
+
+                monthly_total.append(new_value_dict)
+
+
+            temp_detail_dictionary = {
+                "id": 1,
+                "rekening": str(value[0]),
+                "jumlah_fisik_anggaran": value[1],
+                "jumlah_Kebutuhan_dana": monthly_total,
+                "biaya": expenses_array
+            }
 
             detail_array.append(temp_detail_dictionary)
 
@@ -1123,8 +982,8 @@ class Main(Database, Utility, File):
             update_id = data[i].get("id")
             update_dictionary = {
                 "id": update_id,
-                "name": data[i].get("name"),
-                "activity": data[i].get("activity")
+                "tahun": data[i].get("tahun"),
+                "divisi": data[i].get("divisi")
             }
 
             summary_recaps_collection.replace_one({"id": update_id}, update_dictionary, upsert=True)

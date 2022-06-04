@@ -1,7 +1,7 @@
-import enum
 import json
 import os
 import datetime
+import timeit
 import gridfs
 
 from excel import Excel
@@ -92,26 +92,27 @@ class File():
         elif(Main.env_value.get("Status") == "Development"):
             database_phase = "Dev"
 
-        for division in data:
-            excel_folder_path = f"excel/{division.get('name').lower()}"
+        for division in data[0].get("divisi"):
+
+            excel_folder_path = f"excel/{division.get('divisi').lower()}"
             full_excel_file_path = f"{file_path}/{excel_folder_path}/{excel_file_path}"
             system_excel_path = os.path.join(system_path, full_excel_file_path)
 
-            pdf_folder_path = f"pdf/{division.get('name').lower()}"
+            pdf_folder_path = f"pdf/{division.get('divisi').lower()}"
             full_pdf_folder_path = f"{file_path}/{pdf_folder_path}/{pdf_file_path}"
             system_pdf_path = os.path.join(system_path, full_pdf_folder_path)
 
             os.makedirs(f"{file_path}/{excel_folder_path}", exist_ok=True)
             os.makedirs(f"{file_path}/{pdf_folder_path}", exist_ok=True)
 
-            print(f"Creating   : {division.get('name')} Files")
+            print(f"Creating   : {division.get('divisi')} Files")
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path, excel_client_dispatch)
 
-            print(f"Uploading  : {division.get('name')} Files")
-            database_name = f"{database_phase}{division.get('name')}"
+            print(f"Uploading  : {division.get('divisi')} Files")
+            database_name = f"{database_phase}{division.get('divisi')}"
             File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
-            print(f"Completed  : {division.get('name')} Files")
+            print(f"Completed  : {division.get('divisi')} Files")
             print()
 
         
@@ -122,7 +123,7 @@ class File():
         Excel.create_file(full_excel_file_path)
 
         wb_excel = Excel(full_excel_file_path, 1)
-        wb_excel.write_value_singular("A1", f"Divisi: {division.get('name')}")
+        wb_excel.write_value_singular("A1", f"Divisi: {division.get('divisi')}")
         wb_excel.write_value_multiple("A3", "C3", ["No.", "Sub Kegiatan", "Realisasi"])
         wb_excel.write_value_multiple("c4", "D4", ["Fisik", "Keuangan"])
 
@@ -130,25 +131,25 @@ class File():
         wb_excel.merge("B3", "B4")
         wb_excel.merge("C3", "D3")
 
-        row_end_range = 4 + len(division.get('activity'))
+        row_end_range = 4 + len(division.get('sub_kegiatan'))
         wb_excel.border_multiple("A3", [4, row_end_range], "all", style="thin")
         wb_excel.alignment_multiple("A3", [4, row_end_range], horizontal="center", vertical="center")
         wb_excel.alignment_multiple("B5", [2, row_end_range], horizontal="left", vertical="center", wrap=True)
         wb_excel.font_singular("A1", size=12, bold=True)
         wb_excel.font_multiple("A3", "D4", bold=True)
 
-        for activity_count, activity in enumerate(division.get('activity')):
+        for activity_count, activity in enumerate(division.get('sub_kegiatan')):
             activity_physical_value = None
-            if(type(activity.get('physical')) in (int, float)):
-                activity_physical_value = f"{activity.get('physical')}%"
+            if(type(activity.get('fisik')) in (int, float)):
+                activity_physical_value = f"{activity.get('fisik')}%"
 
             activity_finance_value = None
-            if(type(activity.get('finance')) in (int, float)):
-                activity_finance_value = f"{activity.get('finance')}%"
+            if(type(activity.get('keuangan')) in (int, float)):
+                activity_finance_value = f"{activity.get('keuangan')}%"
 
             activity_value = [
                 activity_count + 1,
-                activity.get("activity"),
+                activity.get("sub_kegiatan"),
                 activity_physical_value,
                 activity_finance_value
             ]
@@ -157,11 +158,11 @@ class File():
                 [1, 5 + activity_count], [4, 5 + activity_count], activity_value)
 
 
-        wb_excel.workbook_sheet.column_dimensions["A"].width = 5
-        wb_excel.workbook_sheet.column_dimensions["B"].width = 60
-        wb_excel.workbook_sheet.column_dimensions["C"].width = 11
-        wb_excel.workbook_sheet.column_dimensions["D"].width = 11
-        wb_excel.workbook.save(wb_excel.path)
+        wb_excel.active_sheet.column_dimensions["A"].width = 5
+        wb_excel.active_sheet.column_dimensions["B"].width = 60
+        wb_excel.active_sheet.column_dimensions["C"].width = 11
+        wb_excel.active_sheet.column_dimensions["D"].width = 11
+        wb_excel.save()
 
 
     def create_pdf(system_excel_path, system_pdf_path, excel_client_dispatch):
@@ -191,6 +192,8 @@ class Main(Database, Utility, File):
     env_value = dotenv_values("./api/.env") # path
 
     def main():
+        start_time = timeit.default_timer()
+
         mongoDBURI = Main.env_value.get("APIdbURI")
         if(Main.env_value.get("Status") == "Development"):
             database_name = "Development"
@@ -204,7 +207,13 @@ class Main(Database, Utility, File):
 
         Utility.update_data(mongoDBURI, database_name)
 
-        print("Program Has Finished Running")
+        stop_time = timeit.default_timer()
+        elapsed_time = stop_time - start_time
+
+        print(f"Elapsed time: {elapsed_time} seconds")
+        print()
+        print("You can close the program...")
+        input()
 
 
     def get_data(mongoDBURI, database_name):
@@ -225,19 +234,19 @@ class Main(Database, Utility, File):
                 "divisi": division_array
             }
         ]
-        
+
 
         if(Main.env_value.get("Status") == "Development"):
             Main.write_json(recap_array, Main.env_value.get("JSONPath"))
-            # data = json.load(open(Main.env_value.get("JSONPath")))
-            # Main.update_data(mongoDBURI, database_name, data)
+            data = json.load(open(Main.env_value.get("JSONPath")))
+            Main.update_data(mongoDBURI, database_name, data)
 
-            # Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), data)            
+            Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), data)            
 
         elif(Main.env_value.get("Status") == "Production"):
-            Main.update_data(mongoDBURI, database_name, division_array)
+            Main.update_data(mongoDBURI, database_name, recap_array)
 
-            Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), division_array)
+            Main.create_file(mongoDBURI, Main.env_value.get("FilePath"), recap_array)
 
 
     def get_division(settings_data, wb_summary):
@@ -423,8 +432,8 @@ class Main(Database, Utility, File):
             update_id = data[i].get("id")
             update_dictionary = {
                 "id": update_id,
-                "name": data[i].get("name"),
-                "activity": data[i].get("activity")
+                "tahun": data[i].get("tahun"),
+                "divisi": data[i].get("divisi")
             }
 
             summary_recaps_collection.replace_one({"id": update_id}, update_dictionary, upsert=True)

@@ -1,24 +1,80 @@
 import openpyxl
+
 from openpyxl.styles import *
 
 class Excel():
-    def __init__(self, path: str, sheet: int):
-        self.path = path
-        self.workbook = openpyxl.load_workbook(self.path, data_only=True)
+    def __init__(self, file_path: str, active_sheet: int = 1):
+        self.file_path = file_path
+        self.workbook = openpyxl.load_workbook(self.file_path, data_only=True)
 
         wb_sheet = self.workbook.sheetnames
 
-        self.workbook_sheet = self.workbook[wb_sheet[sheet - 1]]
+        self.active_sheet = self.workbook[wb_sheet[active_sheet - 1]]
+
+
+    def create_file(file_path: str):
+        wb = openpyxl.Workbook()
+        wb.save(file_path)
+
+
+    def save(self):
+        self.workbook.save(self.file_path)
+
+
+    def create_sheet(self, new_sheet_name: str):
+        self.workbook.create_sheet(new_sheet_name)
+
+
+    def change_sheet(self, active_sheet: int or str):
+        if(type(active_sheet) == int):
+            self.active_sheet = self.workbook[self.workbook.sheetnames[active_sheet - 1]]
+
+        elif(type(active_sheet) == str):
+            self.active_sheet = self.workbook[active_sheet]
+
+
+    def change_sheet_name(self, old_sheet_name, new_sheet_name):
+        self.workbook[old_sheet_name].title = new_sheet_name
     
 
-    def change_sheet(self, sheet):
-        wb_sheet = self.workbook.sheetnames
-        self.workbook_sheet = self.workbook[wb_sheet[sheet - 1]]
+    def delete_sheet(self, deleted_sheet: int or str):
+        if(type(deleted_sheet) == int):
+            del self.workbook[self.workbook.sheetnames[deleted_sheet - 1]]
+
+        elif(type(deleted_sheet) == str):
+            del self.workbook[deleted_sheet]
 
 
-    def create_file(path: str):
-        wb = openpyxl.Workbook()
-        wb.save(path)
+    def adjust_width(self, start_range: any, end_range: any, extra_width: int = 0, width_limit: int = 0):
+        start_column, start_row = Excel.convert_range(start_range)
+        end_column, end_row = Excel.convert_range(end_range)
+
+        width_dict = {}
+        for column in range(start_column, end_column + 1):
+            temp_width_array = []
+            cell_column_letter =  self.active_sheet.cell(row = 1, column = column).column_letter
+
+            for row in range(start_row, end_row + 1):
+                temp_value = self.active_sheet.cell(row = row, column = column).value
+
+                if(type(temp_value) in (int, str)):
+                    temp_width_array.append(len(str(temp_value)))
+
+
+            max_width_value = max(temp_width_array)
+
+            if(width_limit > 0):
+                if(max_width_value > width_limit):
+                    max_width_value = width_limit
+
+                    self.alignment_multiple([column, start_row], [column, end_row], wrap = True)
+
+
+            width_dict[cell_column_letter] = max_width_value
+
+        
+        for column, width in width_dict.items():
+            self.active_sheet.column_dimensions[column].width = (width + 1 + extra_width)
 
 
     def check_range(range: any):
@@ -85,10 +141,24 @@ class Excel():
         return attributes_string
 
 
+    def change_cell_number_format_singular(self, range: any, number_format: str):
+        column, row = Excel.convert_range(range)
+        self.active_sheet.cell(row = row, column = column).number_format = number_format
+
+
+    def change_cell_number_format_multiple(self, start_range: any, end_range: any, number_format: str):
+        start_column, start_row = Excel.convert_range(start_range)
+        end_column, end_row = Excel.convert_range(end_range)
+
+        for row in range(start_row, end_row + 1):
+            for column in range(start_column, end_column + 1):
+                self.active_sheet.cell(row = row, column = column).number_format = number_format
+
+
     #region Get
     def get_value_singular(self, range: any):
         column, row = Excel.convert_range(range)
-        value = self.workbook_sheet.cell(row = row, column = column).value
+        value = self.active_sheet.cell(row = row, column = column).value
 
         return value
 
@@ -100,7 +170,7 @@ class Excel():
         value = []
         for row in range(start_row, end_row + 1):
             for column in range(start_column, end_column + 1):
-                temp_value = self.workbook_sheet.cell(row = row, column = column).value
+                temp_value = self.active_sheet.cell(row = row, column = column).value
                 value.append(temp_value)
 
         return value
@@ -114,7 +184,7 @@ class Excel():
         for row in range(start_row, end_row + 1):
             temp_value_array = []
             for column in range(start_column, end_column + 1):
-                temp_value = self.workbook_sheet.cell(row = row, column = column).value
+                temp_value = self.active_sheet.cell(row = row, column = column).value
                 temp_value_array.append(temp_value)
             
             value_array.append(temp_value_array)
@@ -131,8 +201,7 @@ class Excel():
 
         column, row = Excel.convert_range(range)
             
-        self.workbook_sheet.cell(row = row, column = column, value = value)
-        self.workbook.save(self.path)
+        self.active_sheet.cell(row = row, column = column, value = value)
 
 
     def write_value_multiple(self, start_range: any, end_range: any, value: any):
@@ -144,18 +213,18 @@ class Excel():
                 if(type(check_value) == list):
                     raise TypeError("Use write_value_multiple_2d function if the value is a 2D list")
 
+
             value_counter = 0
             for row in range(start_row, end_row + 1):
                 for column in range(start_column, end_column + 1):
-                    self.workbook_sheet.cell(row = row, column = column, value = value[value_counter])
+                    self.active_sheet.cell(row = row, column = column, value = value[value_counter])
                     value_counter += 1
+
 
         elif(type(value) in (str, int, bool, float)):
             for row in range(start_row, end_row + 1):
                 for column in range(start_column, end_column + 1):
-                    self.workbook_sheet.cell(row = row, column = column, value = value)       
-
-        self.workbook.save(self.path)
+                    self.active_sheet.cell(row = row, column = column, value = value)       
 
 
     def write_value_multiple_2d(self, start_range: any, value: any):
@@ -165,15 +234,15 @@ class Excel():
                 if(type(check_value) != list):
                     value_is_valid = False
 
+
             if(value_is_valid):
                 start_column, start_row = Excel.convert_range(start_range)
                 end_column, end_row = start_column + len(value[0]), start_row + len(value)
 
                 for x, row in enumerate(range(start_row, end_row)):
                     for y, column in enumerate(range(start_column, end_column)):
-                        self.workbook_sheet.cell(row = row, column = column, value = value[x][y])
+                        self.active_sheet.cell(row = row, column = column, value = value[x][y])
 
-                self.workbook.save(self.path)
 
             elif(not value_is_valid):
                 raise TypeError("Value must be a 2D list")
@@ -189,17 +258,15 @@ class Excel():
         start_column, start_row = Excel.convert_range(start_range)
         end_column, end_row = Excel.convert_range(end_range)
 
-        self.workbook_sheet.merge_cells(start_row = start_row, start_column = start_column, end_row = end_row, end_column = end_column)
-        self.workbook.save(self.path)
+        self.active_sheet.merge_cells(start_row = start_row, start_column = start_column, end_row = end_row, end_column = end_column)
 
     
     def unmerge(self, start_range: any, end_range: any):
         start_column, start_row = Excel.convert_range(start_range)
         end_column, end_row = Excel.convert_range(end_range)
 
-        self.workbook_sheet.unmerge_cells(start_row = start_row, start_column = start_column, end_row = end_row, end_column = end_column)
-        self.workbook.save(self.path)
-    
+        self.active_sheet.unmerge_cells(start_row = start_row, start_column = start_column, end_row = end_row, end_column = end_column)
+
     #endregion Merge & Unmerge
 
 
@@ -285,8 +352,8 @@ class Excel():
 
         attributes_string = Excel.font_attributes(**attributes)
 
-        self.workbook_sheet.cell(row = row, column = column).font = eval(f"Font({attributes_string})")
-        self.workbook.save(self.path)
+        font = eval(f"Font({attributes_string})")
+        self.active_sheet.cell(row = row, column = column).font = font
 
     
     def font_multiple(self, start_range: any, end_range: any, **attributes: any):
@@ -295,11 +362,11 @@ class Excel():
 
         attributes_string = Excel.font_attributes(**attributes)
 
+        font = eval(f"Font({attributes_string})")
         for row in range(start_row, end_row + 1):
             for column in range(start_column, end_column + 1):
-                self.workbook_sheet.cell(row = row, column = column).font = eval(f"Font({attributes_string})")
+                self.active_sheet.cell(row = row, column = column).font = font
 
-        self.workbook.save(self.path)
     
     #endregion Font
 
@@ -388,8 +455,7 @@ class Excel():
             
         attributes_string = Excel.fill_attributes(**attributes)
 
-        self.workbook_sheet.cell(row = row, column = column).fill = eval(f"PatternFill({attributes_string})")
-        self.workbook.save(self.path)
+        self.active_sheet.cell(row = row, column = column).fill = eval(f"PatternFill({attributes_string})")
 
     
     def fill_multiple(self, start_range: any, end_range: any, **attributes: any):
@@ -405,15 +471,16 @@ class Excel():
         if(shade):    
             second_attributes_string = Excel.shade_attributes(**attributes)
 
+        main_pattern_fill = eval(f"PatternFill({main_attributes_string})")
+        second_pattern_fill = eval(f"PatternFill({second_attributes_string})")
         for row in range(start_row, end_row + 1):
             for column in range(start_column, end_column + 1):
-                self.workbook_sheet.cell(row = row, column = column).fill = eval(f"PatternFill({main_attributes_string})")
+                self.active_sheet.cell(row = row, column = column).fill = main_pattern_fill
 
                 if(shade and column % 2 == 0):
-                    self.workbook_sheet.cell(row = row, column = column).fill = eval(f"PatternFill({second_attributes_string})")
-                
-        self.workbook.save(self.path)
+                    self.active_sheet.cell(row = row, column = column).fill = second_pattern_fill
     
+
     #endregion Fill
 
 
@@ -447,8 +514,8 @@ class Excel():
 
         return Excel.attributes_string(list_of_attributes)
 
-    
-    def set_border(self, row, column, side, border):
+
+    def border_set(side, attribute):
         if(type(side) == str):
             side = side.lower()
         
@@ -456,24 +523,24 @@ class Excel():
             raise TypeError("Side data type needs to be a string")
 
         if(side == "all"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(top = border, left = border, right = border, bottom = border)
+            border = Border(top = attribute, left = attribute, right = attribute, bottom = attribute)
 
         elif(side == "top"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(top = border)
+            border = Border(top = attribute)
 
         elif(side == "left"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(left = border)
+            border = Border(left = attribute)
 
         elif(side == "right"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(right = border)
+            border = Border(right = attribute)
 
         elif(side == "bottom"):
-            self.workbook_sheet.cell(row = row, column = column).border = Border(bottom = border)
+            border = Border(bottom = attribute)
         
         else:
             raise TypeError("Side value can only be all, top, left, right, bottom")
 
-        self.workbook.save(self.path)
+        return border
 
 
     def border_singular(self, cell_range: any, side: str, **attributes: any):
@@ -481,8 +548,9 @@ class Excel():
             
         attributes_string = Excel.border_attributes(**attributes)
         
-        border = eval(f"Side({attributes_string})")
-        self.set_border(row, column, side, border)
+        side = eval(f"Side({attributes_string})")
+        border = Excel.border_set(side)
+        self.active_sheet.cell(row = row, column = column).border = border
 
     
     def border_multiple(self, start_range: any, end_range: any, side: str, **attributes: any):
@@ -491,10 +559,12 @@ class Excel():
             
         attributes_string = Excel.border_attributes(**attributes)
         
-        border = eval(f"Side({attributes_string})")
+        attribute = eval(f"Side({attributes_string})")
+        border = Excel.border_set(side, attribute)
+
         for row in range(start_row, end_row + 1):
             for column in range(start_column, end_column + 1):
-                self.set_border(row, column, side, border)
+                self.active_sheet.cell(row = row, column = column).border = border
     
     #endregion
 
@@ -572,8 +642,8 @@ class Excel():
 
         attributes_string = Excel.alignment_attributes(**attributes)
         
-        self.workbook_sheet.cell(row = row, column = column).alignment = eval(f"Alignment({attributes_string})")
-        self.workbook.save(self.path)
+        alignment = eval(f"Alignment({attributes_string})")
+        self.active_sheet.cell(row = row, column = column).alignment = alignment
 
     
     def alignment_multiple(self, start_range: any, end_range: any, **attributes: any):
@@ -582,11 +652,11 @@ class Excel():
 
         attributes_string = Excel.alignment_attributes(**attributes)
 
+        alignment = eval(f"Alignment({attributes_string})")
         for row in range(start_row, end_row + 1):
             for column in range(start_column, end_column + 1):
-                self.workbook_sheet.cell(row = row, column = column).alignment = eval(f"Alignment({attributes_string})")
+                self.active_sheet.cell(row = row, column = column).alignment = alignment
                 
-        self.workbook.save(self.path)
     
     #endregion
 
