@@ -10,9 +10,7 @@
     @endphp
 </pre> --}}
 
-@foreach ($summary as $summary_item)
-    {{ var_dump() }}    
-@endforeach
+
 
 
 {{-- <a href="{{ asset("storage/ProSekretariat"); }}">test</a> --}}
