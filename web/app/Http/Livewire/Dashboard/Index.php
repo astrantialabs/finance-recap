@@ -31,9 +31,11 @@ class Index extends Component
     }
     public function render()
     {
-        gridfs("ProSekretariat", "pdf");
+        // gridfs("ProSekretariat", "pdf");
 
-        $summary = SummaryRecaps::all();
+        // $summary = SummaryRecaps::all();
+        $summary = SummaryRecaps::where("divisi.divisi", "HI")->get();
+        // dd($summary);
         return view("dashboard.index", [
             "summary" => $summary,
         ]);

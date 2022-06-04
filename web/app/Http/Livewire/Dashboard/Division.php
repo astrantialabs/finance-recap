@@ -11,6 +11,7 @@ class Division extends Component
 {
     public $titles;
     public $isActive;
+    public $test;
     public $payload;
 
     public function mount($id)
@@ -19,7 +20,10 @@ class Division extends Component
         $summary_activity_title = [];
 
         foreach ($summary as $summary => $summary_item) {
-            $summary_activity_title[] = strtolower($summary_item["name"]);
+            $divisi = $summary_item['divisi'];
+            foreach ($divisi as $divisi => $summary_item_item) {
+                $summary_activity_title[] = strtolower($summary_item_item["divisi"]);
+            }
         }
 
         function filter_array($array, $term)
@@ -39,28 +43,37 @@ class Division extends Component
             switch ($id) {
                 case "sekretariat":
                     if ($user->hasRole(["sekretariat", "superadmin", "admin"])) {
-                        $this->payload = SummaryRecaps::all()->where("name", "Sekretariat");
+                        $this->payload = SummaryRecaps::where("divisi.divisi", "Sekretariat")->get();
+
+                        $this->test = $this->payload[0]["divisi"]['0'];
+
                     } else {
                         return redirect()->to("/");
                     }
                     break;
                 case "penta":
                     if ($user->hasRole(["penta", "superadmin", "admin"])) {
-                        $this->payload = SummaryRecaps::all()->where("name", "Penta");
+                        $this->payload = SummaryRecaps::where("divisi.divisi", "Penta")->get();
+                        $this->test = $this->payload[0]["divisi"]['1'];
+
                     } else {
                         return redirect()->to("/");
                     }
                     break;
                 case "lattas":
                     if ($user->hasRole(["lattas", "superadmin", "admin"])) {
-                        $this->payload = SummaryRecaps::all()->where("name", "Lattas");
+                        $this->payload = SummaryRecaps::where("divisi.divisi", "Lattas")->get();
+                        $this->test = $this->payload[0]["divisi"]['2'];
+
                     } else {
                         return redirect()->to("/");
                     }
                     break;
                 case "hi":
                     if ($user->hasRole(["hi", "superadmin", "admin"])) {
-                        $this->payload = SummaryRecaps::all()->where("name", "HI");
+                        $this->payload = SummaryRecaps::where("divisi.divisi", "HI")->get();
+                        $this->test = $this->payload[0]["divisi"]['3'];
+
                     } else {
                         return redirect()->to("/");
                     }
@@ -87,6 +100,7 @@ class Division extends Component
     {
         return view("dashboard.division", [
             "payload" => $this->payload,
+            "test" => $this->test
         ]);
     }
 }
