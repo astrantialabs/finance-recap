@@ -36,9 +36,10 @@ class Main():
                 temp_detail_dictionary = {
                     "id": detail_index + 1,
                     "active_sheet": detail_settings[0],
-                    "start_range": detail_settings[1],
-                    "end_range": detail_settings[2],
-                    "attribute": detail_settings[3]
+                    "sheet_name" : detail_settings[1],
+                    "start_range": detail_settings[2],
+                    "end_range": detail_settings[3],
+                    "attribute": detail_settings[4]
                 }
 
                 detail_array.append(temp_detail_dictionary)
@@ -46,9 +47,9 @@ class Main():
 
             temp_division_dictionary = {
                 "id": division_index + 1,
-                "name": division_settings[2],
-                "start_range": division_settings[0],
-                "end_range": division_settings[1],
+                "name": division_settings[0],
+                "start_range": division_settings[1],
+                "end_range": division_settings[2],
                 "detail": detail_array
             }
 

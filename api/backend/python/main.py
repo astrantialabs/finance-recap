@@ -292,136 +292,137 @@ class Main(Database, Utility, File):
     def get_detail(division_data, activity_count, wb_summary):
         detail_setting = division_data.get("detail")[activity_count]
 
-        print(f"Processing : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
-        
+        print(f"Processing : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('sheet_name')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
+
         detail_array = []
-        cell_range = [Excel.convert_range(detail_setting.get("start_range")), Excel.convert_range(detail_setting.get("end_range"))]
+        if("null" not in detail_setting.get("sheet_name")):
+            cell_range = [Excel.convert_range(detail_setting.get("start_range")), Excel.convert_range(detail_setting.get("end_range"))]
 
-        cell_attribute_index = 0
-        cell_attribute_count = 0
+            cell_attribute_index = 0
+            cell_attribute_count = 0
 
-        detail_range = []
-        expenses_range = []
+            detail_range = []
+            expenses_range = []
 
-        i = cell_range[0][1]
-        while i < cell_range[1][1] + 2:
-            if(cell_attribute_count == detail_setting.get("attribute")[cell_attribute_index]):  
-                combined_expenses_range = []
+            i = cell_range[0][1]
+            while i < cell_range[1][1] + 2:
+                if(cell_attribute_count == detail_setting.get("attribute")[cell_attribute_index]):  
+                    combined_expenses_range = []
 
-                j = 0
-                while j < len(expenses_range):
-                    temp_combined_expenses_range = expenses_range[j] + expenses_range[j+1] 
-                    combined_expenses_range.append(temp_combined_expenses_range)
+                    j = 0
+                    while j < len(expenses_range):
+                        temp_combined_expenses_range = expenses_range[j] + expenses_range[j+1] 
+                        combined_expenses_range.append(temp_combined_expenses_range)
 
-                    j += 2
-
-
-                temp_detail.append(combined_expenses_range)
-                detail_range.append(temp_detail)
-
-                expenses_range = []
-                cell_attribute_count = 0
-                cell_attribute_index += 1
-
-            if(cell_attribute_count == 0):
-                temp_detail = [[cell_range[0][0], i], [cell_range[1][0], i]]
-
-                cell_attribute_count += 1
-                i += 1
-            
-            elif(cell_attribute_count != 0):
-                temp_expenses = [[cell_range[0][0], i], [cell_range[1][0], i+1]]
-                expenses_range.append(temp_expenses)
-
-                cell_attribute_count += 1
-                i += 2        
+                        j += 2
 
 
-        wb_summary.change_sheet(detail_setting.get("active_sheet"))
-        for i in range(len(detail_range)):
-            expenses_array = []
-            for j in range(len(detail_range[i][2])):
-                physical_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][0], detail_range[i][2][j][1])
-                finance_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][2], detail_range[i][2][j][3])
+                    temp_detail.append(combined_expenses_range)
+                    detail_range.append(temp_detail)
 
-                del physical_value[0][2:4]
-                del physical_value[1][2:4]
-                del finance_value[0][2:4]
-                del finance_value[1][2:4]
+                    expenses_range = []
+                    cell_attribute_count = 0
+                    cell_attribute_index += 1
 
-                physical_monthly = []
-                for k in range(len(physical_value[0][2:14])):
-                    temp_physical_monthly_dictionary = {
-                        "id": k + 1,
-                        "target": {
-                            "total": physical_value[0][2:14][k],
-                            "note": None
+                if(cell_attribute_count == 0):
+                    temp_detail = [[cell_range[0][0], i], [cell_range[1][0], i]]
+
+                    cell_attribute_count += 1
+                    i += 1
+                
+                elif(cell_attribute_count != 0):
+                    temp_expenses = [[cell_range[0][0], i], [cell_range[1][0], i+1]]
+                    expenses_range.append(temp_expenses)
+
+                    cell_attribute_count += 1
+                    i += 2        
+
+        
+            wb_summary.change_sheet(detail_setting.get("sheet_name"))
+            for i in range(len(detail_range)):
+                expenses_array = []
+                for j in range(len(detail_range[i][2])):
+                    physical_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][0], detail_range[i][2][j][1])
+                    finance_value = wb_summary.get_value_multiple_2d(detail_range[i][2][j][2], detail_range[i][2][j][3])
+
+                    del physical_value[0][2:4]
+                    del physical_value[1][2:4]
+                    del finance_value[0][2:4]
+                    del finance_value[1][2:4]
+
+                    physical_monthly = []
+                    for k in range(len(physical_value[0][2:14])):
+                        temp_physical_monthly_dictionary = {
+                            "id": k + 1,
+                            "target": {
+                                "total": physical_value[0][2:14][k],
+                                "note": None
+                            },
+                            "realisasi": {
+                                "total": physical_value[1][2:14][k],
+                                "note": None
+                            }
+                        }
+
+                        physical_monthly.append(temp_physical_monthly_dictionary)
+
+
+                    finance_monthly = []
+                    for k in range(len(finance_value[0][2:14])):
+                        temp_finance_monthly_dictionary = {
+                            "id": k + 1,
+                            "target": {
+                                "total": finance_value[0][2:14][k],
+                                "note": None
+                            },
+                            "realisasi": {
+                                "total": finance_value[1][2:14][k],
+                                "note": None
+                            }
+                        }
+
+                        finance_monthly.append(temp_finance_monthly_dictionary)
+
+
+                    temp_expenses_dictionary = {
+                        "id": j+1,
+                        "biaya": str(physical_value[0][0]),
+                        "fisik": {
+                            "jumlah_fisik": str(physical_value[0][1]),
+                            "jumlah_Kebutuhan_dana": physical_monthly
                         },
-                        "realisasi": {
-                            "total": physical_value[1][2:14][k],
-                            "note": None
+                        "keuangan": {
+                            "jumlah_anggaran": str(finance_value[0][1]),
+                            "jumlah_Kebutuhan_dana": finance_monthly
                         }
                     }
 
-                    physical_monthly.append(temp_physical_monthly_dictionary)
+                    expenses_array.append(temp_expenses_dictionary)
 
 
-                finance_monthly = []
-                for k in range(len(finance_value[0][2:14])):
-                    temp_finance_monthly_dictionary = {
-                        "id": k + 1,
-                        "target": {
-                            "total": finance_value[0][2:14][k],
-                            "note": None
-                        },
-                        "realisasi": {
-                            "total": finance_value[1][2:14][k],
-                            "note": None
-                        }
+                value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
+                del value[2:4]
+
+                monthly_total = []
+                for monthly_value_index, monthly_value in enumerate(value[2:14]):
+                    new_value_dict = {
+                        "id": monthly_value_index + 1,
+                        "total": monthly_value,
+                        "note": None
                     }
 
-                    finance_monthly.append(temp_finance_monthly_dictionary)
+                    monthly_total.append(new_value_dict)
 
 
-                temp_expenses_dictionary = {
-                    "id": j+1,
-                    "biaya": str(physical_value[0][0]),
-                    "fisik": {
-                        "jumlah_fisik": str(physical_value[0][1]),
-                        "jumlah_Kebutuhan_dana": physical_monthly
-                    },
-                    "keuangan": {
-                        "jumlah_anggaran": str(finance_value[0][1]),
-                        "jumlah_Kebutuhan_dana": finance_monthly
-                    }
+                temp_detail_dictionary = {
+                    "id": 1,
+                    "rekening": str(value[0]),
+                    "jumlah_fisik_anggaran": value[1],
+                    "jumlah_Kebutuhan_dana": monthly_total,
+                    "biaya": expenses_array
                 }
 
-                expenses_array.append(temp_expenses_dictionary)
-
-
-            value = wb_summary.get_value_multiple(detail_range[i][0], detail_range[i][1])
-            del value[2:4]
-
-            monthly_total = []
-            for monthly_value_index, monthly_value in enumerate(value[2:14]):
-                new_value_dict = {
-                    "id": monthly_value_index + 1,
-                    "total": monthly_value,
-                    "note": None
-                }
-
-                monthly_total.append(new_value_dict)
-
-
-            temp_detail_dictionary = {
-                "id": 1,
-                "rekening": str(value[0]),
-                "jumlah_fisik_anggaran": value[1],
-                "jumlah_Kebutuhan_dana": monthly_total,
-                "biaya": expenses_array
-            }
-
-            detail_array.append(temp_detail_dictionary)
+                detail_array.append(temp_detail_dictionary)
 
 
         return detail_array
