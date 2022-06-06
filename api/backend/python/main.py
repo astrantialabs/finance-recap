@@ -192,28 +192,33 @@ class Main(Database, Utility, File):
     env_value = dotenv_values("./api/.env") # path
 
     def main():
-        start_time = timeit.default_timer()
+        try:
+            start_time = timeit.default_timer()
 
-        mongoDBURI = Main.env_value.get("APIdbURI")
-        if(Main.env_value.get("Status") == "Development"):
-            database_name = "Development"
+            mongoDBURI = Main.env_value.get("APIdbURI")
+            if(Main.env_value.get("Status") == "Development"):
+                database_name = "Development"
 
-        elif(Main.env_value.get("Status") == "Production"):
-            database_name = "DisnakerFinanceRecap"
+            elif(Main.env_value.get("Status") == "Production"):
+                database_name = "DisnakerFinanceRecap"
 
-        Main.get_data(mongoDBURI, database_name)
+            Main.get_data(mongoDBURI, database_name)
 
-        # Main.show_data(mongoDBURI, database_name)
+            # Main.show_data(mongoDBURI, database_name)
 
-        Utility.update_data(mongoDBURI, database_name)
+            Utility.update_data(mongoDBURI, database_name)
 
-        stop_time = timeit.default_timer()
-        elapsed_time = stop_time - start_time
+            stop_time = timeit.default_timer()
+            elapsed_time = stop_time - start_time
 
-        print(f"Elapsed time: {elapsed_time} seconds")
-        print()
-        print("You can close the program...")
-        input()
+            print(f"Elapsed time: {elapsed_time} seconds")
+            print()
+            print("You can close the program...")
+            input()
+
+        except:
+            print("Program failed to run...")
+            input()
 
 
     def get_data(mongoDBURI, database_name):
