@@ -19,12 +19,12 @@ foreach ($test as $key => $value) {
             <table class="fold-table" align="center">
                 <thead>
                     <tr>
-                        <th colspan="1" rowspan="2">Sub Kegiatan</th>
-                        <th colspan="2" rowspan="1">Realisasi</th>
+                        <th class="text-center" colspan="1" rowspan="2">Sub Kegiatan</th>
+                        <th class="text-center" colspan="2" rowspan="1">Realisasi</th>
                     </tr>
                     <tr>
-                        <th>Pisikal</th>
-                        <th>Realisasi</th>
+                        <th class="text-center">Pisikal</th>
+                        <th class="text-center">Realisasi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,7 +36,7 @@ foreach ($test as $key => $value) {
                             <td class="activity">
                                 {{ $test_item['sub_kegiatan'] }}
                             </td>
-                            <td class="physical">
+                            <td class="physical text-center">
                                 @isset($test_item['fisik'])
                                     {{ $test_item['fisik'] }}%
                                 @endisset
@@ -46,7 +46,7 @@ foreach ($test as $key => $value) {
                                     }
                                 @endphp
                             </td>
-                            <td class="finance">
+                            <td class="finance text-center">
                                 @isset($test_item['keuangan'])
                                     {{ $test_item['keuangan'] }}%
                                 @endisset
@@ -63,39 +63,39 @@ foreach ($test as $key => $value) {
                                     <table align="center">
                                         <thead class="division-table-nested-head">
                                             <tr>
-                                                <th rowspan="2">
+                                                <th class="text-center" rowspan="2">
                                                     Rekening
                                                 </th>
-                                                <th rowspan="2">
+                                                <th class="text-center" rowspan="2">
                                                     Jumlah Fisik / Anggaran
                                                 </th>
-                                                <th rowspan="2">
+                                                <th class="text-center" rowspan="2">
                                                     Target Realisasi
                                                 </th>
-                                                <th rowspan="1" colspan="12">
+                                                <th class="text-center" rowspan="1" colspan="12">
                                                     Jumlah Kebutuhan Dana
                                                 </th>
-                                                <th rowspan="2">Jumlah</th>
-                                                <th rowspan="2">
+                                                <th class="text-center" rowspan="2">Jumlah</th>
+                                                <th class="text-center" rowspan="2">
                                                     Persentase Realisasi Fisik / Anggaran
                                                 </th>
-                                                <th rowspan="2">
+                                                <th class="text-center" rowspan="2">
                                                     Sisa Fisik / Anggaran yang belum digunakan
                                                 </th>
                                             </tr>
                                             <tr>
-                                                <th rowspan="1">Januari</th>
-                                                <th rowspan="1">Febuari</th>
-                                                <th rowspan="1">Maret</th>
-                                                <th rowspan="1">April</th>
-                                                <th rowspan="1">Mei</th>
-                                                <th rowspan="1">Juni</th>
-                                                <th rowspan="1">Juli</th>
-                                                <th rowspan="1">Agustus</th>
-                                                <th rowspan="1">September</th>
-                                                <th rowspan="1">Oktober</th>
-                                                <th rowspan="1">November</th>
-                                                <th rowspan="1">December</th>
+                                                <th class="text-center" rowspan="1">Januari</th>
+                                                <th class="text-center" rowspan="1">Febuari</th>
+                                                <th class="text-center" rowspan="1">Maret</th>
+                                                <th class="text-center" rowspan="1">April</th>
+                                                <th class="text-center" rowspan="1">Mei</th>
+                                                <th class="text-center" rowspan="1">Juni</th>
+                                                <th class="text-center" rowspan="1">Juli</th>
+                                                <th class="text-center" rowspan="1">Agustus</th>
+                                                <th class="text-center" rowspan="1">September</th>
+                                                <th class="text-center" rowspan="1">Oktober</th>
+                                                <th class="text-center" rowspan="1">November</th>
+                                                <th class="text-center" rowspan="1">December</th>
                                             </tr>
                                         </thead>
                                         <tbody class="sekretariat-table-nested-body">
@@ -110,7 +110,7 @@ foreach ($test as $key => $value) {
                                                     <td class="account">
                                                         {{ $details_item['rekening'] }}
                                                     </td>
-                                                    <td>
+                                                    <td class="text-center">
                                                         @currency($details_item['jumlah_fisik_anggaran'])
                                                     </td>
                                                     <td>
@@ -119,12 +119,12 @@ foreach ($test as $key => $value) {
 
                                                     <?php $monthly_finance = $details_item['jumlah_Kebutuhan_dana']; ?>
                                                     @foreach ((array) $monthly_finance as $monthly_finance_array => $monthly_finance_item)
-                                                        <td>
+                                                        <td class="text-center">
                                                             @currency($monthly_finance_item['total'])
                                                         </td>
                                                     @endforeach
 
-                                                    <td>
+                                                    <td class="text-center">
                                                         @currency(array_sum(array_column($monthly_finance, 'total')))
                                                     </td>
                                                     <td>
@@ -144,16 +144,16 @@ foreach ($test as $key => $value) {
                                                         <td class="first-row fixed fixed-row-one " rowspan="2">
                                                             {{ $expenses_item['biaya'] }}
                                                         </td>
-                                                        <td class="first-row fixed fixed-row-two" rowspan="2">
+                                                        <td class="first-row fixed fixed-row-two text-center" rowspan="2">
                                                             {{ $physical_expenses['jumlah_fisik'] }}
                                                         </td>
-                                                        <td class="first-row fixed fixed-row-three">
+                                                        <td class="first-row fixed fixed-row-three text-center">
                                                             Target
                                                         </td>
                                                         <?php $monthly_physical_expenses = $physical_expenses['jumlah_Kebutuhan_dana']; ?>
 
                                                         @foreach ((array) $monthly_physical_expenses as $monthly_physical_expenses => $monthly_physical_expenses_item)
-                                                            <td class="first-row">
+                                                            <td class="first-row text-center">
                                                                 @isset($monthly_physical_expenses_item['target']['total'])
                                                                     {{ $monthly_physical_expenses_item['target']['total'] }}
                                                                 @endisset
@@ -166,10 +166,10 @@ foreach ($test as $key => $value) {
                                                         @endforeach
 
                                                         <?php $monthly_physical_expenses = $physical_expenses['jumlah_Kebutuhan_dana']; ?>
-                                                        <td class="first-row">
+                                                        <td class="first-row text-center">
                                                             {{ array_sum(array_column(array_column($monthly_physical_expenses, 'target'), 'total')) }}
                                                         </td>
-                                                        <td class="first-row" rowspan="2">
+                                                        <td class="first-row text-center" rowspan="2">
                                                             {{ round(
                                                                 divnum(
                                                                     array_sum(array_column(array_column($monthly_physical_expenses, 'realisasi'), 'total')),
@@ -177,20 +177,20 @@ foreach ($test as $key => $value) {
                                                                 ) * 100,
                                                             ) }}%
                                                         </td>
-                                                        <td class="first-row" rowspan="2">
+                                                        <td class="first-row text-center" rowspan="2">
                                                             {{ array_sum(array_column(array_column($monthly_physical_expenses, 'target'), 'total')) -
                                                                 array_sum(array_column(array_column($monthly_physical_expenses, 'realisasi'), 'total')) }}
                                                         </td>
                                                     </tr>
 
                                                     <tr>
-                                                        <td class="first-row fixed">
+                                                        <td class="first-row fixed text-center">
                                                             Realisasi
                                                         </td>
 
                                                         <?php $monthly_physical_expenses = $physical_expenses['jumlah_Kebutuhan_dana']; ?>
                                                         @foreach ((array) $monthly_physical_expenses as $monthly_physical_expenses => $monthly_physical_expenses_item)
-                                                            <td class="first-row">
+                                                            <td class="first-row text-center">
                                                                 @isset($monthly_physical_expenses_item['realisasi']['total'])
                                                                     {{ $monthly_physical_expenses_item['realisasi']['total'] }}
                                                                 @endisset
@@ -203,7 +203,7 @@ foreach ($test as $key => $value) {
                                                         @endforeach
 
                                                         <?php $monthly_physical_expenses = $physical_expenses['jumlah_Kebutuhan_dana']; ?>
-                                                        <td class="first-row">
+                                                        <td class="first-row text-center">
                                                             {{ array_sum(array_column(array_column($monthly_physical_expenses, 'realisasi'), 'total')) }}
                                                         </td>
                                                     </tr>
@@ -212,15 +212,15 @@ foreach ($test as $key => $value) {
                                                         <td class="second-row fixed" rowspan="2">
                                                             {{ $expenses_item['biaya'] }}
                                                         </td>
-                                                        <td class="second-row fixed" rowspan="2">
+                                                        <td class="second-row fixed text-center" rowspan="2">
                                                             {{ $finance_expenses['jumlah_anggaran'] }}
                                                         </td>
 
-                                                        <td class="second-row fixed">Target</td>
+                                                        <td class="second-row fixed text-center">Target</td>
 
                                                         <?php $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana']; ?>
                                                         @foreach ((array) $monthly_finance_expenses as $monthly_finance_expenses => $monthly_finance_expenses_item)
-                                                            <td class="second-row">
+                                                            <td class="second-row text-center">
                                                                 @isset($monthly_finance_expenses_item['target']['total'])
                                                                     @currency($monthly_finance_expenses_item['target']['total'])
                                                                 @endisset
@@ -233,10 +233,10 @@ foreach ($test as $key => $value) {
                                                         @endforeach
 
                                                         <?php $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana']; ?>
-                                                        <td class="second-row">
+                                                        <td class="second-row text-center">
                                                             @currency(array_sum(array_column(array_column($monthly_finance_expenses, 'target'), 'total')))
                                                         </td>
-                                                        <td class="second-row" rowspan="2">
+                                                        <td class="second-row text-center" rowspan="2">
                                                             {{ round(
                                                                 divnum(
                                                                     array_sum(array_column(array_column($monthly_finance_expenses, 'realisasi'), 'total')),
@@ -244,7 +244,7 @@ foreach ($test as $key => $value) {
                                                                 ) * 100,
                                                             ) }}%
                                                         </td>
-                                                        <td class="second-row" rowspan="2">
+                                                        <td class="second-row text-center" rowspan="2">
                                                             @php
                                                                 $result = round(
                                                                     array_sum(array_column(array_column($monthly_finance_expenses, 'target'), 'total')) -
@@ -256,11 +256,11 @@ foreach ($test as $key => $value) {
                                                     </tr>
 
                                                     <tr>
-                                                        <td class="second-row fixed">Realisasi</td>
+                                                        <td class="second-row fixed text-center">Realisasi</td>
 
                                                         <?php $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana']; ?>
                                                         @foreach ((array) $monthly_finance_expenses as $monthly_finance_expenses => $monthly_finance_expenses_item)
-                                                            <td class="second-row">
+                                                            <td class="second-row text-center">
                                                                 @isset($monthly_finance_expenses_item['realisasi']['total'])
                                                                     @currency($monthly_finance_expenses_item['realisasi']['total'])
                                                                 @endisset
@@ -272,7 +272,7 @@ foreach ($test as $key => $value) {
                                                             </td>
                                                         @endforeach
                                                         <?php $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana']; ?>
-                                                        <td class="second-row">
+                                                        <td class="second-row text-center">
                                                             @currency(array_sum(array_column(array_column($monthly_finance_expenses, 'realisasi'), 'total')))
                                                         </td>
                                                     </tr>
@@ -309,7 +309,7 @@ foreach ($test as $key => $value) {
                                                     $sisa_persentase_realisasi_fisik_footer = 100 - $persentase_realisasi_fisik_footer;
                                                 ?>
 
-                                                <th>
+                                                <th class="text-center">
                                                     Jumlah Realisasi Fisik
                                                 </th>
                                                 <th>
@@ -357,10 +357,10 @@ foreach ($test as $key => $value) {
                                                 <th>
                                                     &nbsp;
                                                 </th>
-                                                <th>
+                                                <th class="text-center">
                                                     {{ round($persentase_realisasi_fisik_footer) }}%
                                                 </th>
-                                                <th>
+                                                <th class="text-center">
                                                     {{ round($sisa_persentase_realisasi_fisik_footer) }}%
                                                 </th>
                                             </tr>
@@ -408,56 +408,27 @@ foreach ($test as $key => $value) {
                                                     };
                                                 ?>
 
-                                                <th>
+                                                <th class="text-center">
                                                     Jumlah Realisasi Keuangan
                                                 </th>
-                                                <th>
+                                                <th class="text-center">
                                                     @currency($jumlah_fisik_anggaran_sum)
                                                 </th>
 
                                                 <th>
                                                     &nbsp;
                                                 </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[1])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[2])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[3])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[4])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[5])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[6])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[7])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[8])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[9])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[10])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[11])
-                                                </th>
-                                                <th>
-                                                    @currency($monthly_realization_finance_object[12])
-                                                </th>
-                                                <th>
+                                                
+                                                @for ($i = 0; $i < 12; $i++)
+                                                    <th class="text-center">
+                                                        @currency($monthly_realization_finance_object[$i + 1])
+                                                    </th>
+                                                @endfor
+
+                                                <th class="text-center">
                                                     @currency($monthly_realization_finance_summary)
                                                 </th>
-                                                <th>
+                                                <th class="text-center">
                                                     <?php try { ?>
                                                         {{ round(($monthly_realization_finance_summary / $jumlah_fisik_anggaran_sum) * 100) }}%
                                                     <?php } catch(error) { ?>
@@ -465,7 +436,7 @@ foreach ($test as $key => $value) {
                                                     <?php } ?>
 
                                                 </th>
-                                                <th>
+                                                <th class="text-center">
                                                     @currency($jumlah_fisik_anggaran_sum - $monthly_realization_finance_summary)
                                                 </th>
                                             </tr>
