@@ -75,6 +75,13 @@ foreach ($test as $key => $value) {
                                                 <th rowspan="1" colspan="12">
                                                     Jumlah Kebutuhan Dana
                                                 </th>
+                                                <th rowspan="2">Jumlah</th>
+                                                <th rowspan="2">
+                                                    Persentase Realisasi Fisik / Anggaran
+                                                </th>
+                                                <th rowspan="2">
+                                                    Sisa Fisik / Anggaran yang belum digunakan
+                                                </th>
                                             </tr>
                                             <tr>
                                                 <th rowspan="1">Januari</th>
@@ -89,13 +96,6 @@ foreach ($test as $key => $value) {
                                                 <th rowspan="1">Oktober</th>
                                                 <th rowspan="1">November</th>
                                                 <th rowspan="1">December</th>
-                                                <th rowspan="1">Jumlah</th>
-                                                <th rowspan="1">
-                                                    Persentase Realisasi Fisik / Anggaran
-                                                </th>
-                                                <th rowspan="1">
-                                                    Sisa Fisik / Anggaran yang belum digunakan
-                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody class="sekretariat-table-nested-body">
@@ -118,14 +118,14 @@ foreach ($test as $key => $value) {
                                                     </td>
 
                                                     <?php $monthly_finance = $details_item['jumlah_Kebutuhan_dana']; ?>
-                                                    @foreach ((array) $monthly_finance as $monthly_finance => $monthly_finance_item)
+                                                    @foreach ((array) $monthly_finance as $monthly_finance_array => $monthly_finance_item)
                                                         <td>
                                                             @currency($monthly_finance_item['total'])
                                                         </td>
                                                     @endforeach
 
                                                     <td>
-                                                        @currency($details_item['jumlah_fisik_anggaran'])
+                                                        @currency(array_sum(array_column($monthly_finance, 'total')))
                                                     </td>
                                                     <td>
                                                         &nbsp;
@@ -143,8 +143,6 @@ foreach ($test as $key => $value) {
                                                     <tr>
                                                         <td class="first-row fixed fixed-row-one " rowspan="2">
                                                             {{ $expenses_item['biaya'] }}
-                                                            <br>
-                                                            -
                                                         </td>
                                                         <td class="first-row fixed fixed-row-two" rowspan="2">
                                                             {{ $physical_expenses['jumlah_fisik'] }}
@@ -213,8 +211,6 @@ foreach ($test as $key => $value) {
                                                     <tr>
                                                         <td class="second-row fixed" rowspan="2">
                                                             {{ $expenses_item['biaya'] }}
-                                                            <br>
-                                                            -
                                                         </td>
                                                         <td class="second-row fixed" rowspan="2">
                                                             {{ $finance_expenses['jumlah_anggaran'] }}
@@ -225,11 +221,11 @@ foreach ($test as $key => $value) {
                                                         <?php $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana']; ?>
                                                         @foreach ((array) $monthly_finance_expenses as $monthly_finance_expenses => $monthly_finance_expenses_item)
                                                             <td class="second-row">
-                                                                @isset($monthly_physical_expenses_item['target']['total'])
-                                                                    @currency($monthly_physical_expenses_item['target']['total'])
+                                                                @isset($monthly_finance_expenses_item['target']['total'])
+                                                                    @currency($monthly_finance_expenses_item['target']['total'])
                                                                 @endisset
                                                                 @php
-                                                                    if (is_null($monthly_physical_expenses_item['target']['total'])) {
+                                                                    if (is_null($monthly_finance_expenses_item['target']['total'])) {
                                                                         echo '-';
                                                                     }
                                                                 @endphp
@@ -238,19 +234,22 @@ foreach ($test as $key => $value) {
 
                                                         <?php $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana']; ?>
                                                         <td class="second-row">
-                                                            @currency(array_sum(array_column(array_column($monthly_physical_expenses, 'target'), 'total')))
+                                                            @currency(array_sum(array_column(array_column($monthly_finance_expenses, 'target'), 'total')))
                                                         </td>
                                                         <td class="second-row" rowspan="2">
                                                             {{ round(
                                                                 divnum(
-                                                                    array_sum(array_column(array_column($monthly_physical_expenses, 'realisasi'), 'total')),
-                                                                    array_sum(array_column(array_column($monthly_physical_expenses, 'target'), 'total')),
+                                                                    array_sum(array_column(array_column($monthly_finance_expenses, 'realisasi'), 'total')),
+                                                                    array_sum(array_column(array_column($monthly_finance_expenses, 'target'), 'total')),
                                                                 ) * 100,
                                                             ) }}%
                                                         </td>
                                                         <td class="second-row" rowspan="2">
                                                             @php
-                                                                $result = round(array_sum(array_column(array_column($monthly_physical_expenses, 'target'), 'total'))) - array_sum(array_column(array_column($monthly_physical_expenses, 'realisasi'), 'total'));
+                                                                $result = round(
+                                                                    array_sum(array_column(array_column($monthly_finance_expenses, 'target'), 'total')) -
+                                                                    array_sum(array_column(array_column($monthly_finance_expenses, 'realisasi'), 'total'))
+                                                                );
                                                             @endphp
                                                             @currency($result)
                                                         </td>
@@ -262,11 +261,11 @@ foreach ($test as $key => $value) {
                                                         <?php $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana']; ?>
                                                         @foreach ((array) $monthly_finance_expenses as $monthly_finance_expenses => $monthly_finance_expenses_item)
                                                             <td class="second-row">
-                                                                @isset($monthly_physical_expenses_item['realisasi']['total'])
-                                                                    @currency($monthly_physical_expenses_item['realisasi']['total'])
+                                                                @isset($monthly_finance_expenses_item['realisasi']['total'])
+                                                                    @currency($monthly_finance_expenses_item['realisasi']['total'])
                                                                 @endisset
                                                                 @php
-                                                                    if (is_null($monthly_physical_expenses_item['realisasi']['total'])) {
+                                                                    if (is_null($monthly_finance_expenses_item['realisasi']['total'])) {
                                                                         echo '-';
                                                                     }
                                                                 @endphp
@@ -274,7 +273,7 @@ foreach ($test as $key => $value) {
                                                         @endforeach
                                                         <?php $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana']; ?>
                                                         <td class="second-row">
-                                                            @currency(array_sum(array_column(array_column($monthly_physical_expenses, 'realisasi'), 'total')))
+                                                            @currency(array_sum(array_column(array_column($monthly_finance_expenses, 'realisasi'), 'total')))
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -282,296 +281,193 @@ foreach ($test as $key => $value) {
                                         </tbody>
                                         <tfoot class="sekretariat-table-nested-foot">
                                             <tr>
+                                                <?php
+                                                    $details = $test_item['detail'];
+                                                    $persentase_realisasi_fisik_array = [];
+                                                    
+                                                    foreach ($details as $detail => $detail_item) {
+                                                        $expenses = $detail_item['biaya'];
+                                                        
+
+                                                        foreach ($expenses as $expense => $expense_item) {
+                                                            $physical_expenses = $expense_item['fisik'];
+
+                                                            $monthly_physical_expenses = $physical_expenses['jumlah_Kebutuhan_dana'];
+
+                                                            $persentase_realisasi_fisik = (array_sum(array_column(array_column($monthly_physical_expenses, 'realisasi'), 'total')) / array_sum(array_column(array_column($monthly_physical_expenses, 'target'), 'total'))) * 100;
+                                                        
+                                                            array_push($persentase_realisasi_fisik_array, $persentase_realisasi_fisik);
+                                                        }
+                                                    }
+
+                                                    if (array_sum($persentase_realisasi_fisik_array) != 0 && count($persentase_realisasi_fisik_array) != 0) {
+                                                        $persentase_realisasi_fisik_footer = array_sum($persentase_realisasi_fisik_array) / count($persentase_realisasi_fisik_array);
+                                                    } else if (array_sum($persentase_realisasi_fisik_array) == 0 || count($persentase_realisasi_fisik_array) == 0) {
+                                                        $persentase_realisasi_fisik_footer = 0;
+                                                    }
+
+                                                    $sisa_persentase_realisasi_fisik_footer = 100 - $persentase_realisasi_fisik_footer;
+                                                ?>
+
                                                 <th>
                                                     Jumlah Realisasi Fisik
                                                 </th>
                                                 <th>
                                                     &nbsp;
                                                 </th>
-                                                <?php $details = $test_item['detail']; ?>
-
-                                                <?php $jumlahRealisasiKeuangan = []; ?>
-                                                <?php $jumlahRealisasiJanuari = []; ?>
-                                                <?php $jumlahRealisasiFebuari = []; ?>
-                                                <?php $jumlahRealisasiMaret = []; ?>
-                                                <?php $jumlahRealisasiApril = []; ?>
-                                                <?php $jumlahRealisasiMei = []; ?>
-                                                <?php $jumlahRealisasiJuni = []; ?>
-                                                <?php $jumlahRealisasiJuli = []; ?>
-                                                <?php $jumlahRealisasiAgustus = []; ?>
-                                                <?php $jumlahRealisasiSeptember = []; ?>
-                                                <?php $jumlahRealisasiOktober = []; ?>
-                                                <?php $jumlahRealisasiNovember = []; ?>
-                                                <?php $jumlahRealisasiDecember = []; ?>
-
-                                                @foreach ((array) $details as $details => $details_item)
-                                                    <?php $expenses = $details_item['biaya']; ?>
-
-                                                    @foreach ((array) $expenses as $expenses => $expenses_item)
-                                                        <?php $physical_expenses = $expenses_item['fisik']; ?>
-
-                                                        <?php $monthly_physical_expenses = $physical_expenses['jumlah_Kebutuhan_dana']; ?>
-
-                                                        <?php $jumlahRealisasiKeuangan[] = array_sum(array_column(array_column($monthly_physical_expenses, 'target'), 'total')); ?>
-
-                                                        <?php $jumlahRealisasiJanuari[] = array_slice($monthly_physical_expenses[0], 0, 10); ?>
-                                                        <?php $jumlahRealisasiFebuari[] = array_slice($monthly_physical_expenses[1], 0, 10); ?>
-                                                        <?php $jumlahRealisasiMaret[] = array_slice($monthly_physical_expenses[2], 0, 10); ?>
-                                                        <?php $jumlahRealisasiApril[] = array_slice($monthly_physical_expenses[3], 0, 10); ?>
-                                                        <?php $jumlahRealisasiMei[] = array_slice($monthly_physical_expenses[4], 0, 10); ?>
-                                                        <?php $jumlahRealisasiJuni[] = array_slice($monthly_physical_expenses[5], 0, 10); ?>
-                                                        <?php $jumlahRealisasiJuli[] = array_slice($monthly_physical_expenses[6], 0, 10); ?>
-                                                        <?php $jumlahRealisasiAgustus[] = array_slice($monthly_physical_expenses[7], 0, 10); ?>
-                                                        <?php $jumlahRealisasiSeptember[] = array_slice($monthly_physical_expenses[8], 0, 10); ?>
-                                                        <?php $jumlahRealisasiOktober[] = array_slice($monthly_physical_expenses[9], 0, 10); ?>
-                                                        <?php $jumlahRealisasiNovember[] = array_slice($monthly_physical_expenses[10], 0, 10); ?>
-                                                        <?php $jumlahRealisasiDecember[] = array_slice($monthly_physical_expenses[11], 0, 10); ?>
-                                                    @endforeach
-                                                @endforeach
-
                                                 <th>
-                                                    @currency(array_sum($jumlahRealisasiKeuangan))
-                                                </th>
-                                                {{-- <th>
                                                     &nbsp;
-                                                </th> --}}
-                                                <th>
-                                                    @php
-                                                        $januari = array_sum(array_column(array_column($jumlahRealisasiJanuari, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($januari)
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $febuari = array_sum(array_column(array_column($jumlahRealisasiFebuari, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($febuari)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $maret = array_sum(array_column(array_column($jumlahRealisasiMaret, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($maret)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $april = array_sum(array_column(array_column($jumlahRealisasiApril, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($april)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $mei = array_sum(array_column(array_column($jumlahRealisasiMei, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($mei)
-
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $juni = array_sum(array_column(array_column($jumlahRealisasiJuni, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($juni)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $juli = array_sum(array_column(array_column($jumlahRealisasiJuli, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($juli)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $agustus = array_sum(array_column(array_column($jumlahRealisasiAgustus, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($agustus)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $september = array_sum(array_column(array_column($jumlahRealisasiSeptember, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($september)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $oktober = array_sum(array_column(array_column($jumlahRealisasiOktober, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($oktober)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $november = array_sum(array_column(array_column($jumlahRealisasiNovember, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($november)
-
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $desember = array_sum(array_column(array_column($jumlahRealisasiDecember, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($desember)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $all_months = $januari + $febuari + $maret + $april + $mei + $juni + $juli + $agustus + $september + $oktober + $november + $desember;
-                                                    @endphp
-                                                    @currency($all_months)
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $allMonthsPercent = divnum($all_months, array_sum($jumlahRealisasiKeuangan)) * 100;
-                                                    @endphp
-                                                    {{ round($allMonthsPercent) }}%
+                                                    &nbsp;
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $new = abs($allMonthsPercent - 100);
-                                                    @endphp
-                                                    {{ round($new) }}%
+                                                    {{ round($persentase_realisasi_fisik_footer) }}%
+                                                </th>
+                                                <th>
+                                                    {{ round($sisa_persentase_realisasi_fisik_footer) }}%
                                                 </th>
                                             </tr>
                                             <tr>
+                                                <?php
+                                                    $monthly_realization_finance_object = [
+                                                        1 => [],
+                                                        2 => [],
+                                                        3 => [],
+                                                        4 => [],
+                                                        5 => [],
+                                                        6 => [],
+                                                        7 => [],
+                                                        8 => [],
+                                                        9 => [],
+                                                        10 => [],
+                                                        11 => [],
+                                                        12 => [],
+                                                    ];
+
+                                                    $details = $test_item['detail'];
+
+                                                    $jumlah_fisik_anggaran_sum = array_sum(array_column($details, 'jumlah_fisik_anggaran'));
+
+                                                    foreach ($details as $detail => $detail_item) {
+                                                        $expenses = $detail_item['biaya'];
+
+                                                        foreach ($expenses as $expense => $expense_item) {
+                                                            $finance_expenses = $expense_item['keuangan'];
+
+                                                            $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana'];
+
+                                                            foreach ($monthly_finance_expenses as $monthly_finance_expense => $monthly_finance_expense_item) {
+                                                                array_push($monthly_realization_finance_object[$monthly_finance_expense_item['id']], $monthly_finance_expense_item['realisasi']['total']);
+                                                            }
+                                                        }
+                                                    };
+
+                                                    $monthly_realization_finance_summary = 0;
+
+                                                    foreach (array_keys($monthly_realization_finance_object) as $monthly_realization_finance_object_key => $key) {
+                                                        $monthly_realization_finance_object[$key] = array_sum($monthly_realization_finance_object[$key]);
+
+                                                        $monthly_realization_finance_summary += $monthly_realization_finance_object[$key];
+                                                    };
+                                                ?>
+
                                                 <th>
                                                     Jumlah Realisasi Keuangan
                                                 </th>
-                                                <?php $details = $test_item['detail']; ?>
+                                                <th>
+                                                    @currency($jumlah_fisik_anggaran_sum)
+                                                </th>
 
-                                                <?php $jumlahRealisasiKeuangan = []; ?>
-
-                                                <?php $jumlahRealisasiJanuari = []; ?>
-                                                <?php $jumlahRealisasiFebuari = []; ?>
-                                                <?php $jumlahRealisasiMaret = []; ?>
-                                                <?php $jumlahRealisasiApril = []; ?>
-                                                <?php $jumlahRealisasiMei = []; ?>
-                                                <?php $jumlahRealisasiJuni = []; ?>
-                                                <?php $jumlahRealisasiJuli = []; ?>
-                                                <?php $jumlahRealisasiAgustus = []; ?>
-                                                <?php $jumlahRealisasiSeptember = []; ?>
-                                                <?php $jumlahRealisasiOktober = []; ?>
-                                                <?php $jumlahRealisasiNovember = []; ?>
-                                                <?php $jumlahRealisasiDecember = []; ?>
-
-                                                @foreach ((array) $details as $details => $details_item)
-                                                    <?php $jumlahRealisasiKeuangan[] = $details_item['jumlah_fisik_anggaran']; ?>
-
-                                                    <?php $expenses = $details_item['biaya']; ?>
-                                                    @foreach ((array) $expenses as $expenses => $expenses_item)
-                                                        <?php $finance_expenses = $expenses_item['keuangan']; ?>
-
-                                                        <?php $monthly_finance_expenses = $finance_expenses['jumlah_Kebutuhan_dana']; ?>
-
-                                                        <?php $jumlahRealisasiJanuari[] = array_slice($monthly_finance_expenses[0], 0, 10); ?>
-                                                        <?php $jumlahRealisasiFebuari[] = array_slice($monthly_finance_expenses[1], 1, 10); ?>
-                                                        <?php $jumlahRealisasiMaret[] = array_slice($monthly_finance_expenses[2], 1, 10); ?>
-                                                        <?php $jumlahRealisasiApril[] = array_slice($monthly_finance_expenses[3], 1, 10); ?>
-                                                        <?php $jumlahRealisasiMei[] = array_slice($monthly_finance_expenses[4], 1, 10); ?>
-                                                        <?php $jumlahRealisasiJuni[] = array_slice($monthly_finance_expenses[5], 1, 10); ?>
-                                                        <?php $jumlahRealisasiJuli[] = array_slice($monthly_finance_expenses[6], 1, 10); ?>
-                                                        <?php $jumlahRealisasiAgustus[] = array_slice($monthly_finance_expenses[7], 1, 10); ?>
-                                                        <?php $jumlahRealisasiSeptember[] = array_slice($monthly_finance_expenses[8], 1, 10); ?>
-                                                        <?php $jumlahRealisasiOktober[] = array_slice($monthly_finance_expenses[9], 1, 10); ?>
-                                                        <?php $jumlahRealisasiNovember[] = array_slice($monthly_finance_expenses[10], 1, 10); ?>
-                                                        <?php $jumlahRealisasiDecember[] = array_slice($monthly_finance_expenses[11], 1, 10); ?>
-                                                    @endforeach
-                                                @endforeach
                                                 <th>
                                                     &nbsp;
                                                 </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[1])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[2])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[3])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[4])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[5])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[6])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[7])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[8])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[9])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[10])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[11])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_object[12])
+                                                </th>
+                                                <th>
+                                                    @currency($monthly_realization_finance_summary)
+                                                </th>
+                                                <th>
+                                                    <?php try { ?>
+                                                        {{ round(($monthly_realization_finance_summary / $jumlah_fisik_anggaran_sum) * 100) }}%
+                                                    <?php } catch(error) { ?>
+                                                        0%
+                                                    <?php } ?>
 
-                                                <th>
-                                                    @currency(array_sum($jumlahRealisasiKeuangan))
-                                                </th>
-
-                                                <th>
-                                                    @php
-                                                        $januari = array_sum(array_column(array_column($jumlahRealisasiJanuari, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($januari)
                                                 </th>
                                                 <th>
-                                                    @php
-                                                        $febuari = array_sum(array_column(array_column($jumlahRealisasiFebuari, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($febuari)
+                                                    @currency($jumlah_fisik_anggaran_sum - $monthly_realization_finance_summary)
                                                 </th>
-                                                <th>
-                                                    @php
-                                                        $maret = array_sum(array_column(array_column($jumlahRealisasiMaret, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($maret)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $april = array_sum(array_column(array_column($jumlahRealisasiApril, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($april)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $mei = array_sum(array_column(array_column($jumlahRealisasiMei, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($mei)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $juni = array_sum(array_column(array_column($jumlahRealisasiJuni, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($juni)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $juli = array_sum(array_column(array_column($jumlahRealisasiJuli, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($juli)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $agustus = array_sum(array_column(array_column($jumlahRealisasiAgustus, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($agustus)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $september = array_sum(array_column(array_column($jumlahRealisasiSeptember, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($september)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $oktober = array_sum(array_column(array_column($jumlahRealisasiOktober, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($oktober)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $november = array_sum(array_column(array_column($jumlahRealisasiNovember, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($november)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $desember = array_sum(array_column(array_column($jumlahRealisasiDecember, 'target'), 'total'));
-                                                    @endphp
-                                                    @currency($desember)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $all_months = $januari + $febuari + $maret + $april + $mei + $juni + $juli + $agustus + $september + $oktober + $november + $desember;
-                                                    @endphp
-                                                    @currency($all_months)
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $allMonthsPercent = divnum($all_months, array_sum($jumlahRealisasiKeuangan)) * 100;
-                                                    @endphp
-                                                    {{ round($allMonthsPercent) }}%
-                                                </th>
-                                                <th>
-                                                    @php
-                                                        $new = abs($allMonthsPercent - 100);
-                                                    @endphp
-                                                    {{ round($new) }}%
-                                                </th>
-
-                                                
                                             </tr>
                                         </tfoot>
                                     </table>
