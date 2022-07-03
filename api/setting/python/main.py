@@ -70,10 +70,10 @@ class Main(Database):
             [sg.Listbox(list_box_values, default_values=settings_data[division_count].get("name"), key="listbox", enable_events=True, size=(100, 4), select_mode="single")],
 
             [sg.Text("Division")],
-            [[sg.InputText(default_text=settings_data[division_count].get(attribute), size=(100, 1), key=f"division_{attribute}", enable_events=True)] for attribute in division_attribute],
+            [[sg.InputText(default_text=settings_data[division_count].get(attribute), size=(100, 1), key=f"division_{attribute}", enable_events=True, disabled=True)] if attribute == "id" else [sg.InputText(default_text=settings_data[division_count].get(attribute), size=(100, 1), key=f"division_{attribute}", enable_events=True)] for attribute in division_attribute],
 
             [sg.Text("Detail")],
-            [[sg.InputText(default_text=settings_data[division_count].get("detail")[detail_count].get(attribute), size=(100, 1), key=f"detail_{attribute}", enable_events=True)] for attribute in detail_attribute],
+            [[sg.InputText(default_text=settings_data[division_count].get("detail")[detail_count].get(attribute), size=(100, 1), key=f"detail_{attribute}", enable_events=True, disabled=True)] if attribute == "id" else [sg.InputText(default_text=settings_data[division_count].get("detail")[detail_count].get(attribute), size=(100, 1), key=f"detail_{attribute}", enable_events=True)] for attribute in detail_attribute],
 
             [[sg.Button(button[0], key=f"{button[1]}_button", enable_events=True, size=(15, 1), disabled=button[2]) for button in buttons] for buttons in list_of_button]
         ]
@@ -226,12 +226,13 @@ class Main(Database):
             elif(event == "add_division_button"):
                 window.Disable()
 
-                new_id = len(settings_data) + 1
+                new_id = int(len(settings_data) + 1)
                 for division_index, division in enumerate(settings_data):
-                    if(division.get("id") != division_index + 1):
-                        new_id = division_index + 1
+                    if(int(division.get("id")) != int(division_index + 1)):
+                        new_id = int(division_index + 1)
                         break
 
+            
                 list_of_add_division_division_input = [
                     new_id,
                     "Name",
@@ -254,10 +255,10 @@ class Main(Database):
 
                 add_division_layout = [
                     [sg.Text("Division")],
-                    [[sg.InputText(default_text=list_of_add_division_division_input[attribute_index], size=(100, 1), key=f"add_division_division_{attribute}", enable_events=True)] for attribute_index, attribute in enumerate(division_attribute)],
+                    [[sg.InputText(default_text=list_of_add_division_division_input[attribute_index], size=(100, 1), key=f"add_division_division_{attribute}", enable_events=True, disabled=True)] if attribute == "id" else [sg.InputText(default_text=list_of_add_division_division_input[attribute_index], size=(100, 1), key=f"add_division_division_{attribute}", enable_events=True)] for attribute_index, attribute in enumerate(division_attribute)],
 
                     [sg.Text("Detail")],
-                    [[sg.InputText(default_text=list_of_add_division_detail_input[attribute_index], size=(100, 1), key=f"add_division_detail_{attribute}", enable_events=True)] for attribute_index, attribute in enumerate(detail_attribute)],
+                    [[sg.InputText(default_text=list_of_add_division_detail_input[attribute_index], size=(100, 1), key=f"add_division_detail_{attribute}", enable_events=True, disabled=True)] if attribute == "id" else [sg.InputText(default_text=list_of_add_division_detail_input[attribute_index], size=(100, 1), key=f"add_division_detail_{attribute}", enable_events=True)] for attribute_index, attribute in enumerate(detail_attribute)],
 
                     [sg.Button(button, key=f"{button.lower()}_add_division_button", enable_events=True, size=(12, 1)) for button in list_of_add_division_button]
                 ]
@@ -311,7 +312,7 @@ class Main(Database):
                                 add_division_is_valid = False
 
 
-                        list_of_add_division_detail[4] = temp_list
+                        list_of_add_division_detail[4] = " ".join(str(x) for x in temp_list)
 
                         if(add_division_is_valid):
                             new_division_dictionary = {
@@ -357,11 +358,11 @@ class Main(Database):
             elif(event == "add_detail_button"):
                 window.Disable()
 
-                new_id = len(settings_data[division_count].get("detail")) + 1
+                new_id = int(len(settings_data[division_count].get("detail")) + 1)
                 for detail_index, detail in enumerate(settings_data[division_count].get("detail")):
                     if(type(detail) == dict):
-                        if(detail.get("id") != detail_index + 1):
-                            new_id = detail_index + 1
+                        if(int(detail.get("id")) != int(detail_index + 1)):
+                            new_id = int(detail_index + 1)
                             break
                 
                 list_of_add_detail_input = [
@@ -379,7 +380,7 @@ class Main(Database):
 
                 add_detail_layout = [
                     [sg.Text("Detail")],
-                    [[sg.InputText(default_text=list_of_add_detail_input[attribute_index], size=(100, 1), key=f"add_detail_{attribute}", enable_events=True)] for attribute_index, attribute in enumerate(detail_attribute)],
+                    [[sg.InputText(default_text=list_of_add_detail_input[attribute_index], size=(100, 1), key=f"add_detail_{attribute}", enable_events=True, disabled=True)] if attribute == "id" else [sg.InputText(default_text=list_of_add_detail_input[attribute_index], size=(100, 1), key=f"add_detail_{attribute}", enable_events=True)] for attribute_index, attribute in enumerate(detail_attribute)],
 
                     [sg.Button(button, key=f"{button.lower()}_add_detail_button", enable_events=True, size=(12, 1)) for button in list_of_add_detail_button]
                 ]
@@ -422,7 +423,7 @@ class Main(Database):
                                 add_detail_is_valid = False
 
 
-                        list_of_add_detail[4] = temp_list
+                        list_of_add_detail[4] = " ".join(str(x) for x in temp_list)
 
                         if(add_detail_is_valid):
                             new_detail_dictionary = {

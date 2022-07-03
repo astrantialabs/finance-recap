@@ -55,8 +55,6 @@ class Utility():
 
 
     def update_data(mongoDBURI, database_name):
-        print("Updating   : Utilities")
-
         excel_path = Main.env_value.get("ExcelPath")
 
         excel_last_modified = os.path.getmtime(excel_path)
@@ -72,9 +70,6 @@ class Utility():
         }
 
         utilities_collection.replace_one({"id": 1}, update_dictionary, upsert=True)
-
-        print("Completed  : Utilities")
-        print()
 
 
 class File():
@@ -105,14 +100,14 @@ class File():
             os.makedirs(f"{file_path}/{excel_folder_path}", exist_ok=True)
             os.makedirs(f"{file_path}/{pdf_folder_path}", exist_ok=True)
 
-            print(f"Creating   : {division.get('divisi')} Files")
+            print(f"Membuat    : File {division.get('divisi')}")
             File.create_excel(file_path, division, full_excel_file_path)
             File.create_pdf(system_excel_path, system_pdf_path, excel_client_dispatch)
 
-            print(f"Uploading  : {division.get('divisi')} Files")
+            print(f"Mengunggah : File {division.get('divisi')}")
             database_name = f"{database_phase}{division.get('divisi')}"
             File.upload_file(mongoDBURI, database_name, current_datetime, full_excel_file_path, full_pdf_folder_path)
-            print(f"Completed  : {division.get('divisi')} Files")
+            print(f"Selesai    : File {division.get('divisi')}")
             print()
 
         
@@ -211,13 +206,13 @@ class Main(Database, Utility, File):
             stop_time = timeit.default_timer()
             elapsed_time = stop_time - start_time
 
-            print(f"Elapsed time: {elapsed_time} seconds")
+            print(f"Waktu yang berlalu: {elapsed_time} detik")
             print()
-            print("You can close the program...")
+            print("Anda bisa menutup programnya...")
             input()
 
         except:
-            print("Program failed to run...")
+            print("Program gagal untuk dijalankan...")
             input()
 
 
@@ -257,7 +252,7 @@ class Main(Database, Utility, File):
     def get_division(settings_data, wb_summary):
         division_array = []
         for division_count, division_data in enumerate(settings_data):
-            print(f"Processing : {division_data.get('name')}")
+            print(f"Memproses  : {division_data.get('name')}")
             activity_array = Main.get_activity(division_data, wb_summary)
 
             division_attribute = ["divisi", "sub_kegiatan"]
@@ -265,7 +260,7 @@ class Main(Database, Utility, File):
             temp_division_dictionary = Main.convert_to_dict(division_count, division_value, division_attribute)
 
             division_array.append(temp_division_dictionary)
-            print(f"Completed  : {division_data.get('name')}")
+            print(f"Selesai    : {division_data.get('name')}")
             print()
 
         return division_array
@@ -292,7 +287,7 @@ class Main(Database, Utility, File):
     def get_detail(division_data, activity_count, wb_summary):
         detail_setting = division_data.get("detail")[activity_count]
 
-        print(f"Processing : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('sheet_name')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
+        print(f"Memproses  : {detail_setting.get('id')} {detail_setting.get('active_sheet')} {detail_setting.get('sheet_name')} {detail_setting.get('start_range')} {detail_setting.get('end_range')} {detail_setting.get('attribute')}")
 
         detail_array = []
         if("null" not in detail_setting.get("sheet_name")):
@@ -429,7 +424,7 @@ class Main(Database, Utility, File):
 
 
     def update_data(mongoDBURI, database_name, data):
-        print("Uploading  : Data")
+        print("Mengunggah : Data")
 
         collection_name = "summary_recaps"
         summary_recaps_collection = Main.get_collection(mongoDBURI, database_name, collection_name)
@@ -445,7 +440,7 @@ class Main(Database, Utility, File):
             summary_recaps_collection.replace_one({"id": update_id}, update_dictionary, upsert=True)
 
 
-        print("Completed  : Data")
+        print("Selesai    : Data")
         print()
 
 
