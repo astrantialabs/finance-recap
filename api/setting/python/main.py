@@ -136,6 +136,7 @@ class Main(Database):
                             save_is_valid = False
 
                         if(save_is_valid):
+                            collection.delete_many({})
                             for division_index, division_settings in enumerate(settings_data):
                                 update_dictionary = {
                                     "id": division_settings.get("id"),
@@ -316,14 +317,14 @@ class Main(Database):
 
                         if(add_division_is_valid):
                             new_division_dictionary = {
-                                "id": list_of_add_division_division[0],
+                                "id": int(list_of_add_division_division[0]),
                                 "name": list_of_add_division_division[1],
                                 "start_range": list_of_add_division_division[2],
                                 "end_range": list_of_add_division_division[3],
                                 "detail": [
                                     {
-                                        "id": list_of_add_division_detail[0],
-                                        "active_sheet": list_of_add_division_detail[1],
+                                        "id": int(list_of_add_division_detail[0]),
+                                        "active_sheet": int(list_of_add_division_detail[1]),
                                         "start_range": list_of_add_division_detail[2],
                                         "end_range": list_of_add_division_detail[3],
                                         "attribute": list_of_add_division_detail[4]
@@ -427,8 +428,8 @@ class Main(Database):
 
                         if(add_detail_is_valid):
                             new_detail_dictionary = {
-                                "id": list_of_add_detail[0],
-                                "active_sheet": list_of_add_detail[1],
+                                "id": int(list_of_add_detail[0]),
+                                "active_sheet": int(list_of_add_detail[1]),
                                 "start_range": list_of_add_detail[2],
                                 "end_range": list_of_add_detail[3],
                                 "attribute": list_of_add_detail[4]
@@ -487,20 +488,36 @@ class Main(Database):
         window["listbox"].update(set_to_index=[division_count], scroll_to_index=division_count)
 
         for attribute in division_attribute:
-            window[f"division_{attribute}"].update(settings_data[division_count].get(attribute))
+            if(attribute in ["id"]):
+                window[f"division_{attribute}"].update(int(settings_data[division_count].get(attribute)))
+
+            elif(attribute not in ["id"]):
+                window[f"division_{attribute}"].update(settings_data[division_count].get(attribute))
 
 
         for attribute in detail_attribute:
-            window[f"detail_{attribute}"].update(settings_data[division_count].get("detail")[detail_count].get(attribute))
+            if(attribute in ["id", "active_sheet"]):
+                window[f"detail_{attribute}"].update(int(settings_data[division_count].get("detail")[detail_count].get(attribute)))
+
+            elif(attribute not in ["id", "active_sheet"]):
+                window[f"detail_{attribute}"].update(settings_data[division_count].get("detail")[detail_count].get(attribute))
 
 
     def update_input(settings_data, division_attribute, division_count, detail_attribute, detail_count, values):
         for division_settings in division_attribute:
-            settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
+            if(division_settings in ["id"]):
+                settings_data[division_count][division_settings] = int(values[f"division_{division_settings}"])
+
+            elif(division_settings not in ["id"]):
+                settings_data[division_count][division_settings] = values[f"division_{division_settings}"]
 
 
         for detail_settings in detail_attribute:
-            settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
+            if(division_settings in ["id", "active_sheet"]):
+                settings_data[division_count].get("detail")[detail_count][detail_settings] = int(values[f"detail_{detail_settings}"])
+
+            elif(division_settings not in ["id", "active_sheet"]):
+                settings_data[division_count].get("detail")[detail_count][detail_settings] = values[f"detail_{detail_settings}"]
 
     
     def get_settings_data(collection):
